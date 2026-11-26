@@ -21,6 +21,8 @@
 - [x] Compact and expanded Music Player structure and controls accepted.
 - [x] Playback Queue placement and playback-state restoration accepted.
 - [x] Download Queue columns, controls, task ordering, and single-download concurrency accepted.
+- [x] Both download modes confirmed: in-app offline listening and permitted independent audio-file downloads.
+- [x] Independent download destination, Artist / Album / Track folder structure, duplicate-skip behaviour, and format choices confirmed.
 
 ## In progress
 
@@ -42,4 +44,4 @@ These are intentionally not started. Do not create application implementation un
 
 ## Next action
 
-Continue with download and offline-listening behaviour, including destination, folder organization, duplicate handling, and permitted formats. Do not revisit already accepted navigation, track-list, player, or Download Queue decisions unless the owner requests a change.
+Continue defining in-app offline storage/lifecycle and audio quality/bitrate behaviour. Do not revisit the accepted download destination, folder hierarchy, duplicate-skip rule, format choices, navigation, track-list, player, or Download Queue decisions unless the owner requests a change.
