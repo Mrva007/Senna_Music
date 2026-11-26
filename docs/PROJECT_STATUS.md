@@ -33,7 +33,8 @@
 - [x] Metadata editing uses explicit Save / Cancel; edits are not written until Save.
 - [x] Bulk metadata editing for multiple selected tracks confirmed.
 - [x] Saved metadata changes are written directly into the original audio file where supported; no automatic backup copy is created.
-- [x] Damaged or unreadable local audio files remain visible in the library with an error indication.
+- [x] Damaged or unreadable local audio files remain visible with a red error indicator beside the track name.
+- [x] Retry and Details actions are available for damaged or unreadable local audio files.
 - [x] Download quality selection confirmed: default in Settings with per-download override.
 
 ## In progress
@@ -41,7 +42,7 @@
 - [ ] Continue defining remaining GUI details and unresolved product questions.
 - [ ] Define exact shared GUI dimensions after the GUI structure is complete.
 - [ ] Define exact quality/bitrate levels and resolve provider-specific playback and download capabilities.
-- [ ] Define detailed presentation and actions for damaged/unreadable local files.
+- [ ] Define the exact contents of the error Details view for damaged/unreadable local files.
 - [ ] Keep approved decisions, proposals, and open questions clearly separated.
 
 ## Not started / blocked by concept approval
@@ -57,4 +58,4 @@ These are intentionally not started. Do not create application implementation un
 
 ## Next action
 
-Continue defining remaining GUI details and product questions, including exact quality/bitrate levels, provider capabilities, and detailed error presentation/recovery actions for damaged/unreadable files. Local Music folder selection, recursive scanning, startup scanning, background monitoring, automatic addition of newly discovered files, missing-file reconciliation, supported audio formats, writing metadata changes into files where supported, basic editable fields, explicit Save / Cancel, bulk editing, no automatic backup, and visibility of damaged files with an error indication are accepted. The unified download/offline-playback model and Settings default with per-download quality override are also accepted. Do not revisit previously accepted decisions unless the owner requests a change.
+Continue defining remaining GUI details and product questions, including exact quality/bitrate levels, provider capabilities, and the exact contents of the Details view for damaged/unreadable files. Local Music folder selection, recursive scanning, startup scanning, background monitoring, automatic addition of newly discovered files, missing-file reconciliation, supported audio formats, writing metadata changes into files where supported, basic editable fields, explicit Save / Cancel, bulk editing, no automatic backup, and visibility of damaged files with a red error indicator plus Retry and Details actions are accepted. The unified download/offline-playback model and Settings default with per-download quality override are also accepted. Do not revisit previously accepted decisions unless the owner requests a change.
