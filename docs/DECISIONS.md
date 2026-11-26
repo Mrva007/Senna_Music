@@ -54,6 +54,9 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-047 | Scan manually added Local Music folders recursively, including all subfolders. | Accepted |
 | D-048 | After startup scanning, continue refreshing/monitoring manually added folders automatically in the background while Senna Music is running. | Accepted |
 | D-049 | Automatically add newly discovered music files in the scanned folders to the Local Music library; no per-file confirmation is required. | Accepted |
+| D-050 | Local Music supports MP3, M4A, FLAC, WAV, and OGG audio files. | Accepted |
+| D-051 | Users can edit supported audio metadata in Senna Music, and changes are written into the audio file itself where the format supports the relevant metadata. | Accepted |
+| D-052 | Damaged or unreadable local audio files remain visible in the library with an error indication. | Accepted |
 
 ## Change control
 
