@@ -51,6 +51,9 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 
 | D-045 | Automatically scan all folders manually added by the user when Senna Music starts. | Accepted |
 | D-046 | If a previously indexed local music file is moved or deleted, remove its library entry; never delete or modify the file on disk as part of this reconciliation. | Accepted |
+| D-047 | Scan manually added Local Music folders recursively, including all subfolders. | Accepted |
+| D-048 | After startup scanning, continue refreshing/monitoring manually added folders automatically in the background while Senna Music is running. | Accepted |
+| D-049 | Automatically add newly discovered music files in the scanned folders to the Local Music library; no per-file confirmation is required. | Accepted |
 
 ## Change control
 
