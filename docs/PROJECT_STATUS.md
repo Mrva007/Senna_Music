@@ -28,6 +28,9 @@
 - [x] Local Music scanning includes all subfolders recursively.
 - [x] Added folders are monitored/refreshed automatically in the background while the application is running.
 - [x] Newly discovered music files are added to the Local Music library automatically, without per-file confirmation.
+- [x] Local Music supported formats confirmed: MP3, M4A, FLAC, WAV, and OGG.
+- [x] Audio metadata editing confirmed, with changes written into the audio file itself where supported.
+- [x] Damaged or unreadable local audio files remain visible in the library with an error indication.
 - [x] Download quality selection confirmed: default in Settings with per-download override.
 
 ## In progress
@@ -35,6 +38,8 @@
 - [ ] Continue defining remaining GUI details and unresolved product questions.
 - [ ] Define exact shared GUI dimensions after the GUI structure is complete.
 - [ ] Define exact quality/bitrate levels and resolve provider-specific playback and download capabilities.
+- [ ] Define exact editable metadata fields and the metadata-editing workflow.
+- [ ] Define detailed presentation and actions for damaged/unreadable local files.
 - [ ] Keep approved decisions, proposals, and open questions clearly separated.
 
 ## Not started / blocked by concept approval
@@ -50,4 +55,4 @@ These are intentionally not started. Do not create application implementation un
 
 ## Next action
 
-Continue defining remaining GUI details and product questions, including exact quality/bitrate levels, provider capabilities, and remaining detailed Local Music behaviour. Local Music folder selection, recursive scanning, startup scanning, background monitoring, automatic addition of newly discovered files, and missing-file reconciliation are accepted. The unified download/offline-playback model and Settings default with per-download quality override are also accepted. Do not revisit these or previously accepted navigation, track-list, player, and Download Queue decisions unless the owner requests a change.
+Continue defining remaining GUI details and product questions, including exact quality/bitrate levels, provider capabilities, exact editable metadata fields, metadata-editing workflow, and detailed error presentation for damaged/unreadable files. Local Music folder selection, recursive scanning, startup scanning, background monitoring, automatic addition of newly discovered files, missing-file reconciliation, supported audio formats, writing metadata changes into files where supported, and visibility of damaged files with an error indication are accepted. The unified download/offline-playback model and Settings default with per-download quality override are also accepted. Do not revisit previously accepted decisions unless the owner requests a change.
