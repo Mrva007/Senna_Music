@@ -11,8 +11,10 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [ ] Complete remaining GUI details, including exact dimensions and unresolved visual/interaction behaviour.
 - [ ] Define search and provider connection.
 - [ ] Define playback behaviour.
-- [x] Define independent download destination, folder organization, duplicate handling, and format choices.
-- [ ] Define in-app offline storage/lifecycle and audio quality/bitrate behaviour.
+- [x] Define unified download/offline-playback model: one local downloaded file is used for both in-app offline playback and external playback.
+- [x] Define download destination, folder organization, duplicate handling, format choices, and quality-selection behaviour.
+- [x] Define Local Music scanning approach: user manually adds folders to scan.
+- [ ] Define exact quality/bitrate levels and provider-specific download capabilities.
 - [ ] Define Download Queue details.
 - [ ] Complete playlist behaviour.
 - [ ] Define CLI and future AI-agent integration.
