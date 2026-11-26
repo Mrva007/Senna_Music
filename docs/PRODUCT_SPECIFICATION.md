@@ -2,7 +2,7 @@
 
 **Status:** Concept in progress  
 **Implementation:** Not authorized  
-**Source of truth:** This document, together with the decision log and open-questions register.
+**Source of truth:** This document, together with the GUI specification, decision log, and open-questions register.
 
 ## 1. Product vision
 
@@ -11,9 +11,9 @@ Senna Music is a standalone music platform inspired by Spotify.
 It is intended to support:
 - Discovering and searching for music through online music services.
 - Playing music.
-- Creating and managing user playlists.
-- Downloading music for offline listening inside Senna Music.
-- Downloading permitted audio files to the user's computer for use outside the application, for example in a car.
+- Creating and managing user playlists and favourite collections.
+- Downloading permitted audio files to the user's computer.
+- Playing those same downloaded local files offline inside Senna Music or outside the application, for example in a car.
 
 Senna Music is exclusively for music. Video is out of scope.
 
@@ -25,18 +25,28 @@ The architecture must allow additional music providers to be integrated later wi
 
 Provider capabilities are subject to the provider's APIs, licences, terms, and technical restrictions. The application must not bypass DRM or provider restrictions. Playback and download support must be assessed separately for each provider and use case.
 
-## 3. Download capabilities
+## 3. Downloads and offline playback
 
-Two distinct capabilities are defined:
+Senna Music has one unified local-download model; there are no separate download destinations or separate ways of storing music for offline listening.
 
-1. **Offline listening:** content made available for listening inside Senna Music, subject to provider capabilities and rights.
-2. **Audio file download:** downloading audio files only when the source and applicable rights explicitly permit it, for use outside the application.
+- Music is downloaded once to the computer folder selected by the user.
+- Offline listening means playing those same already-downloaded local files inside Senna Music, without requiring an internet connection.
+- There is no separate app-managed offline copy, second storage location, or additional offline download source.
+- The same downloaded file can also be played outside Senna Music, where permitted.
 
-Expected audio formats are MP3, M4A, and FLAC, depending on the source and available rights. Format and quality selection remain open.
+The owner confirmed these download and file-organization rules:
 
-## 4. GUI direction
+- The user selects the destination folder on the computer.
+- Files are organized automatically into an Artist / Album / Track folder hierarchy.
+- If a target file already exists, the duplicate is skipped; it is not overwritten.
+- Format choices: original format when available, MP3, M4A, and FLAC, subject to source availability and applicable rights.
+- Download quality uses a default configured in Settings, with an option to override it for an individual download.
 
-The selected direction is the simple interface option B:
+Provider capabilities and applicable rights still determine whether a track can be downloaded at all and which formats/qualities are available.
+
+## 4. GUI direction and navigation
+
+The selected GUI direction is the simple option B:
 - Left navigation, normally expanded with icons and labels and collapsible to an icon-only panel.
 - Central workspace for page content, search, and results.
 - Music player at the bottom.
@@ -44,26 +54,60 @@ The selected direction is the simple interface option B:
 
 Senna Music uses the shared GUI structure intended for future applications: a left navigation menu and a central workspace. The structure is consistent across applications; application-specific content appears in the central workspace. Exact dimensions remain open.
 
-### Home page
+Accepted left-navigation order:
+1. Home
+2. Local Music
+3. Playlists
+4. Favorites
+5. Download Queue
+6. Connected Services
+7. Settings
+
+There is no separate Search navigation item; search is available from Home.
+
+## 5. Home and global search
 
 Home places the shared search at the top, followed by Recently Played, Playlists, and Local Music sections stacked vertically. Sections with no data are hidden.
 
-### Global search
-
 One shared search covers music from connected/supported online providers and Local Music. Results identify their source and can be filtered by source (All Sources, Spotify, YouTube Music, SoundCloud, or Local Music). Results use a list layout with track name, artist, album, and source.
 
-A separate **Local Music** page has been accepted.
-
-## 5. Local music collection
+## 6. Local music collection
 
 - Music files are stored locally on the user's computer.
 - The user chooses the storage folder.
 - Senna Music uses that location for downloaded music files.
-- Local Music is a distinct page in the GUI.
+- Local Music is a distinct page with All Tracks, Artists, Albums, and Folders views.
 
-Further details of local-library scanning, supported file handling, and folder behaviour remain open.
+The user manually adds the folders that Senna Music should scan. Scanning is recursive and includes all subfolders. Senna Music automatically scans those folders at startup and continues monitoring them in the background while the application is running. Newly discovered music files are added to the library automatically, without a separate confirmation step. If a previously indexed file has been moved or deleted, the application removes its entry from the library; it does not delete or modify files on disk.
 
-## 6. GUI and CLI
+Local Music supports MP3, M4A, FLAC, WAV, and OGG files. Senna Music reads supported audio metadata and allows the user to edit it, saving changes into the audio file itself (where the format supports the relevant metadata). If a file is damaged or cannot be read, it remains visible in the library with an error indication rather than being silently omitted. Exact metadata fields, editing workflow, and detailed error presentation remain open.
+
+## 7. Track lists, actions, and Favorites
+
+The standard track list shows Track name, Artist, Album, Duration, and Source, with a small cover-art thumbnail for each track. Clicking a column heading changes sort direction.
+
+A single click on a track starts playback. Multiple tracks can be selected using Ctrl/Shift-click.
+
+Track actions are available through a right-click context menu and a three-dot menu on each row:
+- Play
+- Play Next
+- Add to Queue
+- Add to Playlist
+- Add / Remove Favorites
+- View Track Details
+- Download (when permitted)
+
+Bulk actions for selected tracks:
+- Add to Queue
+- Add to Playlist
+- Add / Remove Favorites
+- Download (when permitted)
+
+Track Details shows track name, artist, album, duration, source, file format, file location, and track artwork.
+
+Favorites supports favourite tracks and user-created collections.
+
+## 8. GUI and CLI
 
 The application has two interfaces:
 
@@ -77,52 +121,66 @@ Both interfaces use the same Core and the same permission system. There must not
 
 CLI commands, API contracts, and permission details remain open.
 
-## 7. User profiles
+## 9. User profiles
 
 The first version starts with one user profile. A multi-user system is not required for the initial version.
 
-## 8. Download queue
+## 10. Download queue
 
 There is one shared download queue for Spotify, YouTube Music, and SoundCloud.
 
-Required columns:
+Accepted columns:
+- Status
+- Track
+- Artist
+- Service / Source
+- Progress
+- File size
+- Estimated remaining time
 
-| Column | Content |
-|---|---|
-| Status | Waiting, Downloading, Completed, Failed, etc. |
-| Track name | Track title |
-| Artist | Artist name |
-| Service | Source provider |
-| Progress | Download percentage |
-
-The **Service** column is mandatory so the user can always see the source of a download.
-
-Required queue controls:
+Accepted controls:
 - Start
 - Pause / Resume
 - Cancel
 - Retry
-- Pause All / Resume All
-- Drag & Drop reordering to change task priority
+- Pause All
+- Resume All
 
-Changing task order must not automatically interrupt a download that is already active.
+Queue behaviour:
+- Drag & Drop reordering changes task priority without interrupting the active download.
+- Newly added tasks go to the end of the queue.
+- Only one download runs at a time.
 
-Queue persistence, restart recovery, concurrency, and detailed state transitions remain open.
+No separate Download History page is planned; the Download Queue is for current and waiting tasks.
 
-## 9. Music player
+## 11. Music player and Playback Queue
 
-An advanced player is located at the bottom of the GUI and includes:
+The bottom player is compact by default and can be expanded using a dedicated button.
+
+Compact player information:
+- Cover artwork
+- Track name
+- Artist
+- Album
+- Favorite button
+
+The expanded player includes large cover artwork, track information, playback controls, progress bar, volume control, Shuffle / Repeat, Playback Queue access, and lyrics when available.
+
+Controls:
 - Play / Pause
-- Next / Previous
-- Volume
+- Previous / Next
 - Shuffle
-- Repeat (single track / entire list)
-- Playback Queue
-- Reordering tracks in the playback queue
+- Repeat: Off / All / One
+- Volume
+- Mute
 
-Detailed playback behaviour and provider-specific constraints remain open.
+Volume uses a slider. Repeat cycles Off → All → One → Off. The progress bar supports click and drag seeking.
 
-## 10. Playlists
+Playback Queue is displayed inside the expanded player and supports track reordering.
+
+When the application closes, it saves the last played track, playback position, and Playback Queue for restoration at the next launch.
+
+## 12. Playlists
 
 The user manages playlists manually:
 - Create
@@ -132,16 +190,11 @@ The user manages playlists manually:
 - Reorder tracks
 - Play an entire playlist
 
+All playlists are accessed through the single Playlists navigation destination. Individual playlists are not separate permanent navigation items.
+
 Automatic collection cataloguing by artist, album, and genre is not part of the agreed concept.
 
-## 11. Download history
-
-The simpler option A was selected:
-- There is no separate History page.
-- Only current and waiting tasks appear in Download Queue.
-- Completed downloads do not require a separate history view.
-
-## 12. Explicit product constraints
+## 13. Explicit product constraints
 
 - Music only; no video functionality.
 - No DRM bypass or circumvention of provider restrictions.

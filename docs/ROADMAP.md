@@ -7,10 +7,22 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Establish repository and documentation source of truth.
 - [x] Record current accepted product decisions.
 - [x] Record open questions and development workflow.
-- [ ] Complete GUI structure.
+- [x] Define primary GUI structure: navigation/page inventory, track lists, compact and expanded player, and Download Queue.
+- [ ] Complete remaining GUI details, including exact dimensions and unresolved visual/interaction behaviour.
 - [ ] Define search and provider connection.
 - [ ] Define playback behaviour.
-- [ ] Define download and offline capabilities.
+- [x] Define unified download/offline-playback model: one local downloaded file is used for both in-app offline playback and external playback.
+- [x] Define download destination, folder organization, duplicate handling, format choices, and quality-selection behaviour.
+- [x] Define Local Music scanning approach: user manually adds folders; scan automatically at application startup.
+- [x] Define missing-file reconciliation: remove missing/moved entries from the library without changing files on disk.
+- [x] Define recursive scanning of manually added folders, including all subfolders.
+- [x] Define automatic background monitoring while the application is running.
+- [x] Define automatic addition of newly discovered music files to the Local Music library.
+- [x] Define supported Local Music audio formats: MP3, M4A, FLAC, WAV, and OGG.
+- [x] Define audio metadata editing, writing changes into files where supported.
+- [x] Define handling of damaged/unreadable files: keep them visible in the library with an error indication.
+- [ ] Define exact editable metadata fields, editing workflow, and detailed error presentation.
+- [ ] Define exact quality/bitrate levels and provider-specific download capabilities.
 - [ ] Define Download Queue details.
 - [ ] Complete playlist behaviour.
 - [ ] Define CLI and future AI-agent integration.

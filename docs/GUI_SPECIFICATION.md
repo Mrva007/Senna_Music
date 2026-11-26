@@ -23,45 +23,184 @@ Senna Music follows the shared GUI structure intended to be reused across future
 
 The structure and dimensions should remain consistent across applications; application-specific content and functions occupy the central workspace. Exact dimensions are not yet defined.
 
-## 3. Accepted Home page
+## 3. Accepted navigation
+
+The accepted left-navigation order is:
+
+1. Home
+2. Local Music
+3. Playlists
+4. Favorites
+5. Download Queue
+6. Connected Services
+7. Settings
+
+There is no separate Search navigation item. Search is available from the Home page.
+
+## 4. Accepted Home page and global search
 
 The Home page uses a vertical layout:
 
-1. Search at the top.
+1. Shared search at the top.
 2. Recently Played section.
 3. Playlists section.
 4. Local Music section.
 
 The sections below Search are stacked vertically, one after another. A section is displayed only when it has data; empty sections are hidden.
 
-## 4. Accepted global search
+One shared search covers music available through connected/supported online providers and Local Music. Each result visibly identifies its source: Spotify, YouTube Music, SoundCloud, or Local Music. Results can be filtered by source, including All Sources. Results use a list layout, not cards, and each row shows track name, artist, album, and source.
 
-- One shared search is used across the application rather than separate search fields for each provider.
-- Search covers music available through connected/supported sources and the user's Local Music.
-- Each result visibly identifies its source: Spotify, YouTube Music, SoundCloud, or Local Music.
-- Results can be filtered by source, including an All Sources filter.
-- Results are displayed as a list, not as individual cards.
-- Each result row shows the track name, artist, album, and source.
+## 5. Accepted page contents and behaviour
 
-Search results and available capabilities remain subject to each provider's APIs, account access, licences, and technical restrictions.
+### Local Music
 
-## 5. Accepted page decision
+Local Music is a separate page with these views:
 
-- **Local Music** is a separate page in the application. This was explicitly selected by the owner.
+- All Tracks
+- Artists
+- Albums
+- Folders
 
-## 6. Not yet decided
+### Playlists
+
+Playlists is one navigation destination containing the user's playlists. Individual playlists are not separate permanent navigation items.
+
+### Favorites
+
+Favorites supports favourite tracks and user-created collections.
+
+### Download Queue
+
+Download Queue is a separate page in the left navigation. Its accepted columns are:
+
+- Status
+- Track
+- Artist
+- Service / Source
+- Progress
+- File size
+- Estimated remaining time
+
+Accepted controls:
+
+- Start
+- Pause / Resume
+- Cancel
+- Retry
+- Pause All
+- Resume All
+
+Tasks can be reordered with Drag & Drop. Reordering must not interrupt the active download. New tasks are added to the end of the queue. Only one download runs at a time.
+
+No separate download-history page is planned.
+
+### Connected Services
+
+Connected Services is a separate navigation destination and includes:
+
+- Connect / Disconnect
+- Account status
+- Provider settings
+- Connection diagnostics
+
+### Settings
+
+Accepted Settings categories:
+
+- General
+- Audio & Playback
+- Storage & Downloads
+- Appearance
+- Language
+
+## 6. Accepted track-list behaviour
+
+The standard track list is used across Local Music, search results, playlists, and Favorites unless a page-specific requirement says otherwise.
+
+- A single click on a track starts playback immediately.
+- Multiple tracks can be selected using Ctrl/Shift-click.
+- Track actions are available through both a right-click context menu and a three-dot menu on each row.
+- Accepted individual actions: Play, Play Next, Add to Queue, Add to Playlist, Add / Remove Favorites, View Track Details, and Download (when permitted).
+- Accepted bulk actions: Add to Queue, Add to Playlist, Add / Remove Favorites, and Download (when permitted).
+
+Track-list columns:
+
+- Track name
+- Artist
+- Album
+- Duration
+- Source
+
+A small cover-art thumbnail appears with each track. Clicking a column heading changes sorting direction (ascending/descending).
+
+Track Details displays:
+
+- Track name
+- Artist
+- Album
+- Duration
+- Source
+- File format
+- File location
+- Track artwork
+
+## 7. Accepted Music Player
+
+### Compact player
+
+The bottom player is compact by default and can be expanded using a dedicated expand button. It displays:
+
+- Cover artwork
+- Track name
+- Artist
+- Album
+- Favorite button
+
+The progress bar supports click and drag seeking.
+
+### Expanded player
+
+The expanded player contains:
+
+- Large cover artwork
+- Track information
+- Playback controls
+- Progress bar
+- Volume control
+- Shuffle / Repeat
+- Playback Queue access
+- Lyrics, when available
+
+The expanded player does not currently include a separately accepted Track Details section.
+
+Controls:
+
+- Play / Pause
+- Previous / Next
+- Shuffle
+- Repeat: Off / All / One
+- Volume
+- Mute
+
+Volume uses a slider. Repeat cycles Off → All → One → Off.
+
+Playback Queue is displayed inside the expanded player. The queue supports reordering tracks.
+
+When the application closes, it saves the last played track, playback position, and Playback Queue for restoration at the next launch.
+
+## 8. Not yet decided
 
 The following must not be treated as accepted design decisions:
-- Complete navigation menu and page inventory, including exact names, order, icons, and grouping.
-- Exact dimensions of the shared left navigation and central workspace, and the bottom player's dimensions.
-- Provider connection and account-management screens.
-- Provider-specific playback presentation and states.
-- Local Music page layout and supported local-library operations.
-- Download Queue layout details beyond the accepted columns and controls.
-- Playlist page layout and playlist editing interactions.
-- Settings page structure.
-- Responsive behaviour, themes, dialogs, and notifications.
 
-## 7. Working rule
+- Exact dimensions of the shared left navigation, central workspace, and bottom player.
+- Icons, visual styling, themes, and detailed responsive behaviour.
+- Provider-specific playback presentation and states.
+- Exact editable metadata fields and metadata-editing workflow. Supported formats are MP3, M4A, FLAC, WAV, and OGG; metadata changes are written into the audio file itself where supported. Damaged or unreadable files remain visible in the library with an error indication. Detailed error presentation and remaining file-management behaviour are still open. The user adds folders manually; they are scanned recursively at startup and monitored in the background. Entries for moved/deleted files are removed from the library without touching disk files.
+- Detailed playlist editing interactions and collection management.
+- Exact download quality/bitrate levels and provider-specific download restrictions. The unified local download and offline-playback model is accepted.
+- Dialogs, notifications, and error-state presentation.
+- Detailed lyrics availability and display behaviour.
+
+## 9. Working rule
 
 Record each GUI decision here only after the owner confirms it. Keep confirmed decisions separate from proposals and unresolved questions. Do not create production UI or implementation based on provisional suggestions.

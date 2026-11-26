@@ -14,14 +14,32 @@
 - [x] GUI direction documented.
 - [x] Local Music accepted as a separate GUI page.
 - [x] Shared GUI shell accepted: left navigation and central workspace; navigation can collapse to an icon-only panel.
-- [x] Home page structure accepted: search first, then Recently Played, Playlists, and Local Music stacked vertically; empty sections are hidden.
-- [x] Global search presentation accepted: shared search across supported sources and Local Music, source labels and filters, list-style results.
+- [x] Home page structure and global search presentation accepted.
+- [x] Complete primary navigation order accepted.
+- [x] Local Music, Playlists, Favorites, Connected Services, and Settings page inventories accepted.
+- [x] Track-list columns, track actions, multi-selection, sorting, and Track Details contents accepted.
+- [x] Compact and expanded Music Player structure and controls accepted.
+- [x] Playback Queue placement and playback-state restoration accepted.
+- [x] Download Queue columns, controls, task ordering, and single-download concurrency accepted.
+- [x] Unified download model confirmed: download each permitted track once to the user's chosen folder; offline listening plays that same local file, with no separate offline copy or storage location.
+- [x] Independent download destination, Artist / Album / Track folder structure, duplicate-skip behaviour, and format choices confirmed.
+- [x] Local Music scanning confirmed: user manually adds folders; Senna Music scans them automatically at startup.
+- [x] Missing local files are reconciled by removing their library entries only; files on disk are never deleted or modified by this process.
+- [x] Local Music scanning includes all subfolders recursively.
+- [x] Added folders are monitored/refreshed automatically in the background while the application is running.
+- [x] Newly discovered music files are added to the Local Music library automatically, without per-file confirmation.
+- [x] Local Music supported formats confirmed: MP3, M4A, FLAC, WAV, and OGG.
+- [x] Audio metadata editing confirmed, with changes written into the audio file itself where supported.
+- [x] Damaged or unreadable local audio files remain visible in the library with an error indication.
+- [x] Download quality selection confirmed: default in Settings with per-download override.
 
 ## In progress
 
-- [ ] Define the complete GUI navigation and page inventory.
-- [ ] Resolve the remaining product and GUI questions in the agreed order.
+- [ ] Continue defining remaining GUI details and unresolved product questions.
 - [ ] Define exact shared GUI dimensions after the GUI structure is complete.
+- [ ] Define exact quality/bitrate levels and resolve provider-specific playback and download capabilities.
+- [ ] Define exact editable metadata fields and the metadata-editing workflow.
+- [ ] Define detailed presentation and actions for damaged/unreadable local files.
 - [ ] Keep approved decisions, proposals, and open questions clearly separated.
 
 ## Not started / blocked by concept approval
@@ -37,4 +55,4 @@ These are intentionally not started. Do not create application implementation un
 
 ## Next action
 
-Continue defining the complete left navigation and page inventory. Do not revisit the accepted Home page or global search decisions unless the owner requests a change.
+Continue defining remaining GUI details and product questions, including exact quality/bitrate levels, provider capabilities, exact editable metadata fields, metadata-editing workflow, and detailed error presentation for damaged/unreadable files. Local Music folder selection, recursive scanning, startup scanning, background monitoring, automatic addition of newly discovered files, missing-file reconciliation, supported audio formats, writing metadata changes into files where supported, and visibility of damaged files with an error indication are accepted. The unified download/offline-playback model and Settings default with per-download quality override are also accepted. Do not revisit previously accepted decisions unless the owner requests a change.
