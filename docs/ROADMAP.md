@@ -18,6 +18,10 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define recursive scanning of manually added folders, including all subfolders.
 - [x] Define automatic background monitoring while the application is running.
 - [x] Define automatic addition of newly discovered music files to the Local Music library.
+- [x] Define supported Local Music audio formats: MP3, M4A, FLAC, WAV, and OGG.
+- [x] Define audio metadata editing, writing changes into files where supported.
+- [x] Define handling of damaged/unreadable files: keep them visible in the library with an error indication.
+- [ ] Define exact editable metadata fields, editing workflow, and detailed error presentation.
 - [ ] Define exact quality/bitrate levels and provider-specific download capabilities.
 - [ ] Define Download Queue details.
 - [ ] Complete playlist behaviour.
