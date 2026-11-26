@@ -25,6 +25,9 @@
 - [x] Independent download destination, Artist / Album / Track folder structure, duplicate-skip behaviour, and format choices confirmed.
 - [x] Local Music scanning confirmed: user manually adds folders; Senna Music scans them automatically at startup.
 - [x] Missing local files are reconciled by removing their library entries only; files on disk are never deleted or modified by this process.
+- [x] Local Music scanning includes all subfolders recursively.
+- [x] Added folders are monitored/refreshed automatically in the background while the application is running.
+- [x] Newly discovered music files are added to the Local Music library automatically, without per-file confirmation.
 - [x] Download quality selection confirmed: default in Settings with per-download override.
 
 ## In progress
@@ -47,4 +50,4 @@ These are intentionally not started. Do not create application implementation un
 
 ## Next action
 
-Continue defining remaining GUI details and product questions, including exact quality/bitrate levels, provider capabilities, and remaining detailed Local Music behaviour. The unified download/offline-playback model, manual folder scanning, and Settings default with per-download quality override are accepted. Do not revisit these or previously accepted navigation, track-list, player, and Download Queue decisions unless the owner requests a change.
+Continue defining remaining GUI details and product questions, including exact quality/bitrate levels, provider capabilities, and remaining detailed Local Music behaviour. Local Music folder selection, recursive scanning, startup scanning, background monitoring, automatic addition of newly discovered files, and missing-file reconciliation are accepted. The unified download/offline-playback model and Settings default with per-download quality override are also accepted. Do not revisit these or previously accepted navigation, track-list, player, and Download Queue decisions unless the owner requests a change.
