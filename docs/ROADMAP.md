@@ -13,7 +13,8 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [ ] Define playback behaviour.
 - [x] Define unified download/offline-playback model: one local downloaded file is used for both in-app offline playback and external playback.
 - [x] Define download destination, folder organization, duplicate handling, format choices, and quality-selection behaviour.
-- [x] Define Local Music scanning approach: user manually adds folders to scan.
+- [x] Define Local Music scanning approach: user manually adds folders; scan automatically at application startup.
+- [x] Define missing-file reconciliation: remove missing/moved entries from the library without changing files on disk.
 - [ ] Define exact quality/bitrate levels and provider-specific download capabilities.
 - [ ] Define Download Queue details.
 - [ ] Complete playlist behaviour.
