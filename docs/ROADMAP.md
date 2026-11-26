@@ -15,6 +15,9 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define download destination, folder organization, duplicate handling, format choices, and quality-selection behaviour.
 - [x] Define Local Music scanning approach: user manually adds folders; scan automatically at application startup.
 - [x] Define missing-file reconciliation: remove missing/moved entries from the library without changing files on disk.
+- [x] Define recursive scanning of manually added folders, including all subfolders.
+- [x] Define automatic background monitoring while the application is running.
+- [x] Define automatic addition of newly discovered music files to the Local Music library.
 - [ ] Define exact quality/bitrate levels and provider-specific download capabilities.
 - [ ] Define Download Queue details.
 - [ ] Complete playlist behaviour.
