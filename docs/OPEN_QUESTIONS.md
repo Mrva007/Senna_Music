@@ -4,21 +4,22 @@ Only unresolved topics are listed here. An item becomes accepted only after the 
 
 | # | Topic | Status | Notes |
 |---:|---|---|---|
-| 1 | Complete left navigation and page inventory | Open | Local Music and the Home/search structure are accepted; remaining pages, exact names, order, icons, and grouping are still undefined. |
-| 2 | How Spotify, YouTube Music, and SoundCloud accounts/services are connected | Open | Must respect each provider's supported authentication and API model. |
+| 1 | Exact dimensions and visual design of the GUI shell | Open | Navigation order and core page structure are accepted; exact dimensions, icons, visual styling, and responsive behaviour remain open. |
+| 2 | Provider connection and account-management details | Open | Must respect each provider's supported authentication and API model. The Connected Services page inventory is accepted. |
 | 3 | Playback rules and capabilities for each provider | Open | Assess separately by provider and use case. |
 | 4 | Offline download details | Open | Distinguish in-app offline access from external audio-file downloads. |
-| 5 | Audio formats and quality of downloaded files | Open | MP3, M4A, and FLAC are expected possibilities, subject to source and rights. |
-| 6 | Download Queue behaviour, persistence, and restart recovery | Open | |
-| 7 | Maximum number of simultaneous downloads | Open | |
-| 8 | Duplicate handling and files already present on disk | Open | |
-| 9 | CLI commands and AI-agent API | Open | Same Core and permission system as GUI. |
-| 10 | Application settings | Open | |
-| 11 | Application updates and integration/update mechanism | Open | |
-| 12 | Backup and recovery of application data | Open | |
-| 13 | Technology and architecture | Open | Decide after product and GUI requirements are sufficiently defined. |
-| 14 | Installation and distribution | Open | |
-| 15 | Exact dimensions of the shared GUI shell | Open | Define the left navigation, central workspace, and bottom player dimensions after the GUI structure is complete. |
+| 5 | Audio formats and quality of downloaded files | Open | MP3, M4A, and FLAC are expected possibilities, subject to source and rights. Format/quality selection remains open. |
+| 6 | Download Queue persistence and restart recovery | Open | Queue columns, controls, ordering, and single-download concurrency are accepted; persistence/recovery of download tasks remains open. |
+| 7 | Duplicate handling and files already present on disk | Open | |
+| 8 | CLI commands and AI-agent API | Open | Same Core and permission system as GUI. |
+| 9 | Application updates and integration/update mechanism | Open | |
+| 10 | Backup and recovery of application data | Open | |
+| 11 | Technology and architecture | Open | Decide after product and GUI requirements are sufficiently defined. |
+| 12 | Installation and distribution | Open | |
+| 13 | Detailed Local Music operations | Open | Scanning, metadata handling, file operations, and supported local formats. |
+| 14 | Detailed playlist and Favorites interactions | Open | Core navigation and collection concepts are accepted; detailed editing and management interactions remain open. |
+| 15 | Lyrics behaviour | Open | Show lyrics in expanded player when available; source, synchronisation, and fallback behaviour remain open. |
+| 16 | Provider-specific playback and offline behaviour | Open | Capabilities must be verified per provider and must comply with their terms and restrictions. |
 
 ## Resolution rule
 
