@@ -57,6 +57,10 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-050 | Local Music supports MP3, M4A, FLAC, WAV, and OGG audio files. | Accepted |
 | D-051 | Users can edit supported audio metadata in Senna Music, and changes are written into the audio file itself where the format supports the relevant metadata. | Accepted |
 | D-052 | Damaged or unreadable local audio files remain visible in the library with an error indication. | Accepted |
+| D-053 | Local Music metadata editing exposes the basic fields: title, artist, album, track number, year, and genre. | Accepted |
+| D-054 | Metadata edits use an explicit Save / Cancel workflow; changes are not written until the user saves. | Accepted |
+| D-055 | Users can bulk-edit metadata for multiple selected tracks. | Accepted |
+| D-056 | Metadata edits write directly to the original audio file where supported; Senna Music does not create an automatic backup copy before editing. | Accepted |
 
 ## Change control
 
