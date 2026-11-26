@@ -7,10 +7,10 @@ Only unresolved topics are listed here. An item becomes accepted only after the 
 | 1 | Exact dimensions and visual design of the GUI shell | Open | Navigation order and core page structure are accepted; exact dimensions, icons, visual styling, and responsive behaviour remain open. |
 | 2 | Provider connection and account-management details | Open | Must respect each provider's supported authentication and API model. The Connected Services page inventory is accepted. |
 | 3 | Playback rules and capabilities for each provider | Open | Assess separately by provider and use case. |
-| 4 | Offline download details | Open | Distinguish in-app offline access from external audio-file downloads. |
-| 5 | Audio formats and quality of downloaded files | Open | MP3, M4A, and FLAC are expected possibilities, subject to source and rights. Format/quality selection remains open. |
+| 4 | Offline download details | Open | In-app offline storage location, retention, expiration, and provider-specific availability/lifecycle remain to be defined. |
+| 5 | Audio quality and bitrate selection | Open | Format choices are accepted: original when available, MP3, M4A, and FLAC. Quality/bitrate selection remains open and depends on source rights/capabilities. |
 | 6 | Download Queue persistence and restart recovery | Open | Queue columns, controls, ordering, and single-download concurrency are accepted; persistence/recovery of download tasks remains open. |
-| 7 | Duplicate handling and files already present on disk | Open | |
+| 7 | Duplicate handling and files already present on disk | Resolved | Existing target files are skipped; no overwrite. |
 | 8 | CLI commands and AI-agent API | Open | Same Core and permission system as GUI. |
 | 9 | Application updates and integration/update mechanism | Open | |
 | 10 | Backup and recovery of application data | Open | |
