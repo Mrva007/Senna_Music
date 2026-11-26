@@ -10,7 +10,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-004 | Provider integrations must respect APIs, licences, terms, DRM, and technical restrictions; no circumvention. | Accepted |
 | D-005 | Two separate download capabilities: in-app offline listening and permitted audio-file downloads for external use. | Accepted |
 | D-006 | Expected audio formats: MP3, M4A, and FLAC, subject to source and rights. | Accepted |
-| D-007 | GUI direction B: left navigation, central search/results area, bottom player, simple interface without unnecessary recommendations or decoration. | Accepted |
+| D-007 | GUI direction B: left navigation, central workspace, bottom player, simple interface without unnecessary recommendations or decoration. | Accepted |
 | D-008 | The user chooses the local storage folder for downloaded music files. | Accepted |
 | D-009 | GUI and CLI both use the same Core and permission system. | Accepted |
 | D-010 | Start with one user profile; no multi-user system required in the first version. | Accepted |
@@ -20,6 +20,9 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-014 | Users manually create and manage playlists; no automatic artist/album/genre cataloguing. | Accepted |
 | D-015 | No separate download History page; show only current and waiting tasks in Download Queue. | Accepted |
 | D-016 | Local Music is a separate GUI page. | Accepted |
+| D-017 | Home page places Search at the top, followed by Recently Played, Playlists, and Local Music stacked vertically; empty sections are hidden. | Accepted |
+| D-018 | One shared search covers supported online sources and Local Music; results show their source, can be filtered by source, and appear in a list with track name, artist, album, and source. | Accepted |
+| D-019 | The shared GUI standard for future applications is a left navigation menu and a central workspace; Senna Music's navigation can collapse to an icon-only panel. | Accepted |
 
 ## Change control
 
