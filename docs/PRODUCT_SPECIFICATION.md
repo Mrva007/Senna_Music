@@ -78,7 +78,9 @@ One shared search covers music from connected/supported online providers and Loc
 - Senna Music uses that location for downloaded music files.
 - Local Music is a distinct page with All Tracks, Artists, Albums, and Folders views.
 
-The user manually adds the folders that Senna Music should scan. Scanning is recursive and includes all subfolders. Senna Music automatically scans those folders at startup and continues monitoring them in the background while the application is running. Newly discovered music files are added to the library automatically, without a separate confirmation step. If a previously indexed file has been moved or deleted, the application removes its entry from the library; it does not delete or modify files on disk. Further details of metadata handling, supported file handling, and folder behaviour remain open.
+The user manually adds the folders that Senna Music should scan. Scanning is recursive and includes all subfolders. Senna Music automatically scans those folders at startup and continues monitoring them in the background while the application is running. Newly discovered music files are added to the library automatically, without a separate confirmation step. If a previously indexed file has been moved or deleted, the application removes its entry from the library; it does not delete or modify files on disk.
+
+Local Music supports MP3, M4A, FLAC, WAV, and OGG files. Senna Music reads supported audio metadata and allows the user to edit it, saving changes into the audio file itself (where the format supports the relevant metadata). If a file is damaged or cannot be read, it remains visible in the library with an error indication rather than being silently omitted. Exact metadata fields, editing workflow, and detailed error presentation remain open.
 
 ## 7. Track lists, actions, and Favorites
 
