@@ -63,7 +63,8 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-056 | Metadata edits write directly to the original audio file where supported; Senna Music does not create an automatic backup copy before editing. | Accepted |
 | D-057 | Damaged or unreadable Local Music files show a red error indicator beside the track name. | Accepted |
 | D-058 | A damaged or unreadable Local Music file offers a Retry action to attempt loading it again. | Accepted |
-| D-059 | A damaged or unreadable Local Music file offers a Details action to display information about the error. The exact contents of the details view remain open. | Accepted |
+| D-059 | A damaged or unreadable Local Music file offers a Details action to display information about the error. | Accepted |
+| D-060 | The error Details view shows the file name, file location, a user-friendly error message, and a technical error detail when available. | Accepted |
 
 ## Change control
 
