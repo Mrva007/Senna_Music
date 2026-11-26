@@ -8,7 +8,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-002 | The product is music-only; video is out of scope. | Accepted |
 | D-003 | Initial providers are Spotify, YouTube Music, and SoundCloud. | Accepted |
 | D-004 | Provider integrations must respect APIs, licences, terms, DRM, and technical restrictions; no circumvention. | Accepted |
-| D-005 | Two separate download capabilities: in-app offline listening and permitted audio-file downloads for external use. | Accepted |
+| D-005 | Earlier concept: separate in-app offline listening and independent audio-file downloads. | Superseded by D-042; retained for decision history. |
 | D-006 | Expected audio formats: MP3, M4A, and FLAC, subject to source and rights. | Accepted |
 | D-007 | GUI direction B: left navigation, central workspace, bottom player, simple interface without unnecessary recommendations or decoration. | Accepted |
 | D-008 | The user chooses the local storage folder for downloaded music files. | Accepted |
@@ -40,11 +40,14 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-034 | Playback Queue appears inside the expanded player and supports track reordering. | Accepted |
 | D-035 | Player progress supports click-and-drag seeking. | Accepted |
 | D-036 | On application close, save the last played track, playback position, and Playback Queue for restoration on next launch. | Accepted |
-| D-037 | Keep both download capabilities: in-app offline listening and independent audio-file downloads for external playback, subject to provider rights and restrictions. | Accepted |
+| D-037 | Earlier confirmation of two distinct download capabilities. | Superseded by D-042; retained for decision history. |
 | D-038 | The user selects the computer folder used as the destination for independent audio-file downloads. | Accepted |
 | D-039 | Organize independently downloaded files automatically using an Artist / Album / Track folder hierarchy. | Accepted |
 | D-040 | If a downloaded file already exists at the destination, skip the duplicate; do not overwrite it. | Accepted |
 | D-041 | Supported format choices are original format when available, MP3, M4A, and FLAC, subject to source availability and rights. | Accepted |
+| D-042 | Use one unified download/storage model: download a permitted track once to the user's chosen local folder. Offline listening in Senna Music plays that same downloaded local file; there is no separate offline copy, storage location, or second download source. | Accepted; supersedes D-005 and D-037. |
+| D-043 | Local Music scanning is user-directed: the user manually adds the folders Senna Music should scan. | Accepted |
+| D-044 | Download quality has a default setting in Settings, with an option to override quality for an individual download, subject to source capabilities and rights. | Accepted |
 
 ## Change control
 
