@@ -32,7 +32,14 @@ Two distinct capabilities are defined:
 1. **Offline listening:** content made available for listening inside Senna Music, subject to provider capabilities and rights.
 2. **Audio file download:** downloading audio files only when the source and applicable rights explicitly permit it, for use outside the application.
 
-Expected audio formats are MP3, M4A, and FLAC, depending on the source and available rights. Format and quality selection remain open.
+The owner confirmed the following download and file-organization rules:
+
+- The user selects the destination folder on the computer for independently downloaded audio files.
+- Files are organized automatically into an Artist / Album / Track folder hierarchy.
+- If a target file already exists, the duplicate is skipped; it is not overwritten.
+- The available format choices are: original format when available, MP3, M4A, and FLAC. Actual choices depend on source availability and applicable rights.
+
+These rules apply to independent audio-file downloads. In-app offline listening is a separate capability; its provider-specific storage and lifecycle details remain open. Audio quality/bitrate selection also remains open.
 
 ## 4. GUI direction and navigation
 
