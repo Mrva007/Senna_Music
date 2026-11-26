@@ -195,10 +195,10 @@ The following must not be treated as accepted design decisions:
 - Exact dimensions of the shared left navigation, central workspace, and bottom player.
 - Icons, visual styling, themes, and detailed responsive behaviour.
 - Provider-specific playback presentation and states.
-- Exact editable metadata fields and metadata-editing workflow. Supported formats are MP3, M4A, FLAC, WAV, and OGG; metadata changes are written into the audio file itself where supported. Damaged or unreadable files remain visible in the library with an error indication. Detailed error presentation and remaining file-management behaviour are still open. The user adds folders manually; they are scanned recursively at startup and monitored in the background. Entries for moved/deleted files are removed from the library without touching disk files.
+- Remaining Local Music file-management behaviour beyond the accepted scanning, metadata-editing, and damaged-file handling rules. The user adds folders manually; they are scanned recursively at startup and monitored in the background. Entries for moved/deleted files are removed from the library without touching disk files. Metadata editing is defined: title, artist, album, track number, year, and genre; explicit Save / Cancel; bulk editing; direct writing to the original file without automatic backup where supported. Damaged/unreadable files remain visible with a red error indicator beside the track name and offer Retry and Details. Details shows file name, file location, a user-friendly error message, and technical error detail when available.
 - Detailed playlist editing interactions and collection management.
 - Exact download quality/bitrate levels and provider-specific download restrictions. The unified local download and offline-playback model is accepted.
-- Dialogs, notifications, and error-state presentation.
+- General dialogs and notifications beyond the already-defined damaged-file error state.
 - Detailed lyrics availability and display behaviour.
 
 ## 9. Working rule
