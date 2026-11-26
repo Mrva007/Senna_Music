@@ -21,14 +21,16 @@
 - [x] Compact and expanded Music Player structure and controls accepted.
 - [x] Playback Queue placement and playback-state restoration accepted.
 - [x] Download Queue columns, controls, task ordering, and single-download concurrency accepted.
-- [x] Both download modes confirmed: in-app offline listening and permitted independent audio-file downloads.
+- [x] Unified download model confirmed: download each permitted track once to the user's chosen folder; offline listening plays that same local file, with no separate offline copy or storage location.
 - [x] Independent download destination, Artist / Album / Track folder structure, duplicate-skip behaviour, and format choices confirmed.
+- [x] Local Music scanning method confirmed: user manually adds folders to scan.
+- [x] Download quality selection confirmed: default in Settings with per-download override.
 
 ## In progress
 
 - [ ] Continue defining remaining GUI details and unresolved product questions.
 - [ ] Define exact shared GUI dimensions after the GUI structure is complete.
-- [ ] Resolve provider-specific playback, offline, and download capabilities.
+- [ ] Define exact quality/bitrate levels and resolve provider-specific playback and download capabilities.
 - [ ] Keep approved decisions, proposals, and open questions clearly separated.
 
 ## Not started / blocked by concept approval
@@ -44,4 +46,4 @@ These are intentionally not started. Do not create application implementation un
 
 ## Next action
 
-Continue defining in-app offline storage/lifecycle and audio quality/bitrate behaviour. Do not revisit the accepted download destination, folder hierarchy, duplicate-skip rule, format choices, navigation, track-list, player, or Download Queue decisions unless the owner requests a change.
+Continue defining remaining GUI details and product questions, including exact quality/bitrate levels, provider capabilities, and detailed Local Music behaviour. The unified download/offline-playback model, manual folder scanning, and Settings default with per-download quality override are accepted. Do not revisit these or previously accepted navigation, track-list, player, and Download Queue decisions unless the owner requests a change.
