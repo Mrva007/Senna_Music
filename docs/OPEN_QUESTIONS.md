@@ -7,8 +7,8 @@ Only unresolved topics are listed here. An item becomes accepted only after the 
 | 1 | Exact dimensions and visual design of the GUI shell | Open | Navigation order and core page structure are accepted; exact dimensions, icons, visual styling, and responsive behaviour remain open. |
 | 2 | Provider connection and account-management details | Open | Must respect each provider's supported authentication and API model. The Connected Services page inventory is accepted. |
 | 3 | Playback rules and capabilities for each provider | Open | Assess separately by provider and use case. |
-| 4 | Offline download details | Open | In-app offline storage location, retention, expiration, and provider-specific availability/lifecycle remain to be defined. |
-| 5 | Audio quality and bitrate selection | Open | Format choices are accepted: original when available, MP3, M4A, and FLAC. Quality/bitrate selection remains open and depends on source rights/capabilities. |
+| 4 | Separate offline storage and retention | Resolved / Not applicable | There is no separate offline copy or offline storage lifecycle. Offline playback uses the same downloaded local files. Provider-specific download eligibility and rights remain governed by provider capabilities and terms. |
+| 5 | Audio quality and bitrate selection | Partially resolved | Default quality is configured in Settings, with per-download override. Exact quality/bitrate levels and provider-specific availability remain open. |
 | 6 | Download Queue persistence and restart recovery | Open | Queue columns, controls, ordering, and single-download concurrency are accepted; persistence/recovery of download tasks remains open. |
 | 7 | Duplicate handling and files already present on disk | Resolved | Existing target files are skipped; no overwrite. |
 | 8 | CLI commands and AI-agent API | Open | Same Core and permission system as GUI. |
@@ -16,7 +16,7 @@ Only unresolved topics are listed here. An item becomes accepted only after the 
 | 10 | Backup and recovery of application data | Open | |
 | 11 | Technology and architecture | Open | Decide after product and GUI requirements are sufficiently defined. |
 | 12 | Installation and distribution | Open | |
-| 13 | Detailed Local Music operations | Open | Scanning, metadata handling, file operations, and supported local formats. |
+| 13 | Detailed Local Music operations | Partially resolved | User manually adds folders to scan. Metadata handling, file operations, and supported local formats remain open. |
 | 14 | Detailed playlist and Favorites interactions | Open | Core navigation and collection concepts are accepted; detailed editing and management interactions remain open. |
 | 15 | Lyrics behaviour | Open | Show lyrics in expanded player when available; source, synchronisation, and fallback behaviour remain open. |
 | 16 | Provider-specific playback and offline behaviour | Open | Capabilities must be verified per provider and must comply with their terms and restrictions. |
