@@ -23,7 +23,8 @@
 - [x] Download Queue columns, controls, task ordering, and single-download concurrency accepted.
 - [x] Unified download model confirmed: download each permitted track once to the user's chosen folder; offline listening plays that same local file, with no separate offline copy or storage location.
 - [x] Independent download destination, Artist / Album / Track folder structure, duplicate-skip behaviour, and format choices confirmed.
-- [x] Local Music scanning method confirmed: user manually adds folders to scan.
+- [x] Local Music scanning confirmed: user manually adds folders; Senna Music scans them automatically at startup.
+- [x] Missing local files are reconciled by removing their library entries only; files on disk are never deleted or modified by this process.
 - [x] Download quality selection confirmed: default in Settings with per-download override.
 
 ## In progress
@@ -46,4 +47,4 @@ These are intentionally not started. Do not create application implementation un
 
 ## Next action
 
-Continue defining remaining GUI details and product questions, including exact quality/bitrate levels, provider capabilities, and detailed Local Music behaviour. The unified download/offline-playback model, manual folder scanning, and Settings default with per-download quality override are accepted. Do not revisit these or previously accepted navigation, track-list, player, and Download Queue decisions unless the owner requests a change.
+Continue defining remaining GUI details and product questions, including exact quality/bitrate levels, provider capabilities, and remaining detailed Local Music behaviour. The unified download/offline-playback model, manual folder scanning, and Settings default with per-download quality override are accepted. Do not revisit these or previously accepted navigation, track-list, player, and Download Queue decisions unless the owner requests a change.
