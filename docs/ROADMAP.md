@@ -11,7 +11,8 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [ ] Complete remaining GUI details, including exact dimensions and unresolved visual/interaction behaviour.
 - [ ] Define search and provider connection.
 - [ ] Define playback behaviour.
-- [ ] Define download and offline capabilities.
+- [x] Define independent download destination, folder organization, duplicate handling, and format choices.
+- [ ] Define in-app offline storage/lifecycle and audio quality/bitrate behaviour.
 - [ ] Define Download Queue details.
 - [ ] Complete playlist behaviour.
 - [ ] Define CLI and future AI-agent integration.
