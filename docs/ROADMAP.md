@@ -7,7 +7,8 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Establish repository and documentation source of truth.
 - [x] Record current accepted product decisions.
 - [x] Record open questions and development workflow.
-- [ ] Complete GUI structure.
+- [x] Define primary GUI structure: navigation/page inventory, track lists, compact and expanded player, and Download Queue.
+- [ ] Complete remaining GUI details, including exact dimensions and unresolved visual/interaction behaviour.
 - [ ] Define search and provider connection.
 - [ ] Define playback behaviour.
 - [ ] Define download and offline capabilities.
