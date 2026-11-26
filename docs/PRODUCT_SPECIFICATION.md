@@ -150,6 +150,8 @@ Queue behaviour:
 - Drag & Drop reordering changes task priority without interrupting the active download.
 - Newly added tasks go to the end of the queue.
 - Only one download runs at a time.
+- The queue is preserved when the application closes. Waiting tasks remain queued after restart.
+- If an active download was interrupted, Senna Music resumes it from the last safely saved position when the provider/source technically supports resuming. If resuming is not supported, the task remains available for a safe retry; the application must not claim that partial progress can be resumed.
 
 No separate Download History page is planned; the Download Queue is for current and waiting tasks.
 
