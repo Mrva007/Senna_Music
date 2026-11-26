@@ -195,10 +195,9 @@ The following must not be treated as accepted design decisions:
 - Exact dimensions of the shared left navigation, central workspace, and bottom player.
 - Icons, visual styling, themes, and detailed responsive behaviour.
 - Provider-specific playback presentation and states.
-- Detailed Local Music scanning, metadata editing, and file-management behaviour.
+- Detailed Local Music metadata editing and file-management behaviour. The user has accepted manually adding folders for scanning.
 - Detailed playlist editing interactions and collection management.
-- Download format/quality selection and destination/folder rules.
-- Offline availability and provider-specific download restrictions.
+- Exact download quality/bitrate levels and provider-specific download restrictions. The unified local download and offline-playback model is accepted.
 - Dialogs, notifications, and error-state presentation.
 - Detailed lyrics availability and display behaviour.
 
