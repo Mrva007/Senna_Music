@@ -13,11 +13,15 @@
 - [x] Open questions registered.
 - [x] GUI direction documented.
 - [x] Local Music accepted as a separate GUI page.
+- [x] Shared GUI shell accepted: left navigation and central workspace; navigation can collapse to an icon-only panel.
+- [x] Home page structure accepted: search first, then Recently Played, Playlists, and Local Music stacked vertically; empty sections are hidden.
+- [x] Global search presentation accepted: shared search across supported sources and Local Music, source labels and filters, list-style results.
 
 ## In progress
 
 - [ ] Define the complete GUI navigation and page inventory.
-- [ ] Resolve the product questions in the agreed order.
+- [ ] Resolve the remaining product and GUI questions in the agreed order.
+- [ ] Define exact shared GUI dimensions after the GUI structure is complete.
 - [ ] Keep approved decisions, proposals, and open questions clearly separated.
 
 ## Not started / blocked by concept approval
@@ -33,4 +37,4 @@ These are intentionally not started. Do not create application implementation un
 
 ## Next action
 
-Continue GUI definition with the first unresolved topic: complete left navigation and page inventory. The separate Local Music page is already accepted and must not be asked again.
+Continue defining the complete left navigation and page inventory. Do not revisit the accepted Home page or global search decisions unless the owner requests a change.
