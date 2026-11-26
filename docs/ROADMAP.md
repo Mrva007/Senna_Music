@@ -21,7 +21,6 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define supported Local Music audio formats: MP3, M4A, FLAC, WAV, and OGG.
 - [x] Define audio metadata editing: title, artist, album, track number, year, and genre; explicit Save / Cancel; bulk editing; direct writes to the original file where supported, without automatic backup.
 - [x] Define handling of damaged/unreadable files: keep them visible with a red error indicator beside the track name, with Retry and Details actions.
-- [ ] Define the exact contents of the error Details view for damaged/unreadable files.
 - [ ] Define exact quality/bitrate levels and provider-specific download capabilities.
 - [ ] Define Download Queue details.
 - [ ] Complete playlist behaviour.
