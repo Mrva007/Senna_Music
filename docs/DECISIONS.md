@@ -40,6 +40,11 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-034 | Playback Queue appears inside the expanded player and supports track reordering. | Accepted |
 | D-035 | Player progress supports click-and-drag seeking. | Accepted |
 | D-036 | On application close, save the last played track, playback position, and Playback Queue for restoration on next launch. | Accepted |
+| D-037 | Keep both download capabilities: in-app offline listening and independent audio-file downloads for external playback, subject to provider rights and restrictions. | Accepted |
+| D-038 | The user selects the computer folder used as the destination for independent audio-file downloads. | Accepted |
+| D-039 | Organize independently downloaded files automatically using an Artist / Album / Track folder hierarchy. | Accepted |
+| D-040 | If a downloaded file already exists at the destination, skip the duplicate; do not overwrite it. | Accepted |
+| D-041 | Supported format choices are original format when available, MP3, M4A, and FLAC, subject to source availability and rights. | Accepted |
 
 ## Change control
 
