@@ -9,7 +9,7 @@ Only unresolved topics are listed here. An item becomes accepted only after the 
 | 3 | Playback rules and capabilities for each provider | Open | Assess separately by provider and use case. |
 | 4 | Separate offline storage and retention | Resolved / Not applicable | There is no separate offline copy or offline storage lifecycle. Offline playback uses the same downloaded local files. Provider-specific download eligibility and rights remain governed by provider capabilities and terms. |
 | 5 | Audio quality and bitrate selection | Partially resolved | Default quality is configured in Settings, with per-download override. Exact quality/bitrate levels and provider-specific availability remain open. |
-| 6 | Download Queue persistence and restart recovery | Open | Queue columns, controls, ordering, and single-download concurrency are accepted; persistence/recovery of download tasks remains open. |
+| 6 | Download Queue persistence and restart recovery | Resolved | Preserve the queue across restarts. Waiting tasks remain queued; an interrupted active download resumes from its last safely saved position when the provider/source technically supports resuming. |
 | 7 | Duplicate handling and files already present on disk | Resolved | Existing target files are skipped; no overwrite. |
 | 8 | CLI commands and AI-agent API | Open | Same Core and permission system as GUI. |
 | 9 | Application updates and integration/update mechanism | Open | |
