@@ -37,12 +37,22 @@ Expected audio formats are MP3, M4A, and FLAC, depending on the source and avail
 ## 4. GUI direction
 
 The selected direction is the simple interface option B:
-- Left navigation.
-- Central area for search and results.
+- Left navigation, normally expanded with icons and labels and collapsible to an icon-only panel.
+- Central workspace for page content, search, and results.
 - Music player at the bottom.
 - No unnecessary recommendation or decorative sections.
 
-Detailed navigation, page inventory, and page behaviour remain open. A separate **Local Music** page has been accepted.
+Senna Music uses the shared GUI structure intended for future applications: a left navigation menu and a central workspace. The structure is consistent across applications; application-specific content appears in the central workspace. Exact dimensions remain open.
+
+### Home page
+
+Home places the shared search at the top, followed by Recently Played, Playlists, and Local Music sections stacked vertically. Sections with no data are hidden.
+
+### Global search
+
+One shared search covers music from connected/supported online providers and Local Music. Results identify their source and can be filtered by source (All Sources, Spotify, YouTube Music, SoundCloud, or Local Music). Results use a list layout with track name, artist, album, and source.
+
+A separate **Local Music** page has been accepted.
 
 ## 5. Local music collection
 
