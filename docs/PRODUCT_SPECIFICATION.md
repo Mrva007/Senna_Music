@@ -12,8 +12,8 @@ It is intended to support:
 - Discovering and searching for music through online music services.
 - Playing music.
 - Creating and managing user playlists and favourite collections.
-- Downloading music for offline listening inside Senna Music.
-- Downloading permitted audio files to the user's computer for use outside the application, for example in a car.
+- Downloading permitted audio files to the user's computer.
+- Playing those same downloaded local files offline inside Senna Music or outside the application, for example in a car.
 
 Senna Music is exclusively for music. Video is out of scope.
 
@@ -25,21 +25,24 @@ The architecture must allow additional music providers to be integrated later wi
 
 Provider capabilities are subject to the provider's APIs, licences, terms, and technical restrictions. The application must not bypass DRM or provider restrictions. Playback and download support must be assessed separately for each provider and use case.
 
-## 3. Download capabilities
+## 3. Downloads and offline playback
 
-Two distinct capabilities are defined:
+Senna Music has one unified local-download model; there are no separate download destinations or separate ways of storing music for offline listening.
 
-1. **Offline listening:** content made available for listening inside Senna Music, subject to provider capabilities and rights.
-2. **Audio file download:** downloading audio files only when the source and applicable rights explicitly permit it, for use outside the application.
+- Music is downloaded once to the computer folder selected by the user.
+- Offline listening means playing those same already-downloaded local files inside Senna Music, without requiring an internet connection.
+- There is no separate app-managed offline copy, second storage location, or additional offline download source.
+- The same downloaded file can also be played outside Senna Music, where permitted.
 
-The owner confirmed the following download and file-organization rules:
+The owner confirmed these download and file-organization rules:
 
-- The user selects the destination folder on the computer for independently downloaded audio files.
+- The user selects the destination folder on the computer.
 - Files are organized automatically into an Artist / Album / Track folder hierarchy.
 - If a target file already exists, the duplicate is skipped; it is not overwritten.
-- The available format choices are: original format when available, MP3, M4A, and FLAC. Actual choices depend on source availability and applicable rights.
+- Format choices: original format when available, MP3, M4A, and FLAC, subject to source availability and applicable rights.
+- Download quality uses a default configured in Settings, with an option to override it for an individual download.
 
-These rules apply to independent audio-file downloads. In-app offline listening is a separate capability; its provider-specific storage and lifecycle details remain open. Audio quality/bitrate selection also remains open.
+Provider capabilities and applicable rights still determine whether a track can be downloaded at all and which formats/qualities are available.
 
 ## 4. GUI direction and navigation
 
@@ -75,7 +78,7 @@ One shared search covers music from connected/supported online providers and Loc
 - Senna Music uses that location for downloaded music files.
 - Local Music is a distinct page with All Tracks, Artists, Albums, and Folders views.
 
-Further details of local-library scanning, supported file handling, and folder behaviour remain open.
+The user manually adds the folders that Senna Music should scan; the application does not automatically scan all folders or subfolders. Further details of metadata handling, supported file handling, and folder behaviour remain open.
 
 ## 7. Track lists, actions, and Favorites
 
