@@ -49,6 +49,9 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-043 | Local Music scanning is user-directed: the user manually adds the folders Senna Music should scan. | Accepted |
 | D-044 | Download quality has a default setting in Settings, with an option to override quality for an individual download, subject to source capabilities and rights. | Accepted |
 
+| D-045 | Automatically scan all folders manually added by the user when Senna Music starts. | Accepted |
+| D-046 | If a previously indexed local music file is moved or deleted, remove its library entry; never delete or modify the file on disk as part of this reconciliation. | Accepted |
+
 ## Change control
 
 - Do not revise an accepted decision without explicit owner approval.
