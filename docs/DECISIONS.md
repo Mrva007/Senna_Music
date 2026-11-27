@@ -88,6 +88,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-081 | The Create button in the Favorites collection popup remains disabled until the name field contains a non-empty name; an empty or whitespace-only value is not valid. | Accepted |
 | D-082 | Favorites collection names are compared without regard to letter case; names such as `Rock` and `rock` are duplicates, and creation is blocked. | Accepted |
 | D-083 | Leading and trailing whitespace is trimmed from a Favorites collection name before validation and duplicate comparison; for example, ` Rock ` is normalized to `Rock`. | Accepted |
+| D-084 | Multiple consecutive spaces between words in a Favorites collection name are preserved as entered; they are not collapsed into a single space. | Accepted |
 
 ## Change control
 
