@@ -66,3 +66,5 @@ A task is complete only when:
 - Documentation reflects the actual result.
 - The corresponding GitHub issue/PR is updated.
 - The owner can identify the change and its status without repeating prior investigation.
+
+- [x] Define immediate clearing of duplicate-name validation when the user edits the name to a non-duplicate.
