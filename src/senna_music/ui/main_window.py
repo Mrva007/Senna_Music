@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QFrame,
     QHBoxLayout,
+    QHeaderView,
     QLabel,
     QLineEdit,
     QListWidget,
@@ -17,7 +18,6 @@ from PySide6.QtWidgets import (
     QStackedWidget,
     QTableWidget,
     QTableWidgetItem,
-    QHeaderView,
     QVBoxLayout,
     QWidget,
 )
@@ -66,6 +66,7 @@ class MainWindow(QMainWindow):
         self._scan_thread: LibraryScanThread | None = None
         self._build_ui()
         self._show_page("Home")
+        self._start_scan()
 
     def _build_ui(self) -> None:
         root = QWidget()
