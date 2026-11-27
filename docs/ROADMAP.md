@@ -10,6 +10,7 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define primary GUI structure: navigation/page inventory, track lists, compact and expanded player, and Download Queue.
 - [ ] Complete remaining GUI details, including exact dimensions and unresolved visual/interaction behaviour.
 - [x] Define expanded Music Player layout: central workspace with navigation retained, always-visible Playback Queue in a right-side column, and lyrics below track information when available.
+- [x] Define compact Music Player controls: Play / Pause, Previous, and Next alongside track information and artwork.
 - [ ] Define search and provider connection.
 - [ ] Define playback behaviour.
 - [x] Define unified download/offline-playback model: one local downloaded file is used for both in-app offline playback and external playback.

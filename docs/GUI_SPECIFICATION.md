@@ -155,6 +155,9 @@ The bottom player is compact by default and can be expanded using a dedicated ex
 - Artist
 - Album
 - Favorite button
+- Play / Pause
+- Previous
+- Next
 
 The progress bar supports click and drag seeking.
 

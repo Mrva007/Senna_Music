@@ -111,6 +111,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-101 | The expanded Music Player occupies the central workspace while the left navigation remains visible. | Accepted |
 | D-102 | In the expanded Music Player, Playback Queue is displayed as a right-side column and remains visible. | Accepted |
 | D-103 | In the expanded Music Player, available lyrics are displayed below the track information. | Accepted |
+| D-104 | The compact Music Player includes Play / Pause, Previous, and Next controls alongside the track information and artwork. | Accepted |
 
 ## Change control
 
