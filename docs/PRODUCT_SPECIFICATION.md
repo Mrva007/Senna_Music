@@ -6,14 +6,9 @@
 
 ## 1. Product vision
 
-Senna Music is a standalone music platform inspired by Spotify.
+Senna Music is a local-first music downloader and player. Its primary purpose is to help the user find music from supported online sources, download audio files where the source and applicable rights permit it, organize those files in the user's local music collection, and play the local files in Senna Music.
 
-It is intended to support:
-- Discovering and searching for music through online music services.
-- Playing music.
-- Creating and managing user playlists and favourite collections.
-- Downloading permitted audio files to the user's computer.
-- Playing those same downloaded local files offline inside Senna Music or outside the application, for example in a car.
+The application retains its full local Music Player, playlists, Favorites, Download Queue, and Local Music library. Online search is a way to discover source items and obtain their source URLs for the local download workflow; online streaming is not the defining purpose of the product.
 
 Senna Music is exclusively for music. Video is out of scope.
 
@@ -69,7 +64,11 @@ There is no separate Search navigation item; search is available from Home.
 
 Home places the shared search at the top, followed by Recently Played, Playlists, and Local Music sections stacked vertically. Sections with no data are hidden.
 
-One shared search covers music from connected/supported online providers and Local Music. Results identify their source and can be filtered by source (All Sources, Spotify, YouTube Music, SoundCloud, or Local Music). Results use a list layout with track name, artist, album, and source. Previous searches are retained and appear in a dropdown below the shared search field; users can clear the history immediately without a confirmation prompt.
+One integrated search covers Local Music and the three initial online sources: YouTube, Spotify, and SoundCloud. Online sources are searched simultaneously by default, and their results are combined into one list. The user can filter by All Sources or an individual source. Results use a compact list/table rather than large preview cards and show track/title, artist, album when available, and a clearly visible Source column. Search history is retained in a dropdown below the search field and can be cleared immediately without confirmation.
+
+Each online source has its own search adapter because source search, result structure, and URL extraction differ. Adapters normalize results into a common format. A Download action passes the selected result's source URL to the local download workflow, which uses the already-planned yt-dlp and FFmpeg tools where supported. The shared downloader does not imply that every source or every item is downloadable. Source-specific technical restrictions, rights, and legal requirements still apply.
+
+The integrated search is a dedicated music-search interface, not a general-purpose browser. The concept does not assume official provider APIs or OAuth as a prerequisite. The exact non-API search and URL-acquisition method for each source must be technically validated before implementation. This clarification does not authorize DRM circumvention or bypassing access controls.
 
 ## 6. Local music collection
 
@@ -275,3 +274,12 @@ Official sources:
 ### Overall compatibility conclusion
 
 The current concept of one application aggregating and playing tracks from Spotify, YouTube Music, and SoundCloud cannot be treated as approved merely because each provider exposes an API or player. Spotify and SoundCloud have explicit restrictions against cross-service content/stream aggregation; YouTube's API does not provide the required audio-only/background/offline experience. Obtain provider-specific written permissions or revise the provider scope/playback model before implementation. Local Music playback remains independent of these online-provider restrictions.
+
+
+## Local-first search and future sources — owner clarification
+
+The product direction was clarified after the initial provider playback research: Senna Music is primarily a local downloader and player, not a multi-service streaming platform. The existing Music Player remains in scope for playing the user's local music.
+
+The initial integrated search scope is YouTube, Spotify, and SoundCloud, searched in parallel and presented in one source-labelled list. Search adapters are source-specific; download processing remains shared through yt-dlp and FFmpeg where supported. The earlier API/streaming compatibility findings describe the official API and playback routes that were researched; they do not, by themselves, establish that every page-based search or download method is technically possible or legally permitted. Those methods require separate source-by-source validation. No API, login, streaming, or download permission should be assumed.
+
+Torrent search is a future extension only. It is not part of the initial version and must be designed as an additional source adapter, limited to lawful content and use.
