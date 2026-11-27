@@ -122,7 +122,7 @@ Continue with the remaining unresolved GUI visual details (exact dimensions, spe
 - [x] Switching to another service requires user confirmation confirmed.
 - [x] Downloads allowed only when the provider/source officially permits downloading the audio file confirmed.
 
-Provider-specific authentication and playback capabilities, restrictions, and exact download availability remain open for verification. No application implementation has been started or authorized.
+The official sign-in and online playback assumptions in D-155–D-161 have since been superseded by the local-first downloader/search direction (D-169). The local Music Player remains in scope. No application implementation has been started or authorized.
 
 
 ## Provider research — compatibility blockers identified
@@ -130,7 +130,21 @@ Provider-specific authentication and playback capabilities, restrictions, and ex
 - [x] Reviewed official Spotify developer policy and playback documentation.
 - [x] Reviewed official YouTube API/player policies and playback documentation.
 - [x] Reviewed official SoundCloud API guide, API Terms of Use, and public API guidance.
-- [ ] Obtain provider-specific written clarification/permission or revise the multi-provider scope before implementing online integrations.
-- [ ] Owner decision required on Spotify and SoundCloud aggregation restrictions and YouTube Music's external-only role.
+- [x] Reframed the earlier API-based streaming research as historical context after the owner clarified the local-first downloader/player direction.
+- [ ] Validate non-API search, source URL extraction, and download eligibility separately for YouTube, Spotify, and SoundCloud.
 
-Research findings are recorded in PRODUCT_SPECIFICATION.md and unresolved decisions in OPEN_QUESTIONS.md. D-155–D-162 remain the owner's general rules; this research does not override them. No provider integration or application implementation is authorized.
+Research findings are recorded in PRODUCT_SPECIFICATION.md and unresolved decisions in OPEN_QUESTIONS.md. D-155–D-161 are superseded by the local-first direction; D-162 remains the general restriction against bypassing source download rules. No provider integration or application implementation is authorized.
+
+
+## Local-first downloader and integrated search — owner decisions D-163–D-169
+
+- [x] Product direction clarified: Senna Music is primarily a local-first music downloader and player; the existing local Music Player remains in scope.
+- [x] Integrated search across YouTube, Spotify, and SoundCloud confirmed; all three are searched simultaneously by default.
+- [x] Results are combined into one compact list/table with a visible Source column and source filters.
+- [x] Each source uses its own search adapter; adapters normalize results for the shared interface and hand source URLs to the common download workflow where supported.
+- [x] yt-dlp and FFmpeg remain the planned shared download/processing tools; no replacement or new downloader engine is introduced by this decision.
+- [x] Torrent search recorded as a future extension, not an initial-version feature.
+- [x] Official API/OAuth is not assumed as a prerequisite for the initial source search; non-API methods remain subject to technical and rights validation.
+- [x] Initial source scope clarified as general YouTube, Spotify, and SoundCloud; separate YouTube Music playback is not assumed.
+
+Still open: source-by-source technical validation of non-API search and URL extraction, download eligibility/rights, and exact placement and interaction details. The prior official API/streaming research is retained as historical context but does not define the clarified local-first product direction. No implementation has started or been authorized.

@@ -48,7 +48,9 @@ The Home page uses a vertical layout:
 
 The sections below Search are stacked vertically, one after another. A section is displayed only when it has data; empty sections are hidden.
 
-One shared search covers music available through connected/supported online providers and Local Music. Each result visibly identifies its source: Spotify, YouTube Music, SoundCloud, or Local Music. Results can be filtered by source, including All Sources. Results use a list layout, not cards, and each row shows track name, artist, album, and source.
+The Home search provides one integrated music-search experience covering Local Music and the three initial online sources: YouTube, Spotify, and SoundCloud. Online sources are queried simultaneously by default. Results from all sources are combined in one compact list/table rather than large visual cards. The list includes track/title, artist, album when available, and a clearly visible **Source** column. Users can filter by All Sources or an individual source. A Download action is available for results that the local download workflow can process. Each source is handled by its own search adapter; the user does not need to visit each provider separately.
+
+This is a dedicated music-search interface, not a general-purpose web browser. It may use source-specific web/search mechanisms; no official provider API or OAuth integration is assumed as a prerequisite for this search concept. The exact technical acquisition method for each source remains to be validated. The existing compact and expanded local Music Player remains part of the application.
 
 ## 5. Accepted page contents and behaviour
 

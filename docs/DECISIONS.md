@@ -6,7 +6,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 |---|---|---|
 | D-001 | Senna Music is a standalone music platform inspired by Spotify. | Accepted |
 | D-002 | The product is music-only; video is out of scope. | Accepted |
-| D-003 | Initial providers are Spotify, YouTube Music, and SoundCloud. | Accepted |
+| D-003 | Initial providers were Spotify, YouTube Music, and SoundCloud. | Superseded by D-168; retained for history. |
 | D-004 | Provider integrations must respect APIs, licences, terms, DRM, and technical restrictions; no circumvention. | Accepted |
 | D-005 | Earlier concept: separate in-app offline listening and independent audio-file downloads. | Superseded by D-042; retained for decision history. |
 | D-006 | Expected audio formats: MP3, M4A, and FLAC, subject to source and rights. | Accepted |
@@ -170,14 +170,23 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-154 | When lyrics are unavailable, show a clear message and include the reason when it is known. | Accepted |
 
 
-| D-155 | Users connect supported music services through each provider's official sign-in flow, using OAuth or another provider-supported authentication method. | Accepted |
-| D-156 | Play a track inside Senna Music whenever the provider permits in-app playback under its supported capabilities and terms. | Accepted |
-| D-157 | If a provider does not permit in-app playback, offer to open the track in that provider's official service. | Accepted |
+| D-155 | Users connect supported music services through each provider's official sign-in flow, using OAuth or another provider-supported authentication method. | Superseded by D-169; retained for history. |
+| D-156 | Play a track inside Senna Music whenever the provider permits in-app playback under its supported capabilities and terms. | Superseded by D-169; retained for history. |
+| D-157 | If a provider does not permit in-app playback, offer to open the track in that provider's official service. | Superseded by D-169; retained for history. |
 | D-158 | When the same track is available from multiple connected services, show all available sources. | Accepted |
-| D-159 | Users can choose their preferred/main music service in Settings. | Accepted |
-| D-160 | If a service disconnects or loses connection during playback, automatically attempt to reconnect and offer a manual Retry action if reconnection fails. | Accepted |
-| D-161 | Switching playback to another available service when the current service cannot play the track requires user confirmation. | Accepted |
+| D-159 | Users can choose their preferred/main music service in Settings. | Superseded by D-169; retained for history. |
+| D-160 | If a service disconnects or loses connection during playback, automatically attempt to reconnect and offer a manual Retry action if reconnection fails. | Superseded by D-169; retained for history. |
+| D-161 | Switching playback to another available service when the current service cannot play the track requires user confirmation. | Superseded by D-169; retained for history. |
 | D-162 | Download a track only when the service or source officially permits downloading the audio file; never bypass provider restrictions. | Accepted |
+
+| D-163 | Senna Music's primary purpose is a local-first music downloader and player: users discover music from supported sources, download audio files where the source and applicable rights permit it, store those files on their own computer, and play their local music in Senna Music. Online streaming is not the defining purpose of the product. | Accepted |
+| D-164 | The integrated music search queries YouTube, Spotify, and SoundCloud simultaneously by default and combines their results in one list. Users can filter results by source. | Accepted |
+| D-165 | Each initial search source has its own source-specific search adapter to handle its individual search behaviour and result/link extraction. The adapters feed a common result format; a shared downloader engine is used where technically supported. | Accepted |
+| D-166 | Search results show track/title, artist, album where available, and a clearly visible Source column. Results use a compact list/table layout rather than large preview cards. Each eligible result provides a Download action that passes its source URL to the local download workflow. | Accepted |
+| D-167 | Torrent search is a planned future extension, not part of the initial search-source scope. The source-adapter architecture should allow it to be added later. Torrent use must respect applicable rights and law. | Accepted — future scope |
+
+| D-168 | The initial integrated search sources are YouTube, Spotify, and SoundCloud. The YouTube source is the general YouTube service, not a separate YouTube Music playback integration. | Accepted |
+| D-169 | The initial integrated search must not depend on official provider APIs or OAuth as a prerequisite. Each source adapter will investigate non-API search/page-based discovery and source-URL extraction, subject to technical feasibility, source terms, and applicable rights. No online provider streaming integration is assumed as part of the primary product direction. | Accepted — implementation method remains to be validated |
 
 ## Change control
 
