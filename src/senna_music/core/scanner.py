@@ -66,10 +66,12 @@ def scan_library(database: str | Path | None = None) -> int:
         found: set[str] = set()
         if root.is_dir():
             for current, directories, filenames in os.walk(root, followlinks=False):
-                directories[:] = [name for name in directories if not (Path(current) / name).is_symlink()]
+                directories[:] = [
+                    name for name in directories if not (Path(current) / name).is_symlink()
+                ]
                 for filename in filenames:
                     file_path = Path(current) / filename
-                    if file_path.suffix.casefold() not in SUPPORTED_FORMATS:
+                    if file_path.is_symlink() or file_path.suffix.casefold() not in SUPPORTED_FORMATS:
                         continue
                     try:
                         stat = file_path.stat()
