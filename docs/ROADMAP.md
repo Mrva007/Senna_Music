@@ -35,7 +35,12 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define trimming leading and trailing whitespace from Favorites collection names before validation and duplicate comparison.
 - [x] Define preservation of multiple consecutive spaces between words in Favorites collection names; do not collapse them.
 - [x] Define placement of duplicate-name validation message directly below the name field inside the creation popup.
-- [ ] Define remaining playlist and Favorites collection-management interactions.
+- [x] Define playlist creation and rename dialogs, case-insensitive unique names, duplicate-name feedback and immediate clearing.
+- [x] Define playlist Add to Playlist entry points in right-click and three-dot menus.
+- [x] Define multi-select add-to-playlist flow, including creating a playlist without leaving the flow.
+- [x] Define the visible empty-playlist state and its add-tracks option.
+- [x] Define temporary playlist sort-selection lifetime without changing saved manual order.
+- [ ] Define remaining playlist/Favorites collection-management interactions, including playlist-list ordering and exact playlist deletion interaction.
 - [ ] Define CLI and future AI-agent integration.
 - [ ] Define settings and system functions.
 - [ ] Review concept completeness and obtain explicit owner approval to begin implementation.
@@ -68,3 +73,4 @@ A task is complete only when:
 - The owner can identify the change and its status without repeating prior investigation.
 
 - [x] Define immediate clearing of duplicate-name validation when the user edits the name to a non-duplicate.
+- [x] Define playlist creation/rename validation, Add to Playlist flows, empty-playlist state, and temporary sort-selection lifetime (D-087–D-094).
