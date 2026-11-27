@@ -32,7 +32,7 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [ ] Validate non-API search and URL extraction, download eligibility, and rights separately for each initial source.
 - [ ] Define exact integrated-search placement and detailed row interactions.
 - [x] Define lyrics source priority, synchronisation, language preference, fallback, and unavailable-state behaviour.
-- [ ] Define provider-specific playback behaviour.
+- [x] Define local Music Player structure and local-file playback behaviour; optional online-provider streaming is outside the current primary scope.
 - [x] Define unified download/offline-playback model: one local downloaded file is used for both in-app offline playback and external playback.
 - [x] Define download destination, folder organization, duplicate handling, format choices, and quality-selection behaviour.
 - [x] Define Local Music scanning approach: user manually adds folders; scan automatically at application startup.
