@@ -125,6 +125,18 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-115 | Connected Services presents providers in a list with their connection status and available actions. | Accepted |
 | D-116 | When a provider is unavailable or its connection is interrupted, Senna Music displays the status and automatically attempts reconnection, while also offering a retry action. | Accepted |
 
+
+| D-117 | The left navigation has a fixed width; users cannot resize it by dragging its edge. | Accepted |
+| D-118 | Central workspace content layout is page-specific and may differ between pages. | Accepted |
+| D-119 | Track lists use the standard, balanced row density. | Accepted |
+| D-120 | Track-list column headers remain visible while scrolling long lists. | Accepted |
+| D-121 | Artists, albums, and folders views can switch between Grid and List layouts. | Accepted |
+| D-122 | Album cards show cover artwork, album name, artist, and year. | Accepted |
+| D-123 | Empty pages or sections show a message and a clear action button for the next step. | Accepted |
+| D-124 | Loading states may use Skeleton and Spinner indicators; show a Progress Bar when progress is known. | Accepted |
+| D-125 | Senna Music retains previous searches and provides a way to clear the search history. | Accepted |
+| D-126 | Keyboard shortcuts cover playback (Play/Pause, Previous, Next), focusing Search, navigation between main pages, volume/Mute, and displaying/managing Playback Queue. | Accepted |
+
 ## Change control
 
 - Do not revise an accepted decision without explicit owner approval.

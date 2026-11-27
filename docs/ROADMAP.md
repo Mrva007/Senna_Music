@@ -11,6 +11,12 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [ ] Complete remaining GUI details: exact dimensions, icon set, visual tokens, responsive breakpoints, and unresolved interaction behaviour.
 - [x] Confirm modern minimalist visual direction, Windows-following initial theme, and Dark / Light / Automatic theme choices.
 - [x] Confirm manual and automatic left-navigation collapse, Settings in the central workspace, and whole-layout responsiveness.
+- [x] Confirm fixed left-navigation width and page-specific central workspace layouts.
+- [x] Confirm standard track-list density and sticky column headers.
+- [x] Confirm Grid/List switching for Artists, Albums, and Folders, plus album-card information.
+- [x] Confirm empty-state message/action pattern and Skeleton/Spinner/known-progress loading indicators.
+- [x] Confirm retained search history with a clear-history option.
+- [x] Confirm keyboard shortcut groups for playback, Search focus, main-page navigation, volume/Mute, and Playback Queue.
 - [x] Confirm general confirmation dialogs, brief notifications plus history panel, Connected Services list presentation, and automatic reconnection with manual Retry.
 - [x] Confirm compact-player artwork/title clicks do not expand the player; only the dedicated expand button does.
 - [x] Define expanded Music Player layout: central workspace with navigation retained, always-visible Playback Queue in a right-side column, and lyrics below track information when available.

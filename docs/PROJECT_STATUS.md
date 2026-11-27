@@ -69,6 +69,8 @@
 - [x] Playlist tracks can be manually reordered with Drag & Drop; the order is saved persistently. Display sorting by title, artist, or album does not change the saved manual order.
 - [x] Download quality selection confirmed: default in Settings with per-download override.
 
+- [x] GUI details confirmed: fixed-width left navigation, page-specific central layouts, standard track-list density, sticky column headers, Grid/List switching for Artists/Albums/Folders, album-card information, empty-state actions, loading indicators, search-history clearing, and keyboard shortcut groups.
+
 ## In progress
 
 - [ ] Continue defining remaining GUI details and unresolved product questions; exact shell dimensions, icons, responsive breakpoints, and remaining provider/player behaviours are still open.
@@ -89,7 +91,7 @@ These are intentionally not started. Do not create application implementation un
 
 ## Next action
 
-Continue defining the remaining GUI details (exact dimensions, icons, visual tokens, and responsive breakpoints), then resolve lyrics behaviour, provider-specific playback and download capabilities, and exact audio quality / bitrate levels. Do not revisit accepted playlist, Favorites, or Local Music decisions unless the owner requests a change.
+Continue with the remaining unresolved GUI visual details (exact dimensions, icon set, visual tokens, and responsive breakpoints). Then resolve lyrics behaviour, provider-specific playback and download capabilities, and exact audio quality / bitrate levels. Next, define provider authentication/account setup, CLI and AI-agent integration, settings/system functions, updates, backup/recovery, and installation/distribution. Do not revisit accepted decisions unless the owner requests a change.
 
 - [x] Duplicate-name validation message clears immediately when the entered collection name is changed to a non-duplicate.
 - [x] Playlist creation and rename popup, case-insensitive unique names, and duplicate-name validation behaviour confirmed.
