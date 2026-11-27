@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import sqlite3
+from contextlib import closing
 from pathlib import Path
-from typing import Iterator
 
 from platformdirs import user_data_path
 
@@ -22,7 +22,7 @@ def connect(path: str | Path | None = None) -> sqlite3.Connection:
 
 
 def initialize_database(path: str | Path | None = None) -> None:
-    with connect(path) as connection:
+    with closing(connect(path)) as connection:
         connection.executescript(
             """
             PRAGMA foreign_keys = ON;
@@ -40,7 +40,7 @@ def initialize_database(path: str | Path | None = None) -> None:
 
 
 def get_setting(key: str, default: str = "", path: str | Path | None = None) -> str:
-    with connect(path) as connection:
+    with closing(connect(path)) as connection:
         row = connection.execute(
             "SELECT value FROM settings WHERE key = ?", (key,)
         ).fetchone()
@@ -48,27 +48,29 @@ def get_setting(key: str, default: str = "", path: str | Path | None = None) -> 
 
 
 def set_setting(key: str, value: str, path: str | Path | None = None) -> None:
-    with connect(path) as connection:
-        connection.execute(
-            """
-            INSERT INTO settings(key, value) VALUES(?, ?)
-            ON CONFLICT(key) DO UPDATE SET value = excluded.value
-            """,
-            (key, value),
-        )
+    with closing(connect(path)) as connection:
+        with connection:
+            connection.execute(
+                """
+                INSERT INTO settings(key, value) VALUES(?, ?)
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value
+                """,
+                (key, value),
+            )
 
 
 def add_library_folder(folder: str | Path, path: str | Path | None = None) -> bool:
     normalized = str(Path(folder).expanduser().resolve())
-    with connect(path) as connection:
-        cursor = connection.execute(
-            "INSERT OR IGNORE INTO library_folders(path) VALUES(?)", (normalized,)
-        )
-        return cursor.rowcount == 1
+    with closing(connect(path)) as connection:
+        with connection:
+            cursor = connection.execute(
+                "INSERT OR IGNORE INTO library_folders(path) VALUES(?)", (normalized,)
+            )
+            return cursor.rowcount == 1
 
 
 def list_library_folders(path: str | Path | None = None) -> list[str]:
-    with connect(path) as connection:
+    with closing(connect(path)) as connection:
         rows = connection.execute(
             "SELECT path FROM library_folders ORDER BY path COLLATE NOCASE"
         ).fetchall()
@@ -76,5 +78,6 @@ def list_library_folders(path: str | Path | None = None) -> list[str]:
 
 
 def remove_library_folder(folder: str, path: str | Path | None = None) -> None:
-    with connect(path) as connection:
-        connection.execute("DELETE FROM library_folders WHERE path = ?", (folder,))
+    with closing(connect(path)) as connection:
+        with connection:
+            connection.execute("DELETE FROM library_folders WHERE path = ?", (folder,))
