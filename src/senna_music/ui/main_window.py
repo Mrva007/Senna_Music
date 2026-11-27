@@ -5,6 +5,7 @@ from pathlib import Path
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QFileDialog,
+    QCheckBox,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -20,8 +21,10 @@ from PySide6.QtWidgets import (
 
 from senna_music.core.storage import (
     add_library_folder,
+    get_setting,
     list_library_folders,
     remove_library_folder,
+    set_setting,
 )
 
 
@@ -164,8 +167,19 @@ class MainWindow(QMainWindow):
                 row_layout = QHBoxLayout(row)
                 row_layout.setContentsMargins(14, 10, 14, 10)
                 row_layout.addWidget(QLabel(source), 1)
-                status = QLabel("Not configured")
+                source_key = source.casefold()
+                enabled = get_setting(f"source_enabled:{source_key}", "false") == "true"
+                toggle = QCheckBox("Enabled")
+                toggle.setChecked(enabled)
+                status = QLabel("Enabled" if enabled else "Disabled")
                 status.setObjectName("muted")
+
+                def save_source_state(value: bool, key: str = source_key) -> None:
+                    set_setting(f"source_enabled:{key}", "true" if value else "false")
+                    status.setText("Enabled" if value else "Disabled")
+
+                toggle.toggled.connect(save_source_state)
+                row_layout.addWidget(toggle)
                 row_layout.addWidget(status)
                 layout.addWidget(row)
             layout.addStretch(1)
