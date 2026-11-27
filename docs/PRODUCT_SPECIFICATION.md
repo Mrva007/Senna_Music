@@ -225,3 +225,53 @@ Automatic collection cataloguing by artist, album, and genre is not part of the 
 - If the current service cannot play a track and another source is available, switching to that source requires user confirmation.
 - Download an audio file only when the service or source officially permits downloading that file. No restriction, DRM, or provider limitation may be bypassed.
 - These are general product rules. Exact playback, authentication, offline, and download capabilities must be checked separately for Spotify, YouTube Music, SoundCloud, and any future provider; no capability is assumed merely because a provider is listed.
+
+
+## 15. Provider capability and policy research — 27 November 2026
+
+**Research status only.** These findings are not new owner-approved product decisions and do not silently revise D-155–D-162. They identify compatibility blockers that must be resolved before provider integration work.
+
+### Spotify
+
+- The Web Playback SDK can stream Spotify content inside a web application, but it requires a Spotify Premium account. Spotify's developer policy says streaming through the Spotify Platform is only available to Premium subscribers.
+- Spotify's policy explicitly prohibits creating a product or service integrated with streams or content from another service. This appears to conflict with Senna Music's planned combined multi-provider playback/source experience.
+- Spotify also prohibits voice-enabled third-party apps that let users control Spotify by voice. This matters if voice control is ever added to Senna Music.
+- Spotify's developer policy also restricts commercial streaming applications. The exact eligibility of Senna Music's intended distribution/use must be clarified with Spotify.
+- No Spotify audio-file download/offline-copy capability is approved by the reviewed developer API documentation.
+- **Status:** Do not implement Spotify as an in-app stream in the combined multi-provider player without written clarification/permission from Spotify. Premium is required for the Web Playback SDK.
+
+Official sources:
+- https://developer.spotify.com/policy
+- https://developer.spotify.com/documentation/web-playback-sdk
+- https://developer.spotify.com/documentation/web-api/reference/start-a-users-playback
+
+### YouTube Music / YouTube
+
+- The reviewed official Google documentation provides the YouTube Data API and YouTube IFrame Player API; it does not document an official YouTube Music audio-only playback API.
+- The IFrame Player API embeds and controls a YouTube video player, not a replaceable audio-only player. The player and its required controls/branding must remain compliant with YouTube's rules.
+- YouTube API policies prohibit extracting/separating audio tracks, downloading content for offline playback outside the YouTube Premium experience, and allowing background playback of the embedded YouTube player (including when the API service is minimized or closed).
+- Google's policy guide gives a search engine listing YouTube videos alongside other platforms, with clear source distinction, as an example of independent value. That does not grant permission to extract audio or provide background/offline playback.
+- **Status:** YouTube results may be investigated as clearly attributed discovery links, but an in-app audio-only/background player and app-managed audio downloads are not supported by the reviewed official API rules. External playback through the official YouTube Music service is the safe provisional route.
+
+Official sources:
+- https://developers.google.com/youtube/iframe_api_reference
+- https://developers.google.com/youtube/terms/developer-policies-guide
+- https://developers.google.com/youtube/terms/developer-policies
+
+### SoundCloud
+
+- SoundCloud API authentication uses OAuth 2.1 with PKCE. API access requires a registered application and current registration/credential requirements must be met.
+- The API can provide a stream URL for tracks that are available for off-platform streaming. Track access must be checked: playable, preview, or blocked. Creator restrictions, paywalls, and geographic restrictions can prevent streaming.
+- SoundCloud's API Terms of Use prohibit using its API to create an alternative on-demand service aggregating user content from multiple uploaders, or a playback experience aggregating SoundCloud content with other services (the terms give SoundCloud with YouTube as an example), unless the relevant content is explicitly licensed for that use.
+- The API Terms prohibit file-save functionality, persistent caching/downloads, and offline access to API user content, even where an uploader enables downloads on SoundCloud's own platform. Session-only caching is narrowly permitted for operation during that session.
+- SoundCloud's public API guidance says public API use is generally not available for commercial use cases; the API Terms list only specific acceptable commercial cases and reserve approval discretion to SoundCloud.
+- **Status:** Technically streamable tracks exist, but the Senna Music multi-provider/on-demand aggregation model requires explicit licensing/approval from SoundCloud before implementation. Do not use the API to download or store SoundCloud content.
+
+Official sources:
+- https://developers.soundcloud.com/docs
+- https://developers.soundcloud.com/docs/api/terms-of-use
+- https://help.soundcloud.com/hc/en-us/articles/115003446727-SoundCloud-Public-APIs
+
+### Overall compatibility conclusion
+
+The current concept of one application aggregating and playing tracks from Spotify, YouTube Music, and SoundCloud cannot be treated as approved merely because each provider exposes an API or player. Spotify and SoundCloud have explicit restrictions against cross-service content/stream aggregation; YouTube's API does not provide the required audio-only/background/offline experience. Obtain provider-specific written permissions or revise the provider scope/playback model before implementation. Local Music playback remains independent of these online-provider restrictions.
