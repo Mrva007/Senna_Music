@@ -28,7 +28,8 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define compact Music Player controls: Play / Pause, Previous, and Next alongside track information and artwork.
 - [x] Confirm Shuffle and Repeat controls are available only in the expanded Music Player, not the compact player.
 - [ ] Define search and provider connection.
-- [ ] Define playback behaviour.
+- [x] Define lyrics source priority, synchronisation, language preference, fallback, and unavailable-state behaviour.
+- [ ] Define provider-specific playback behaviour.
 - [x] Define unified download/offline-playback model: one local downloaded file is used for both in-app offline playback and external playback.
 - [x] Define download destination, folder organization, duplicate handling, format choices, and quality-selection behaviour.
 - [x] Define Local Music scanning approach: user manually adds folders; scan automatically at application startup.
