@@ -174,9 +174,11 @@ class MainWindow(QMainWindow):
                 status = QLabel("Enabled" if enabled else "Disabled")
                 status.setObjectName("muted")
 
-                def save_source_state(value: bool, key: str = source_key) -> None:
+                def save_source_state(
+                    value: bool, key: str = source_key, status_label: QLabel = status
+                ) -> None:
                     set_setting(f"source_enabled:{key}", "true" if value else "false")
-                    status.setText("Enabled" if value else "Disabled")
+                    status_label.setText("Enabled" if value else "Disabled")
 
                 toggle.toggled.connect(save_source_state)
                 row_layout.addWidget(toggle)
