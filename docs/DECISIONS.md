@@ -73,6 +73,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-066 | Deleting a Favorites collection removes only the collection and its collection entries. Tracks remain in the main Favorites list, Local Music, and any playlists containing them; local audio files are not deleted. | Accepted |
 | D-067 | Tracks within each user-created Favorites collection can be manually reordered by drag and drop, and the chosen order is saved persistently. | Accepted |
 | D-068 | Removing a track from a user-created Favorites collection removes it only from that collection. The track remains in the main Favorites list and in every other Favorites collection that contains it; the local audio file is not deleted. | Accepted |
+| D-069 | The main Favorites list supports its own manually arranged track order, saved persistently and independently of the order in individual user-created Favorites collections. | Accepted |
 
 ## Change control
 
