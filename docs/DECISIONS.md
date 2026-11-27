@@ -67,6 +67,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-060 | The error Details view shows the file name, file location, a user-friendly error message, and a technical error detail when available. | Accepted |
 | D-061 | Preserve the Download Queue across application restarts. Waiting tasks remain queued; an interrupted active download resumes from its last safely saved position when the provider/source technically supports resuming. | Accepted |
 | D-062 | Deleting a playlist removes only the playlist and its playlist entries; it never deletes the underlying music files or removes tracks from Local Music or Favorites. | Accepted |
+| D-063 | Removing a track from a playlist removes only that playlist entry. The track remains in Local Music, Favorites, and every other playlist; its local audio file is not deleted. | Accepted |
 
 ## Change control
 
