@@ -98,3 +98,8 @@ A task is complete only when:
 - [x] Define alphabetical playlist display, per-playlist track counts, Rename/Delete menu access, and delete confirmation (D-095–D-098).
 - [x] Confirm that the playlist list itself cannot be manually reordered (D-099).
 - [x] Define an explicit **Confirm** action in the Local Music folder-selection flow (D-100).
+
+
+- [x] Define general provider connection and playback rules: official sign-in, in-app playback when permitted, official-service fallback, all available sources, preferred provider setting, reconnection/Retry, and user-confirmed source switching (D-155–D-161).
+- [x] Confirm that audio-file downloads are permitted only when officially allowed by the service/source (D-162).
+- [ ] Verify actual authentication, playback, offline, and download capabilities separately for each initial provider.

@@ -248,6 +248,17 @@ Clicking the compact player's cover artwork or track name does not open the expa
 - Animations are short and subtle.
 - Navigation automatically collapses according to the space required by the content; the exact responsive thresholds remain open.
 
+### Provider connection and playback behaviour (confirmed)
+
+- Users connect music services through the provider's official sign-in flow (OAuth or another supported authentication method).
+- Play music inside Senna Music when the provider permits it. If in-app playback is not permitted, offer to open the track in the provider's official service.
+- When the same track is available from multiple connected services, show all available sources.
+- Users can select their preferred/main service in Settings.
+- If a service disconnects during playback, attempt automatic reconnection and offer Retry if it fails.
+- Switching to another service for playback requires user confirmation.
+- Download audio files only when the provider/source officially permits it.
+- Exact provider-specific playback capabilities, authentication steps, and restrictions still require verification and are not assumed by these general decisions.
+
 ## 10. Not yet decided
 
 The following must not be treated as accepted design decisions:
