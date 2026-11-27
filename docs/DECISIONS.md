@@ -101,6 +101,11 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-093 | An empty playlist remains visible and displays a message that it has no tracks yet, together with an option to add tracks. | Accepted |
 | D-094 | A playlist's temporary sort selection is remembered only while that playlist remains open; temporary sorting never changes its saved manual order. | Accepted |
 
+| D-095 | Playlists are displayed alphabetically by playlist name. | Accepted |
+| D-096 | Each playlist displays its current track count alongside its name. | Accepted |
+| D-097 | Playlist Rename and Delete actions are available through both the three-dot menu and the right-click context menu. | Accepted |
+| D-098 | Deleting a playlist always requires confirmation before the playlist and its entries are deleted. | Accepted |
+
 ## Change control
 
 - Do not revise an accepted decision without explicit owner approval.
