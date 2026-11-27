@@ -184,8 +184,9 @@ When the application closes, it saves the last played track, playback position, 
 
 ## 12. Playlists
 
-The user manages playlists manually:
-- Create, rename, and delete playlists.
+The user manages playlists:
+- Create, rename, and delete playlists. Playlist entries are displayed alphabetically by playlist name, and each playlist displays its current track count alongside its name.
+- Rename and Delete are available through both the playlist's three-dot menu and right-click context menu. Deleting a playlist always requires a confirmation prompt.
 - Add and remove tracks.
 - Reorder tracks manually using Drag & Drop; the chosen order is saved persistently.
 - Temporarily sort a playlist by title, artist, or album without changing its saved manual order. The selected sort is remembered only while that playlist remains open.
