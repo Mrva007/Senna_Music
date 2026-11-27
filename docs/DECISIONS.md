@@ -77,6 +77,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-070 | The main Favorites list can also be temporarily sorted by track title, artist, or album. Temporary sorting does not change its saved manual order. | Accepted |
 | D-071 | Each user-created Favorites collection displays its current track count alongside its name. | Accepted |
 | D-072 | The main Favorites list does not display a total track count alongside its name. | Accepted |
+| D-073 | Users can rename a user-created Favorites collection after it has been created. Renaming changes only the collection name; its tracks and saved order remain unchanged. | Accepted |
 
 ## Change control
 
