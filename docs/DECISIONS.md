@@ -75,6 +75,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-068 | Removing a track from a user-created Favorites collection removes it only from that collection. The track remains in the main Favorites list and in every other Favorites collection that contains it; the local audio file is not deleted. | Accepted |
 | D-069 | The main Favorites list supports its own manually arranged track order, saved persistently and independently of the order in individual user-created Favorites collections. | Accepted |
 | D-070 | The main Favorites list can also be temporarily sorted by track title, artist, or album. Temporary sorting does not change its saved manual order. | Accepted |
+| D-071 | Each user-created Favorites collection displays its current track count alongside its name. | Accepted |
 
 ## Change control
 
