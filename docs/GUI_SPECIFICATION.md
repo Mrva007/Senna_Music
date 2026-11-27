@@ -63,11 +63,11 @@ Local Music is a separate page with these views:
 
 ### Playlists
 
-Playlists is one navigation destination containing the user's playlists. Individual playlists are not separate permanent navigation items. Removing a track from a playlist removes only that entry from the current playlist; the track remains in Local Music, Favorites, and every other playlist, and its local audio file is not deleted. Deleting a playlist removes only the playlist and its playlist entries; it never deletes the underlying music files or removes tracks from Local Music or Favorites.
+Playlists is one navigation destination containing the user's playlists. Individual playlists are not separate permanent navigation items. Tracks can be manually reordered with Drag & Drop; the selected order is saved persistently. Users can also sort the displayed list by title, artist, or album without changing the saved manual order. Removing a track from a playlist removes only that entry from the current playlist; the track remains in Local Music, Favorites, and every other playlist, and its local audio file is not deleted. Deleting a playlist removes only the playlist and its playlist entries; it never deletes the underlying music files or removes tracks from Local Music or Favorites.
 
 ### Favorites
 
-Favorites supports favourite tracks and user-created collections.
+Favorites supports favourite tracks and user-created collections. Removing a track from Favorites removes only its Favorites designation; the track remains in Local Music and every playlist containing it, and its local audio file is not deleted.
 
 ### Download Queue
 
