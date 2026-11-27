@@ -11,13 +11,14 @@ The roadmap tracks implementation work, not a second copy of the decision log. A
 - [x] Add SQLite persistence for settings and registered music folders.
 - [x] Add Windows CI for tests and linting.
 - [x] Merge the desktop foundation PR #15.
-- [ ] Verify and record the foundation CI result.
+- [x] Run the foundation CI and identify the Ruff failures (pytest passed; Ruff findings are corrected in PR #16).
+- [ ] Confirm the lint fixes with a green CI run.
 
 ### 2. Local Music
 - [x] Add and persist music folders.
-- [ ] Recursively scan supported audio formats and populate the library (implemented in current PR; pending CI/review).
-- [ ] Read and display track metadata and damaged-file states (implemented in current PR; pending CI/review).
-- [ ] Start a library scan automatically on application launch (implemented in current PR; pending CI/review).
+- [ ] Recursively scan supported audio formats and populate the library (implemented in PR #16; pending green CI/review).
+- [ ] Read and display track metadata and damaged-file states (implemented in PR #16; pending green CI/review).
+- [ ] Start a library scan automatically on application launch (implemented in PR #16; pending green CI/review).
 - [ ] Monitor folders while the application is running.
 - [ ] Add cover-art thumbnails, track details, and accepted row/context actions.
 - [ ] Implement local playback and the compact/expanded player.
