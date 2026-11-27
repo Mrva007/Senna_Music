@@ -123,3 +123,14 @@ Continue with the remaining unresolved GUI visual details (exact dimensions, spe
 - [x] Downloads allowed only when the provider/source officially permits downloading the audio file confirmed.
 
 Provider-specific authentication and playback capabilities, restrictions, and exact download availability remain open for verification. No application implementation has been started or authorized.
+
+
+## Provider research — compatibility blockers identified
+
+- [x] Reviewed official Spotify developer policy and playback documentation.
+- [x] Reviewed official YouTube API/player policies and playback documentation.
+- [x] Reviewed official SoundCloud API guide, API Terms of Use, and public API guidance.
+- [ ] Obtain provider-specific written clarification/permission or revise the multi-provider scope before implementing online integrations.
+- [ ] Owner decision required on Spotify and SoundCloud aggregation restrictions and YouTube Music's external-only role.
+
+Research findings are recorded in PRODUCT_SPECIFICATION.md and unresolved decisions in OPEN_QUESTIONS.md. D-155–D-162 remain the owner's general rules; this research does not override them. No provider integration or application implementation is authorized.
