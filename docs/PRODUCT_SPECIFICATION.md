@@ -105,7 +105,7 @@ Bulk actions for selected tracks:
 
 Track Details shows track name, artist, album, duration, source, file format, file location, and track artwork.
 
-Favorites supports favourite tracks and user-created collections.
+Favorites supports favourite tracks and user-created collections. Removing a track from Favorites removes only its Favorites designation; the track remains in Local Music and every playlist containing it, and its local audio file is not deleted.
 
 ## 8. GUI and CLI
 
@@ -189,10 +189,11 @@ The user manages playlists manually:
 - Rename
 - Delete
 - Add and remove tracks
-- Reorder tracks
+- Reorder tracks manually using Drag & Drop; the chosen order is saved persistently.
+- Sort the displayed playlist by title, artist, or album without changing the saved manual order.
 - Play an entire playlist
 
-Removing a track from a playlist removes only that entry from the current playlist. The track remains in Local Music, Favorites, and every other playlist; its local audio file is not deleted. Deleting a playlist removes only that playlist and its playlist entries. It never deletes the underlying music files and never removes the tracks from Local Music or Favorites. All playlists are accessed through the single Playlists navigation destination. Individual playlists are not separate permanent navigation items.
+Removing a track from Favorites removes only its Favorites designation; the track remains in Local Music and every playlist containing it, and its local audio file is not deleted. Removing a track from a playlist removes only that entry from the current playlist. The track remains in Local Music, Favorites, and every other playlist; its local audio file is not deleted. Deleting a playlist removes only that playlist and its playlist entries. It never deletes the underlying music files and never removes the tracks from Local Music or Favorites. All playlists are accessed through the single Playlists navigation destination. Individual playlists are not separate permanent navigation items.
 
 Automatic collection cataloguing by artist, album, and genre is not part of the agreed concept.
 
