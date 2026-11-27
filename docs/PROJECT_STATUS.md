@@ -49,6 +49,8 @@
 - [x] User-created Favorites collections can be renamed after creation; renaming changes only the collection name and preserves its tracks and saved order.
 - [x] User-created Favorites collections do not support custom cover images.
 - [x] Favorites collections can be deleted from either the three-dot menu or right-click context menu; both require confirmation and delete only the collection and its entries.
+- [x] Favorites collections are displayed alphabetically by name.
+- [x] Favorites collections do not have a dedicated search field.
 - [x] Removing a track from a user-created Favorites collection removes it only from that collection; it remains in the main Favorites list and all other Favorites collections containing it. The local audio file is not deleted.
 - [x] Playlist tracks can be manually reordered with Drag & Drop; the order is saved persistently. Display sorting by title, artist, or album does not change the saved manual order.
 - [x] Download quality selection confirmed: default in Settings with per-download override.
