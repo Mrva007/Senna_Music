@@ -281,3 +281,12 @@ The product direction was clarified after the initial provider playback research
 The initial integrated search scope is YouTube, Spotify, and SoundCloud, searched in parallel and presented in one source-labelled list. Search adapters are source-specific; download processing remains shared through yt-dlp and FFmpeg where supported. The earlier API/streaming compatibility findings describe the official API and playback routes that were researched; they do not, by themselves, establish that every page-based search or download method is technically possible or legally permitted. Those methods require separate source-by-source validation. No API, login, streaming, or download permission should be assumed.
 
 Torrent search is a future extension only. It is not part of the initial version and must be designed as an additional source adapter, limited to lawful content and use.
+
+
+## Implementation clarification — authenticated source access
+
+Following the owner's 2026-11-27 clarification, Spotify is not restricted to metadata-only display. Spotify remains an initial search source. The application should support user-authenticated sessions for Spotify and YouTube when a source requires sign-in, preferably through a practical browser-session/cookie handoff or another supported login flow. Passwords must never be stored in plaintext.
+
+Spotify track information may be used by a Python-based resolver to locate a corresponding audio result from another supported source (for example, matching title and artist), which then enters the common download workflow. This is not direct extraction of Spotify's protected audio stream. The resolver must display the actual download source and preserve separate source/download records.
+
+The first implementation target is a Windows desktop app built with Python, PySide6, and SQLite. The source adapters, authentication/session handling, yt-dlp/FFmpeg download workflow, and local audio playback are being implemented incrementally. This clarification supersedes the earlier Spotify metadata-only proposal and the concept-only implementation restriction.
