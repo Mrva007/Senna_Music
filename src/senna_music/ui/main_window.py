@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import QThread, Qt, Signal
 from PySide6.QtWidgets import (
     QCheckBox,
     QFileDialog,
@@ -51,7 +51,7 @@ class LibraryScanThread(QThread):
     def run(self) -> None:
         try:
             self.completed.emit(scan_library())
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001 - report background scan failures in the UI
             self.failed.emit(str(error))
 
 
