@@ -31,6 +31,7 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define the collection creation dialog: name field with **Create** and **Cancel** actions.
 - [x] Define duplicate Favorites collection-name handling: reject an existing name and display a message.
 - [x] Define empty-name validation: keep **Create** disabled until a non-empty collection name is entered; reject whitespace-only input.
+- [x] Define case-insensitive Favorites collection-name uniqueness; `Rock` and `rock` are duplicates.
 - [ ] Define remaining playlist and Favorites collection-management interactions.
 - [ ] Define CLI and future AI-agent integration.
 - [ ] Define settings and system functions.
