@@ -103,3 +103,8 @@ A task is complete only when:
 - [x] Define general provider connection and playback rules: official sign-in, in-app playback when permitted, official-service fallback, all available sources, preferred provider setting, reconnection/Retry, and user-confirmed source switching (D-155–D-161).
 - [x] Confirm that audio-file downloads are permitted only when officially allowed by the service/source (D-162).
 - [ ] Verify actual authentication, playback, offline, and download capabilities separately for each initial provider.
+
+
+- [x] Research official Spotify, YouTube, and SoundCloud developer capabilities and restrictions.
+- [ ] Resolve provider policy compatibility and owner decisions before online-provider implementation.
+- [ ] Obtain written provider permission where required or revise initial provider scope/playback behaviour.
