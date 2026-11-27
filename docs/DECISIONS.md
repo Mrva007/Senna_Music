@@ -106,6 +106,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-097 | Playlist Rename and Delete actions are available through both the three-dot menu and the right-click context menu. | Accepted |
 | D-098 | Deleting a playlist always requires confirmation before the playlist and its entries are deleted. | Accepted |
 | D-099 | The playlist list itself remains alphabetically ordered by playlist name; users cannot manually reorder playlists. This does not affect the separately accepted manual ordering of tracks inside each playlist. | Accepted |
+| D-100 | When adding folders to Local Music, the folder-selection flow provides an explicit **Confirm** action to complete the selection. | Accepted |
 
 ## Change control
 
