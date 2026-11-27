@@ -108,6 +108,10 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-099 | The playlist list itself remains alphabetically ordered by playlist name; users cannot manually reorder playlists. This does not affect the separately accepted manual ordering of tracks inside each playlist. | Accepted |
 | D-100 | When adding folders to Local Music, the folder-selection flow provides an explicit **Confirm** action to complete the selection. | Accepted |
 
+| D-101 | The expanded Music Player occupies the central workspace while the left navigation remains visible. | Accepted |
+| D-102 | In the expanded Music Player, Playback Queue is displayed as a right-side column and remains visible. | Accepted |
+| D-103 | In the expanded Music Player, available lyrics are displayed below the track information. | Accepted |
+
 ## Change control
 
 - Do not revise an accepted decision without explicit owner approval.
