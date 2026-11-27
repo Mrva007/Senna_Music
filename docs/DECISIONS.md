@@ -84,6 +84,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-077 | Favorites collections do not have a dedicated search field. | Accepted |
 | D-078 | A new Favorites collection can be created either with a **New Collection** button on the Favorites page or with a **+** button beside the Favorites heading. | Accepted |
 | D-079 | Selecting either Favorites collection creation entry point opens a popup dialog with a name field and **Create** / **Cancel** actions. | Accepted |
+| D-080 | Favorites collection names must be unique. If a user tries to create a collection with a name that already exists, creation is blocked and the application displays a message that the name already exists. | Accepted |
 
 ## Change control
 
