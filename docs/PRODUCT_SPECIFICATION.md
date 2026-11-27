@@ -170,6 +170,8 @@ Compact player information:
 
 The expanded player occupies the central workspace while the left navigation remains visible. Its main area includes large cover artwork, track information, playback controls, progress bar, volume control, Shuffle / Repeat, and available lyrics below the track information. Playback Queue is displayed in a dedicated, always-visible right-side column within the expanded player and supports track reordering.
 
+Lyrics use the best available source, preferring synchronised lyrics and automatically falling back to plain lyrics. Users set a preferred lyrics language in Settings and may change it manually. Translated lyrics are deferred beyond the first-version priority. During playback, synchronised lyrics follow the current line while still allowing manual scrolling; timing is automatic and users cannot manually offset it. When lyrics are unavailable, show a clear message and the reason when known. Provider-specific availability remains subject to each provider's capabilities and terms.
+
 Controls:
 - Play / Pause
 - Previous / Next
