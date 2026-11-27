@@ -185,13 +185,15 @@ When the application closes, it saves the last played track, playback position, 
 ## 12. Playlists
 
 The user manages playlists manually:
-- Create
-- Rename
-- Delete
-- Add and remove tracks
+- Create, rename, and delete playlists.
+- Add and remove tracks.
 - Reorder tracks manually using Drag & Drop; the chosen order is saved persistently.
-- Sort the displayed playlist by title, artist, or album without changing the saved manual order.
-- Play an entire playlist
+- Temporarily sort a playlist by title, artist, or album without changing its saved manual order. The selected sort is remembered only while that playlist remains open.
+- Play an entire playlist.
+
+Creating a playlist opens a popup with a playlist-name field and **Create** / **Cancel** actions, following the accepted Favorites collection dialog pattern. Playlist names must be unique, with case-insensitive comparison. If the entered name is a duplicate, a validation message appears below the name field and disappears immediately when the user edits the name to a non-duplicate. Renaming a playlist uses the same popup and validation rules as creation.
+
+Tracks can be added to a playlist from the right-click context menu or the row's three-dot menu through **Add to Playlist**. When multiple tracks are selected, the user can choose an existing playlist or create a new one within the same flow, without leaving the add-to-playlist process. An empty playlist remains visible and displays a message that it has no tracks yet, with an option to add tracks.
 
 Removing a track from Favorites removes only its Favorites designation; the track remains in Local Music and every playlist containing it, and its local audio file is not deleted. Removing a track from a playlist removes only that entry from the current playlist. The track remains in Local Music, Favorites, and every other playlist; its local audio file is not deleted. Deleting a playlist removes only that playlist and its playlist entries. It never deletes the underlying music files and never removes the tracks from Local Music or Favorites. All playlists are accessed through the single Playlists navigation destination. Individual playlists are not separate permanent navigation items.
 
