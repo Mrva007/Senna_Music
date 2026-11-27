@@ -33,6 +33,7 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define empty-name validation: keep **Create** disabled until a non-empty collection name is entered; reject whitespace-only input.
 - [x] Define case-insensitive Favorites collection-name uniqueness; `Rock` and `rock` are duplicates.
 - [x] Define trimming leading and trailing whitespace from Favorites collection names before validation and duplicate comparison.
+- [x] Define preservation of multiple consecutive spaces between words in Favorites collection names; do not collapse them.
 - [ ] Define remaining playlist and Favorites collection-management interactions.
 - [ ] Define CLI and future AI-agent integration.
 - [ ] Define settings and system functions.
