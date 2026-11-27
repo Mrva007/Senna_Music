@@ -1,53 +1,59 @@
 # Senna Music
 
-A standalone, music-only desktop platform inspired by Spotify. The product concept is being defined before implementation begins.
+Senna Music is a **local-first Windows desktop music application**: manage and play your own music library, discover tracks across supported online sources, and download audio into a folder you choose.
 
-> **Project phase: Concept and product definition. No application implementation is authorized yet.**
+The application is music-only. Video playback is out of scope.
 
-## Product direction
+## Current build
 
-Senna Music is intended to bring together music discovery through supported online services, playback, user-managed playlists, offline listening inside the application, and downloads of audio files where the source and rights explicitly permit them.
+**Version:** 0.1.0 — desktop foundation in progress.
 
-The application is music-only. Video is out of scope.
+The first development PR introduces:
+- A runnable PySide6 desktop shell with the agreed left navigation, central workspace, and bottom player area.
+- Home search entry point and dedicated Search Sources page.
+- Local Music folder selection and persistent folder registration.
+- A per-user SQLite database for application settings and library-folder configuration.
+- Windows CI test workflow.
 
-Initial service integrations under consideration:
+The Local Music scanner/player, source adapters, authenticated source sessions, and download workflow are being added in subsequent small milestones. The visible early-build placeholders are intentional and are not represented as completed functionality.
+
+## Initial source direction
+
+The planned integrated search sources are:
+- YouTube (general YouTube, not a separate YouTube Music player)
 - Spotify
-- YouTube Music
 - SoundCloud
 
-All service capabilities must respect each provider's APIs, licences, terms, and technical restrictions. Senna Music will not bypass DRM or platform restrictions.
+Source adapters will normalize results into one list. Authenticated browser sessions/cookies will be investigated for sources that require a signed-in session. Spotify track information may be used to resolve a matching downloadable result from another supported source; Senna Music does not claim to extract Spotify's protected audio stream.
 
-## Current status
+The shared download workflow is planned around yt-dlp and FFmpeg where supported. Torrent search is deferred.
 
-The accepted concept and unresolved decisions are maintained in the documentation:
+## Technology baseline
 
-- [Product concept and specification](docs/PRODUCT_SPECIFICATION.md)
-- [GUI concept](docs/GUI_SPECIFICATION.md)
+- Python 3.11+
+- PySide6 / Qt for the Windows desktop GUI
+- SQLite for local application data
+- yt-dlp and FFmpeg for supported source download/processing workflows
+- Mutagen for local audio metadata
+
+## Run from source (Windows)
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -e ".[dev]"
+python -m senna_music
+```
+
+## Project documentation
+
+- [Product specification](docs/PRODUCT_SPECIFICATION.md)
+- [GUI specification](docs/GUI_SPECIFICATION.md)
 - [Decision log](docs/DECISIONS.md)
 - [Open questions](docs/OPEN_QUESTIONS.md)
 - [Project status](docs/PROJECT_STATUS.md)
-- [Concept and delivery roadmap](docs/ROADMAP.md)
+- [Roadmap](docs/ROADMAP.md)
 - [Development workflow](docs/DEVELOPMENT_WORKFLOW.md)
 
-The documentation is the source of truth. If a discussion produces a new decision, update the relevant document and decision log through a small pull request.
-
-## Development principles
-
-1. Do not change accepted product decisions without the owner's approval.
-2. Do not implement features while the project is in the concept phase.
-3. Resolve open product and GUI questions before choosing implementation details that depend on them.
-4. Keep GUI and CLI as interfaces to the same Core and permission system.
-5. Prefer small, reviewable pull requests with explicit scope and acceptance criteria.
-6. Keep project status and roadmap current as decisions and work are completed.
-7. Respect provider APIs, licences, terms, DRM, and download restrictions.
-
-## Planned interfaces
-
-- **GUI:** primary graphical interface.
-- **CLI:** command interface using the same Core and permission model; intended to support future AI-agent integration.
-
-## Current milestone
-
-**M0 — Project foundation and concept definition**
-
-Establish the documentation and contribution workflow, then complete product and GUI definition. Implementation begins only after explicit approval.
+GitHub is the source of truth. Implementation is delivered in small, reviewable pull requests, with tests and documentation updated alongside each milestone.
