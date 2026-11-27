@@ -159,6 +159,8 @@ The bottom player is compact by default and can be expanded using a dedicated ex
 - Previous
 - Next
 
+Shuffle and Repeat controls are not shown in the compact player; they are available in the expanded player.
+
 The progress bar supports click and drag seeking.
 
 ### Expanded player
