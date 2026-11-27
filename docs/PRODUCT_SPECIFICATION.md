@@ -14,11 +14,9 @@ Senna Music is exclusively for music. Video is out of scope.
 
 ## 2. Music providers
 
-Initial providers: Spotify, YouTube Music, and SoundCloud.
+Initial integrated search sources: YouTube, Spotify, and SoundCloud. The YouTube source means the general YouTube service; a separate YouTube Music playback integration is not assumed.
 
-The architecture must allow additional music providers to be integrated later without changing the application's fundamental Core.
-
-Provider capabilities are subject to the provider's APIs, licences, terms, and technical restrictions. The application must not bypass DRM or provider restrictions. Playback and download support must be assessed separately for each provider and use case.
+The architecture must allow additional source adapters to be integrated later without changing the application's fundamental Core. The initial search concept does not depend on official provider APIs or OAuth. Each adapter must investigate source-specific non-API search and URL extraction, then validate technical feasibility, source terms, and applicable rights. Senna Music must not bypass DRM or access controls.
 
 ## 3. Downloads and offline playback
 
