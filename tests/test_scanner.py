@@ -2,6 +2,7 @@ from senna_music.core.storage import (
     add_library_folder,
     initialize_database,
     list_tracks,
+    remove_library_folder,
 )
 from senna_music.core.scanner import scan_library
 
@@ -57,3 +58,26 @@ def test_scan_keeps_unreadable_file_visible_and_removes_missing_index_entries(tm
     audio_file.unlink()
     assert scan_library(database) == 0
     assert list_tracks(database) == []
+
+
+def test_removing_folder_only_removes_library_index(tmp_path, monkeypatch):
+    database = tmp_path / "senna.sqlite3"
+    music = tmp_path / "Music"
+    music.mkdir()
+    audio_file = music / "keep-on-disk.ogg"
+    audio_file.write_bytes(b"audio")
+    initialize_database(database)
+    add_library_folder(music, database)
+    monkeypatch.setattr(
+        "senna_music.core.scanner.read_track_metadata",
+        lambda path: {
+            "title": path.stem, "artist": "", "album": "", "track_number": "",
+            "year": "", "genre": "", "duration": None, "scan_error": "",
+        },
+    )
+    scan_library(database)
+
+    remove_library_folder(str(music), database)
+
+    assert list_tracks(database) == []
+    assert audio_file.exists()
