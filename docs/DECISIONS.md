@@ -72,6 +72,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-065 | Playlist tracks can be manually reordered by drag and drop, and the chosen order is saved persistently. Users may also sort the displayed list by title, artist, or album without changing the saved manual order. | Accepted |
 | D-066 | Deleting a Favorites collection removes only the collection and its collection entries. Tracks remain in the main Favorites list, Local Music, and any playlists containing them; local audio files are not deleted. | Accepted |
 | D-067 | Tracks within each user-created Favorites collection can be manually reordered by drag and drop, and the chosen order is saved persistently. | Accepted |
+| D-068 | Removing a track from a user-created Favorites collection removes it only from that collection. The track remains in the main Favorites list and in every other Favorites collection that contains it; the local audio file is not deleted. | Accepted |
 
 ## Change control
 
