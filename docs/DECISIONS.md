@@ -169,6 +169,16 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-153 | Lyrics synchronisation is automatic; users do not manually adjust timing. | Accepted |
 | D-154 | When lyrics are unavailable, show a clear message and include the reason when it is known. | Accepted |
 
+
+| D-155 | Users connect supported music services through each provider's official sign-in flow, using OAuth or another provider-supported authentication method. | Accepted |
+| D-156 | Play a track inside Senna Music whenever the provider permits in-app playback under its supported capabilities and terms. | Accepted |
+| D-157 | If a provider does not permit in-app playback, offer to open the track in that provider's official service. | Accepted |
+| D-158 | When the same track is available from multiple connected services, show all available sources. | Accepted |
+| D-159 | Users can choose their preferred/main music service in Settings. | Accepted |
+| D-160 | If a service disconnects or loses connection during playback, automatically attempt to reconnect and offer a manual Retry action if reconnection fails. | Accepted |
+| D-161 | Switching playback to another available service when the current service cannot play the track requires user confirmation. | Accepted |
+| D-162 | Download a track only when the service or source officially permits downloading the audio file; never bypass provider restrictions. | Accepted |
+
 ## Change control
 
 - Do not revise an accepted decision without explicit owner approval.
