@@ -83,6 +83,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-076 | User-created Favorites collections are displayed alphabetically by collection name. | Accepted |
 | D-077 | Favorites collections do not have a dedicated search field. | Accepted |
 | D-078 | A new Favorites collection can be created either with a **New Collection** button on the Favorites page or with a **+** button beside the Favorites heading. | Accepted |
+| D-079 | Selecting either Favorites collection creation entry point opens a popup dialog with a name field and **Create** / **Cancel** actions. | Accepted |
 
 ## Change control
 
