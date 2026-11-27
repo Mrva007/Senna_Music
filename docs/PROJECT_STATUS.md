@@ -45,6 +45,7 @@
 - [x] The main Favorites list has its own persistent manual order, independent of the order in individual collections.
 - [x] The main Favorites list can be temporarily sorted by title, artist, or album without changing its saved manual order.
 - [x] Each user-created Favorites collection displays its current track count alongside its name.
+- [x] The main Favorites list does not display a total track count alongside its name.
 - [x] Removing a track from a user-created Favorites collection removes it only from that collection; it remains in the main Favorites list and all other Favorites collections containing it. The local audio file is not deleted.
 - [x] Playlist tracks can be manually reordered with Drag & Drop; the order is saved persistently. Display sorting by title, artist, or album does not change the saved manual order.
 - [x] Download quality selection confirmed: default in Settings with per-download override.
