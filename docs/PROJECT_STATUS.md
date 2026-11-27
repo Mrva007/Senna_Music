@@ -134,3 +134,15 @@ Provider-specific authentication and playback capabilities, restrictions, and ex
 - [ ] Owner decision required on Spotify and SoundCloud aggregation restrictions and YouTube Music's external-only role.
 
 Research findings are recorded in PRODUCT_SPECIFICATION.md and unresolved decisions in OPEN_QUESTIONS.md. D-155–D-162 remain the owner's general rules; this research does not override them. No provider integration or application implementation is authorized.
+
+
+## Local-first downloader and integrated search — owner decisions D-163–D-167
+
+- [x] Product direction clarified: Senna Music is primarily a local-first music downloader and player; the existing local Music Player remains in scope.
+- [x] Integrated search across YouTube, Spotify, and SoundCloud confirmed; all three are searched simultaneously by default.
+- [x] Results are combined into one compact list/table with a visible Source column and source filters.
+- [x] Each source uses its own search adapter; adapters normalize results for the shared interface and hand source URLs to the common download workflow where supported.
+- [x] yt-dlp and FFmpeg remain the planned shared download/processing tools; no replacement or new downloader engine is introduced by this decision.
+- [x] Torrent search recorded as a future extension, not an initial-version feature.
+
+Still open: source-by-source technical validation of non-API search and URL extraction, download eligibility/rights, and exact placement and interaction details. The prior official API/streaming research is retained as historical context but does not define the clarified local-first product direction. No implementation has started or been authorized.
