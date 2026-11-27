@@ -166,7 +166,7 @@ Compact player information:
 - Album
 - Favorite button
 
-The expanded player includes large cover artwork, track information, playback controls, progress bar, volume control, Shuffle / Repeat, Playback Queue access, and lyrics when available.
+The expanded player occupies the central workspace while the left navigation remains visible. Its main area includes large cover artwork, track information, playback controls, progress bar, volume control, Shuffle / Repeat, and available lyrics below the track information. Playback Queue is displayed in a dedicated, always-visible right-side column within the expanded player and supports track reordering.
 
 Controls:
 - Play / Pause
