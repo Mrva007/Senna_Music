@@ -110,3 +110,16 @@ Continue with the remaining unresolved GUI visual details (exact dimensions, spe
 - [x] Expanded Music Player layout confirmed: it occupies the central workspace while the left navigation remains visible.
 - [x] Playback Queue confirmed as an always-visible right-side column inside the expanded player, with track reordering.
 - [x] Lyrics behaviour confirmed: best available source, synchronised-first with plain-text fallback, preferred language and manual selection, manual scrolling with automatic timing, no manual offset, and a clear unavailable-state message.
+
+
+## Newly confirmed provider decisions — D-155–D-162
+
+- [x] Official provider sign-in (OAuth or another supported authentication method) confirmed.
+- [x] In-app playback when permitted; otherwise offer to open the track in the official provider confirmed.
+- [x] Show all available sources when the same track exists on multiple services confirmed.
+- [x] Preferred/main service selectable in Settings confirmed.
+- [x] Automatic reconnection with a Retry option if reconnection fails confirmed.
+- [x] Switching to another service requires user confirmation confirmed.
+- [x] Downloads allowed only when the provider/source officially permits downloading the audio file confirmed.
+
+Provider-specific authentication and playback capabilities, restrictions, and exact download availability remain open for verification. No application implementation has been started or authorized.
