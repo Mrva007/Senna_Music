@@ -23,7 +23,8 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define handling of damaged/unreadable files: keep them visible with a red error indicator beside the track name, with Retry and Details actions.
 - [ ] Define exact quality/bitrate levels and provider-specific download capabilities.
 - [x] Define Download Queue persistence and restart recovery: preserve waiting tasks across restarts and resume interrupted active downloads from the last safely saved position when technically supported.
-- [ ] Define remaining playlist and Favorites interactions beyond the accepted safe track-removal and playlist-deletion rules.
+- [x] Define playlist track removal, safe playlist deletion, Favorites removal, persistent manual playlist ordering, and temporary display sorting.
+- [ ] Define remaining playlist and Favorites collection-management interactions.
 - [ ] Define CLI and future AI-agent integration.
 - [ ] Define settings and system functions.
 - [ ] Review concept completeness and obtain explicit owner approval to begin implementation.
