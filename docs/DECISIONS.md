@@ -105,6 +105,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-096 | Each playlist displays its current track count alongside its name. | Accepted |
 | D-097 | Playlist Rename and Delete actions are available through both the three-dot menu and the right-click context menu. | Accepted |
 | D-098 | Deleting a playlist always requires confirmation before the playlist and its entries are deleted. | Accepted |
+| D-099 | The playlist list itself remains alphabetically ordered by playlist name; users cannot manually reorder playlists. This does not affect the separately accepted manual ordering of tracks inside each playlist. | Accepted |
 
 ## Change control
 
