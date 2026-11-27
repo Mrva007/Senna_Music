@@ -58,6 +58,7 @@
 - [x] Favorites collection-name uniqueness is case-insensitive; names such as `Rock` and `rock` are duplicates.
 - [x] Leading and trailing whitespace is trimmed from a Favorites collection name before validation and duplicate comparison; ` Rock ` is normalized to `Rock`.
 - [x] Multiple consecutive spaces between words in a Favorites collection name are preserved as entered; they are not collapsed into one space.
+- [x] A duplicate Favorites collection-name validation message appears directly below the name field inside the creation popup.
 - [x] Removing a track from a user-created Favorites collection removes it only from that collection; it remains in the main Favorites list and all other Favorites collections containing it. The local audio file is not deleted.
 - [x] Playlist tracks can be manually reordered with Drag & Drop; the order is saved persistently. Display sorting by title, artist, or album does not change the saved manual order.
 - [x] Download quality selection confirmed: default in Settings with per-download override.
