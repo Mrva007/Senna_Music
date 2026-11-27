@@ -119,6 +119,8 @@ A command interface for controlling the application and supporting future AI-age
 
 Both interfaces use the same Core and the same permission system. There must not be two independent permission systems. Keyboard shortcuts cover playback (Play/Pause, Previous, Next), focusing Search, navigation between main pages, volume/Mute, and displaying/managing Playback Queue. Users can customize shortcuts through Settings; shortcuts are discoverable both in Settings and in relevant menus/tooltips beside the associated functions. Empty pages or sections show a message with a clear next-action button. Loading states use Skeleton and Spinner indicators, with a Progress Bar when progress is known.
 
+Shared visual system: use consistent outline icons for normal navigation items and filled icons for active items; a modern neutral sans-serif font with standard 14–15 px text and clear typographic hierarchy; balanced spacing; slightly rounded corners; subtle borders without shadows; and short, subtle animations. Navigation automatically collapses according to the space required by content. Exact dimensions, icon asset selection, detailed visual tokens, and precise responsive thresholds remain open.
+
 CLI commands, API contracts, and permission details remain open.
 
 ## 9. User profiles
