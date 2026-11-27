@@ -8,9 +8,10 @@
 ## Current GitHub state
 
 - PR #15 (desktop foundation) is merged into `main`.
+- PR #15 tests passed (2/2), but its Ruff step failed on three SIM117 transaction-context findings and one I001 import-order finding.
+- PR #16 fixes those inherited lint findings and adds the first Local Music scanning milestone.
 - Current implementation branch: `feature/local-music-library-scan`.
-- The current PR work adds recursive audio scanning, metadata extraction, persistent track indexing, and the first Local Music track table.
-- CI verification for the current work is pending; do not treat it as passed until GitHub reports the result.
+- PR #16 CI must be green before merge.
 
 ## Working foundation
 
@@ -24,8 +25,8 @@
 
 ## Implementation sequence
 
-1. Desktop foundation: merged — application entry point, navigation shell, SQLite persistence, and CI workflow.
-2. Local Music: folder registration is implemented; recursive scanning, metadata, persistent track indexing, and track-list UI are in the current PR. Folder monitoring, artwork, track details, and local playback remain.
+1. Desktop foundation: merged — application entry point, navigation shell, SQLite persistence, and CI workflow. Its first CI run passed tests but failed Ruff; the lint findings are corrected in PR #16.
+2. Local Music: folder registration is implemented; recursive scanning, metadata, persistent track indexing, automatic startup scan, and track-list UI are in PR #16. Folder monitoring, artwork, track details, and local playback remain.
 3. Search: YouTube, Spotify, and SoundCloud adapters; source settings; session/cookie support where needed.
 4. Downloads: yt-dlp/FFmpeg integration, unified queue, progress, pause/resume, duplicate handling, and file organization.
 5. Library features: playlists, favorites, player queue, lyrics, and remaining accepted interactions.
@@ -34,8 +35,8 @@
 ## Current verification
 
 - Windows GitHub Actions workflow runs pytest and Ruff for pull requests and pushes to main.
-- PR #15 merged; its workflow result was not returned by the available status query.
-- Current Local Music branch requires its own CI result before merge.
+- PR #15: pytest passed (2 tests); Ruff failed with 4 findings.
+- PR #16: CI is the required verification gate; do not merge until both pytest and Ruff pass.
 - The application is an early development build, not yet the complete first release.
 
 ## Deferred beyond the first testable build
