@@ -8,7 +8,11 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Record current accepted product decisions.
 - [x] Record open questions and development workflow.
 - [x] Define primary GUI structure: navigation/page inventory, track lists, compact and expanded player, and Download Queue.
-- [ ] Complete remaining GUI details, including exact dimensions and unresolved visual/interaction behaviour.
+- [ ] Complete remaining GUI details: exact dimensions, icon set, visual tokens, responsive breakpoints, and unresolved interaction behaviour.
+- [x] Confirm modern minimalist visual direction, Windows-following initial theme, and Dark / Light / Automatic theme choices.
+- [x] Confirm manual and automatic left-navigation collapse, Settings in the central workspace, and whole-layout responsiveness.
+- [x] Confirm general confirmation dialogs, brief notifications plus history panel, Connected Services list presentation, and automatic reconnection with manual Retry.
+- [x] Confirm compact-player artwork/title clicks do not expand the player; only the dedicated expand button does.
 - [x] Define expanded Music Player layout: central workspace with navigation retained, always-visible Playback Queue in a right-side column, and lyrics below track information when available.
 - [x] Define compact Music Player controls: Play / Pause, Previous, and Next alongside track information and artwork.
 - [x] Confirm Shuffle and Repeat controls are available only in the expanded Music Player, not the compact player.
