@@ -42,7 +42,7 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define temporary playlist sort-selection lifetime without changing saved manual order.
 - [x] Define playlist-list alphabetical ordering and per-playlist track counts.
 - [x] Define playlist Rename/Delete access through three-dot and right-click menus, with mandatory delete confirmation.
-- [ ] Decide whether users can manually reorder the playlist list.
+- [x] Confirm playlist list remains alphabetical with no manual reordering (D-099).
 - [ ] Define CLI and future AI-agent integration.
 - [ ] Define settings and system functions.
 - [ ] Review concept completeness and obtain explicit owner approval to begin implementation.
@@ -77,3 +77,4 @@ A task is complete only when:
 - [x] Define immediate clearing of duplicate-name validation when the user edits the name to a non-duplicate.
 - [x] Define playlist creation/rename validation, Add to Playlist flows, empty-playlist state, and temporary sort-selection lifetime (D-087–D-094).
 - [x] Define alphabetical playlist display, per-playlist track counts, Rename/Delete menu access, and delete confirmation (D-095–D-098).
+- [x] Confirm that the playlist list itself cannot be manually reordered (D-099).
