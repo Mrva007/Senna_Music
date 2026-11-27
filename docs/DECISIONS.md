@@ -86,6 +86,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-079 | Selecting either Favorites collection creation entry point opens a popup dialog with a name field and **Create** / **Cancel** actions. | Accepted |
 | D-080 | Favorites collection names must be unique. If a user tries to create a collection with a name that already exists, creation is blocked and the application displays a message that the name already exists. | Accepted |
 | D-081 | The Create button in the Favorites collection popup remains disabled until the name field contains a non-empty name; an empty or whitespace-only value is not valid. | Accepted |
+| D-082 | Favorites collection names are compared without regard to letter case; names such as `Rock` and `rock` are duplicates, and creation is blocked. | Accepted |
 
 ## Change control
 
