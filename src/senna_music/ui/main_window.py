@@ -228,6 +228,7 @@ class MainWindow(QMainWindow):
                 row_layout.addWidget(toggle)
                 row_layout.addWidget(status)
                 layout.addWidget(row)
+
             layout.addStretch(1)
 
         elif name == "Settings":
