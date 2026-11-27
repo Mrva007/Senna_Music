@@ -93,15 +93,24 @@ def list_library_folders(path: str | Path | None = None) -> list[str]:
     return [str(row["path"]) for row in rows]
 
 
+def _is_within(candidate: Path, root: Path) -> bool:
+    resolved_candidate = candidate.resolve()
+    resolved_root = root.resolve()
+    return resolved_candidate == resolved_root or resolved_root in resolved_candidate.parents
+
+
 def remove_library_folder(folder: str, path: str | Path | None = None) -> None:
-    normalized = str(Path(folder).expanduser().resolve())
+    root = Path(folder).expanduser().resolve()
     with closing(connect(path)) as connection:
         with connection:
-            connection.execute("DELETE FROM library_folders WHERE path = ?", (normalized,))
-            connection.execute(
-                "DELETE FROM tracks WHERE path = ? OR path LIKE ?",
-                (normalized, normalized.rstrip("\\\\/") + "/%"),
-            )
+            connection.execute("DELETE FROM library_folders WHERE path = ?", (str(root),))
+            rows = connection.execute("SELECT path FROM tracks").fetchall()
+            stale = [
+                str(row["path"])
+                for row in rows
+                if _is_within(Path(str(row["path"])), root)
+            ]
+            connection.executemany("DELETE FROM tracks WHERE path = ?", [(item,) for item in stale])
 
 
 def save_track(track: dict[str, Any], path: str | Path | None = None) -> None:
@@ -139,12 +148,13 @@ def list_tracks(path: str | Path | None = None) -> list[dict[str, Any]]:
 
 def remove_missing_tracks(root: str | Path, found_paths: set[str],
                           path: str | Path | None = None) -> None:
-    root_path = str(Path(root).resolve())
-    prefix = root_path.rstrip("\\\\/") + "/"
+    root_path = Path(root).resolve()
     with closing(connect(path)) as connection:
         with connection:
-            rows = connection.execute(
-                "SELECT path FROM tracks WHERE path = ? OR path LIKE ?", (root_path, prefix + "%")
-            ).fetchall()
-            stale = [str(row["path"]) for row in rows if str(row["path"]) not in found_paths]
+            rows = connection.execute("SELECT path FROM tracks").fetchall()
+            stale = []
+            for row in rows:
+                track_path = Path(str(row["path"])).resolve()
+                if _is_within(track_path, root_path) and str(track_path) not in found_paths:
+                    stale.append(str(row["path"]))
             connection.executemany("DELETE FROM tracks WHERE path = ?", [(item,) for item in stale])
