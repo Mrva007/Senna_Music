@@ -17,6 +17,10 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Confirm empty-state message/action pattern and Skeleton/Spinner/known-progress loading indicators.
 - [x] Confirm retained search history with a clear-history option.
 - [x] Confirm keyboard shortcut groups for playback, Search focus, main-page navigation, volume/Mute, and Playback Queue.
+- [x] Confirm narrow-window navigation collapse, hover tooltips, and active navigation styling.
+- [x] Confirm adaptive compact-player information and conditional central page titles.
+- [x] Confirm responsive Grid card sizing and search-history dropdown/immediate clearing.
+- [x] Confirm customizable keyboard shortcuts and their discoverability in Settings and relevant menus/tooltips.
 - [x] Confirm general confirmation dialogs, brief notifications plus history panel, Connected Services list presentation, and automatic reconnection with manual Retry.
 - [x] Confirm compact-player artwork/title clicks do not expand the player; only the dedicated expand button does.
 - [x] Define expanded Music Player layout: central workspace with navigation retained, always-visible Playback Queue in a right-side column, and lyrics below track information when available.
