@@ -1,35 +1,28 @@
 # Senna Music — Open Questions
 
-Only unresolved topics are listed here. An item becomes accepted only after the owner explicitly confirms a decision and the documentation is updated.
+Only implementation details that are genuinely unresolved remain here. Accepted product behaviour is recorded in DECISIONS.md and the relevant specifications. Do not reopen accepted decisions.
 
 | # | Topic | Status | Notes |
 |---:|---|---|---|
-| 1 | Exact dimensions and remaining visual details of the GUI shell | Partially resolved | Modern minimalist style, Windows-following initial theme, Dark/Light/Automatic choices, fixed-width navigation (with manual and automatic collapse), page-specific central layouts, standard track-list density, sticky column headers, Grid/List switching for Artists/Albums/Folders, album-card contents, empty states, loading indicators, search-history clearing, keyboard-shortcut groups, and general window-responsive layout are accepted. Exact dimensions, the specific icon set, detailed visual tokens, and precise responsive breakpoints remain open. The icon treatment (outline normally, filled when active), consistent icon style, neutral sans-serif typography (14–15 px), clear typographic hierarchy, balanced spacing, slightly rounded corners, subtle borders without shadows, short subtle animations, and content-driven automatic navigation collapse are accepted. Narrow-window navigation collapse, tooltip labels, active-item styling, compact-player adaptation, conditional page titles, and responsive Grid card counts are accepted. |
-| 2 | Source access and session requirements | Open — technical research required | The initial search does not assume official APIs or OAuth. Determine whether any source requires user-managed browser sessions/cookies or other access steps, and define safe handling without storing or exposing credentials unnecessarily. |
-| 3 | Local playback and optional online playback scope | Reframed | The Music Player remains in scope for local music and downloaded files. Online provider streaming is not part of the primary product direction; do not design provider streaming integrations unless the owner explicitly reintroduces that scope. |
-| 4 | Separate offline storage and retention | Resolved / Not applicable | There is no separate offline copy or offline storage lifecycle. Offline playback uses the same downloaded local files. Provider-specific download eligibility and rights remain governed by provider capabilities and terms. |
-| 5 | Audio quality and bitrate selection | Partially resolved | Default quality is configured in Settings, with per-download override. Exact quality/bitrate levels and provider-specific availability remain open. |
-| 6 | Download Queue persistence and restart recovery | Resolved | Preserve the queue across restarts. Waiting tasks remain queued; an interrupted active download resumes from its last safely saved position when the provider/source technically supports resuming. |
-| 7 | Duplicate handling and files already present on disk | Resolved | Existing target files are skipped; no overwrite. |
-| 8 | CLI commands and AI-agent API | Open | Same Core and permission system as GUI. |
-| 9 | Application updates and integration/update mechanism | Open | |
-| 10 | Backup and recovery of application data | Open | |
-| 11 | Technology and architecture | Open | Decide after product and GUI requirements are sufficiently defined. |
-| 12 | Installation and distribution | Open | |
-| 13 | Detailed Local Music operations | Partially resolved | User manually adds folders through a selection flow with an explicit Confirm action; scanning is recursive through all subfolders, runs at startup, and continues automatically in the background while the app is open. Newly discovered music files are added automatically. Entries for moved/deleted files are removed from the library without touching disk files. Supported formats are MP3, M4A, FLAC, WAV, and OGG. Metadata editing is defined: basic fields (title, artist, album, track number, year, genre), explicit Save / Cancel, bulk editing, and direct writing to the original file without automatic backup where supported. Damaged/unreadable files remain visible with a red error indicator beside the track name. Retry and Details actions are available. |
-| 14 | Detailed playlist and Favorites interactions | Resolved | Playlist creation/rename dialogs, case-insensitive unique names, duplicate-name feedback and immediate clearing, Add to Playlist via right-click and three-dot menus, multi-select add/create flow, empty-playlist state, temporary-sort selection lifetime, alphabetical playlist display with no manual reordering, per-playlist track counts, Rename/Delete access through both menus, and mandatory delete confirmation are resolved. Playlist track removal, safe deletion, persistent manual track order, and temporary sorting without changing saved order are resolved. Favorites behaviour is documented, including creation/validation, rename, deletion, ordering, counts, and track-removal rules. |
-| 15 | Lyrics availability and technical behaviour | Resolved | Lyrics appear below track information in the expanded player. Use the best available source; prefer synchronised lyrics and automatically fall back to plain lyrics. Preferred language is configured in Settings with manual language selection. Translations are deferred beyond the first-version priority. Synchronised lyrics follow the current line while allowing manual scrolling; timing is automatic with no manual offset. If lyrics are unavailable, show a clear message and the reason when known. Exact provider integrations remain subject to provider capabilities and terms. |
-| 16 | Provider-specific streaming and API playback behaviour | Reframed — not part of the primary product direction | Earlier research concerned an online multi-provider streaming/player model. The owner clarified that Senna Music is primarily a local downloader and player. The existing local Music Player remains in scope. Do not treat the old streaming assumptions as the product's defining requirement; any optional provider playback must be reconsidered separately before implementation. |
-| 17 | Source-by-source feasibility of integrated web search and URL extraction | Open — technical research required | The owner approved simultaneous search across YouTube, Spotify, and SoundCloud using separate source adapters and a unified result list. Validate a non-API/page-based approach for each source, including technical reliability, source terms, rights, and whether a result can be passed to yt-dlp. Do not assume that search access implies download permission. |
-| 18 | Download eligibility and behaviour for each initial source | Open — technical and rights validation required | Confirm what yt-dlp can technically process for each source and which content may lawfully be downloaded. No DRM circumvention, access-control bypass, or unsupported claim of permission. |
-
-| 19 | Torrent search extension | Planned for a later phase | Not part of the initial version. Design the source-adapter architecture so a torrent search adapter can be added later; define lawful-content and safety requirements before that work begins. |
-| 20 | Placement and detailed interaction of integrated music search | Open — GUI detail | The unified search concept and list presentation are accepted. Exact placement/entry point and detailed row interaction states remain to be specified without reopening the accepted search behaviour. |
+| 1 | YouTube and Spotify authenticated-session mechanism | Technical implementation | User sign-in/session support is accepted. Select the most reliable practical browser-cookie/session handoff or supported login flow. Never store account passwords in plaintext. |
+| 2 | Source-specific search and download adapters | Technical validation | Implement and test YouTube, Spotify track lookup/matching, and SoundCloud independently. Verify search reliability, URL extraction, authentication needs, and which results can be processed by the shared downloader. |
+| 3 | Spotify matching and alternative resolution | Technical validation | Determine the best Python-based resolver workflow for matching Spotify title/artist metadata to a corresponding result on another supported source. Preserve the actual download-source label and separate source records. |
+| 4 | Exact download quality/bitrate levels | Product detail | Default quality is configured in Settings. There is no per-download quality override. Define the available quality levels and source-specific limits during download implementation. |
+| 5 | Remaining GUI visual details | Deferred polish | Exact dimensions, icon assets, and precise responsive breakpoints are not blockers for the first working build. |
+| 6 | In-app source-link browser behaviour | Implementation detail | The accepted behaviour allows opening a source link externally or inside the app. Choose a practical implementation that does not block the first release. |
+| 7 | Lyrics provider integrations | Later implementation | Lyrics behaviour is defined; select and validate actual providers and availability during the player milestone. |
+| 8 | CLI command surface | Deferred | CLI must use the same Core and permission system. Define commands after the main GUI workflows are working. |
+| 9 | Windows packaging and distribution | V1 release task | Choose a repeatable packaging method and produce an installable/testable Windows build. |
+| 10 | Backup and recovery | Deferred | Define backup scope and restore workflow after the core local data model is stable. |
+| 11 | Automatic updates | Deferred | Choose an update mechanism after the first testable Windows release. |
+| 12 | Search-history item actions | Deferred detail | Last 20 queries and immediate Clear History behaviour are accepted. Individual history-item deletion and click behaviour can be finalized during implementation if needed. |
 
 ## Resolution rule
 
 When an item is resolved:
-1. Record the approved decision in [DECISIONS.md](DECISIONS.md).
+1. Record the decision in [DECISIONS.md](DECISIONS.md).
 2. Update the relevant specification.
 3. Update [PROJECT_STATUS.md](PROJECT_STATUS.md).
-4. Remove or mark the item resolved here, without losing useful history.
+4. Remove or mark the item resolved here.
+
+Do not create a new document when an existing specification can be updated.
