@@ -1,10 +1,10 @@
+from senna_music.core.scanner import scan_library
 from senna_music.core.storage import (
     add_library_folder,
     initialize_database,
     list_tracks,
     remove_library_folder,
 )
-from senna_music.core.scanner import scan_library
 
 
 def test_scan_recursively_indexes_supported_audio_and_ignores_other_files(tmp_path, monkeypatch):
