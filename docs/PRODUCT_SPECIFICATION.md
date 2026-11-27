@@ -52,7 +52,7 @@ The selected GUI direction is the simple option B:
 - Music player at the bottom.
 - No unnecessary recommendation or decorative sections.
 
-Senna Music uses the shared GUI structure intended for future applications: a left navigation menu and a central workspace. The structure is consistent across applications; application-specific content appears in the central workspace. Exact dimensions remain open.
+Senna Music uses the shared GUI structure intended for future applications: a left navigation menu and a central workspace. The structure is consistent across applications; application-specific content appears in the central workspace. Exact dimensions remain open. The left navigation has a fixed width and cannot be resized by dragging its edge. Central workspace layout is page-specific. Artists, Albums, and Folders views support switching between Grid and List. Album cards show artwork, album name, artist, and year.
 
 Accepted left-navigation order:
 1. Home
@@ -69,7 +69,7 @@ There is no separate Search navigation item; search is available from Home.
 
 Home places the shared search at the top, followed by Recently Played, Playlists, and Local Music sections stacked vertically. Sections with no data are hidden.
 
-One shared search covers music from connected/supported online providers and Local Music. Results identify their source and can be filtered by source (All Sources, Spotify, YouTube Music, SoundCloud, or Local Music). Results use a list layout with track name, artist, album, and source.
+One shared search covers music from connected/supported online providers and Local Music. Results identify their source and can be filtered by source (All Sources, Spotify, YouTube Music, SoundCloud, or Local Music). Results use a list layout with track name, artist, album, and source. Previous searches are retained and users can clear the search history.
 
 ## 6. Local music collection
 
@@ -84,7 +84,7 @@ Local Music supports MP3, M4A, FLAC, WAV, and OGG files. Senna Music reads suppo
 
 ## 7. Track lists, actions, and Favorites
 
-The standard track list shows Track name, Artist, Album, Duration, and Source, with a small cover-art thumbnail for each track. Clicking a column heading changes sort direction.
+The standard track list shows Track name, Artist, Album, Duration, and Source, with a small cover-art thumbnail for each track. Clicking a column heading changes sort direction. Track lists use standard, balanced row density, and column headers remain visible while scrolling long lists.
 
 A single click on a track starts playback. Multiple tracks can be selected using Ctrl/Shift-click.
 
@@ -117,7 +117,7 @@ The standard graphical interface.
 ### CLI
 A command interface for controlling the application and supporting future AI-agent integration. Intended operations include search, playback, downloads, and task monitoring, subject to permissions.
 
-Both interfaces use the same Core and the same permission system. There must not be two independent permission systems.
+Both interfaces use the same Core and the same permission system. There must not be two independent permission systems. Keyboard shortcuts cover playback (Play/Pause, Previous, Next), focusing Search, navigation between main pages, volume/Mute, and displaying/managing Playback Queue. Empty pages or sections show a message with a clear next-action button. Loading states use Skeleton and Spinner indicators, with a Progress Bar when progress is known.
 
 CLI commands, API contracts, and permission details remain open.
 
