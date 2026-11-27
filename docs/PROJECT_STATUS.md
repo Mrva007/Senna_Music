@@ -93,7 +93,7 @@ These are intentionally not started. Do not create application implementation un
 
 ## Next action
 
-Continue with the remaining unresolved GUI visual details (exact dimensions, specific icon assets, detailed visual tokens, and precise responsive thresholds). Then resolve lyrics behaviour, provider-specific playback and download capabilities, and exact audio quality / bitrate levels. Next, define provider authentication/account setup, CLI and AI-agent integration, settings/system functions, updates, backup/recovery, and installation/distribution. Do not revisit accepted decisions unless the owner requests a change.
+Continue with the remaining unresolved GUI visual details (exact dimensions, specific icon assets, detailed visual tokens, and precise responsive thresholds). Then resolve provider-specific playback and download capabilities and exact audio quality / bitrate levels. Next, define provider authentication/account setup, CLI and AI-agent integration, settings/system functions, updates, backup/recovery, and installation/distribution. Do not revisit accepted decisions unless the owner requests a change.
 
 - [x] Duplicate-name validation message clears immediately when the entered collection name is changed to a non-duplicate.
 - [x] Playlist creation and rename popup, case-insensitive unique names, and duplicate-name validation behaviour confirmed.
@@ -109,4 +109,4 @@ Continue with the remaining unresolved GUI visual details (exact dimensions, spe
 
 - [x] Expanded Music Player layout confirmed: it occupies the central workspace while the left navigation remains visible.
 - [x] Playback Queue confirmed as an always-visible right-side column inside the expanded player, with track reordering.
-- [x] Available lyrics confirmed to appear below track information in the expanded player; source, synchronisation, and fallback remain open.
+- [x] Lyrics behaviour confirmed: best available source, synchronised-first with plain-text fallback, preferred language and manual selection, manual scrolling with automatic timing, no manual offset, and a clear unavailable-state message.
