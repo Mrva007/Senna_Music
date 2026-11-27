@@ -175,6 +175,11 @@ The main player area contains:
 - Volume control
 - Shuffle / Repeat
 - Lyrics below the track information, when available
+- Prefer the best available lyrics source. Use synchronised lyrics when available; otherwise automatically show plain lyrics.
+- The user sets a preferred lyrics language in Settings and can manually change the language.
+- Translated lyrics are deferred and are not a first-version priority.
+- During playback, synchronised lyrics follow the current line, but manual scrolling remains available. Synchronisation is automatic and cannot be manually offset.
+- If lyrics are unavailable, show a clear message and the reason when known.
 
 Playback Queue is displayed in a dedicated right-side column within the expanded player and remains visible. The queue supports reordering tracks.
 
@@ -254,7 +259,7 @@ The following must not be treated as accepted design decisions:
 - Remaining playlist presentation and management details not yet specified.
 - Exact download quality/bitrate levels and provider-specific download restrictions. The unified local download and offline-playback model is accepted.
 - Additional dialog and notification details beyond the accepted general confirmation popup and brief-message / notification-history pattern.
-- Lyrics availability, source, synchronisation, and fallback behaviour; presentation is accepted as below the track information in the expanded player.
+- Exact lyrics-provider integrations and their individual availability/rights remain subject to provider capabilities and terms.
 
 ## 10. Working rule
 
