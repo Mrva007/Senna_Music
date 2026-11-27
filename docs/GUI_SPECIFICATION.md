@@ -160,18 +160,20 @@ The progress bar supports click and drag seeking.
 
 ### Expanded player
 
-The expanded player contains:
+The expanded player occupies the central workspace; the left navigation remains visible.
 
+The main player area contains:
 - Large cover artwork
 - Track information
 - Playback controls
 - Progress bar
 - Volume control
 - Shuffle / Repeat
-- Playback Queue access
-- Lyrics, when available
+- Lyrics below the track information, when available
 
-The expanded player does not currently include a separately accepted Track Details section.
+Playback Queue is displayed in a dedicated right-side column within the expanded player and remains visible. The queue supports reordering tracks.
+
+The expanded player does not include a separately accepted Track Details section.
 
 Controls:
 
@@ -199,7 +201,7 @@ The following must not be treated as accepted design decisions:
 - Remaining playlist presentation and management details not yet specified.
 - Exact download quality/bitrate levels and provider-specific download restrictions. The unified local download and offline-playback model is accepted.
 - General dialogs and notifications beyond the already-defined damaged-file error state.
-- Detailed lyrics availability and display behaviour.
+- Lyrics availability, source, synchronisation, and fallback behaviour; presentation is accepted as below the track information in the expanded player.
 
 ## 9. Working rule
 
