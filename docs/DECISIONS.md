@@ -78,6 +78,8 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-071 | Each user-created Favorites collection displays its current track count alongside its name. | Accepted |
 | D-072 | The main Favorites list does not display a total track count alongside its name. | Accepted |
 | D-073 | Users can rename a user-created Favorites collection after it has been created. Renaming changes only the collection name; its tracks and saved order remain unchanged. | Accepted |
+| D-074 | User-created Favorites collections do not support custom cover images. | Accepted |
+| D-075 | A user-created Favorites collection can be deleted either from its three-dot menu or by right-clicking the collection; both actions require confirmation. Deletion removes only the collection and its entries, not tracks or local audio files elsewhere. | Accepted |
 
 ## Change control
 
