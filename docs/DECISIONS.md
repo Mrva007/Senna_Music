@@ -179,6 +179,12 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-161 | Switching playback to another available service when the current service cannot play the track requires user confirmation. | Accepted |
 | D-162 | Download a track only when the service or source officially permits downloading the audio file; never bypass provider restrictions. | Accepted |
 
+| D-163 | Senna Music's primary purpose is a local-first music downloader and player: users discover music from supported sources, download audio files where the source and applicable rights permit it, store those files on their own computer, and play their local music in Senna Music. Online streaming is not the defining purpose of the product. | Accepted |
+| D-164 | The integrated music search queries YouTube, Spotify, and SoundCloud simultaneously by default and combines their results in one list. Users can filter results by source. | Accepted |
+| D-165 | Each initial search source has its own source-specific search adapter to handle its individual search behaviour and result/link extraction. The adapters feed a common result format; a shared downloader engine is used where technically supported. | Accepted |
+| D-166 | Search results show track/title, artist, album where available, and a clearly visible Source column. Results use a compact list/table layout rather than large preview cards. Each eligible result provides a Download action that passes its source URL to the local download workflow. | Accepted |
+| D-167 | Torrent search is a planned future extension, not part of the initial search-source scope. The source-adapter architecture should allow it to be added later. Torrent use must respect applicable rights and law. | Accepted — future scope |
+
 ## Change control
 
 - Do not revise an accepted decision without explicit owner approval.
