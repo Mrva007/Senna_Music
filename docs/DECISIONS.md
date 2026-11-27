@@ -149,6 +149,17 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-135 | Users can customize keyboard shortcuts through Settings. | Accepted |
 | D-136 | Keyboard shortcuts are discoverable both in Settings and in relevant menus/tooltips beside the associated functions. | Accepted |
 
+| D-137 | Navigation icons use a combination: outline icons for normal items and filled icons for active items. | Accepted |
+| D-138 | Icon style is consistent throughout the application. | Accepted |
+| D-139 | The application uses a modern, neutral sans-serif font. | Accepted |
+| D-140 | Standard text size is 14–15 px. | Accepted |
+| D-141 | Typography uses a clear hierarchy of sizes and weights for headings and content. | Accepted |
+| D-142 | Spacing uses a standard, balanced layout density. | Accepted |
+| D-143 | UI elements use slightly rounded corners. | Accepted |
+| D-144 | Surfaces and components use subtle borders without shadows. | Accepted |
+| D-145 | UI animations are short and subtle. | Accepted |
+| D-146 | Navigation automatically collapses according to the space required by the content. | Accepted |
+
 ## Change control
 
 - Do not revise an accepted decision without explicit owner approval.
