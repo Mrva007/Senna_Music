@@ -232,6 +232,17 @@ Clicking the compact player's cover artwork or track name does not open the expa
 - Search history appears as a dropdown below the shared search field and can be cleared immediately without an additional confirmation prompt.
 - Keyboard shortcuts are customizable through Settings and are discoverable both there and in relevant menus/tooltips beside associated functions.
 
+### Visual design system
+
+- Navigation icons use outline styling for normal items and filled styling for active items.
+- Use one consistent icon style throughout the application.
+- Typography uses a modern, neutral sans-serif font, with a standard text size of 14–15 px and a clear hierarchy of heading/content sizes and weights.
+- Use standard, balanced spacing.
+- UI elements have slightly rounded corners.
+- Use subtle borders and no drop shadows.
+- Animations are short and subtle.
+- Navigation automatically collapses according to the space required by the content; the exact responsive thresholds remain open.
+
 ## 10. Not yet decided
 
 The following must not be treated as accepted design decisions:
