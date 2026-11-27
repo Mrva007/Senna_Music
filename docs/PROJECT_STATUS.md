@@ -96,3 +96,7 @@ Continue defining remaining GUI details and product questions, including exact q
 - [x] Playlist deletion always requires a confirmation prompt.
 - [x] Playlist list ordering finalized: playlists remain alphabetical and cannot be manually reordered; track ordering within each playlist remains independently manual.
 - [x] Local Music folder-selection flow includes an explicit **Confirm** action.
+
+- [x] Expanded Music Player layout confirmed: it occupies the central workspace while the left navigation remains visible.
+- [x] Playback Queue confirmed as an always-visible right-side column inside the expanded player, with track reordering.
+- [x] Available lyrics confirmed to appear below track information in the expanded player; source, synchronisation, and fallback remain open.
