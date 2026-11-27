@@ -29,6 +29,7 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define Favorites collection display order (alphabetical by name) and confirm that no dedicated collection-search field is provided.
 - [x] Define both Favorites collection creation entry points: **New Collection** on the Favorites page and **+** beside the Favorites heading.
 - [x] Define the collection creation dialog: name field with **Create** and **Cancel** actions.
+- [x] Define duplicate Favorites collection-name handling: reject an existing name and display a message.
 - [ ] Define remaining playlist and Favorites collection-management interactions.
 - [ ] Define CLI and future AI-agent integration.
 - [ ] Define settings and system functions.
