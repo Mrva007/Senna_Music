@@ -92,6 +92,15 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-085 | When a duplicate Favorites collection name is entered, the validation message is displayed directly below the name field inside the creation popup. | Accepted |
 | D-086 | The duplicate-name validation message disappears immediately when the user edits the collection name so that it is no longer a duplicate. | Accepted |
 
+| D-087 | Creating a playlist opens a popup dialog with a playlist-name field and **Create** / **Cancel** actions, following the accepted Favorites collection creation-dialog pattern. | Accepted |
+| D-088 | Playlist names must be unique; duplicate comparison is case-insensitive. | Accepted |
+| D-089 | When a duplicate playlist name is entered, the validation message appears below the name field and clears immediately when the user edits the name to a non-duplicate. | Accepted |
+| D-090 | Renaming a playlist uses the same popup and name-validation rules as playlist creation. | Accepted |
+| D-091 | Tracks can be added to a playlist from either the right-click context menu or the row's three-dot menu using **Add to Playlist**. | Accepted |
+| D-092 | When multiple tracks are selected, the user can add them to an existing playlist or create a new playlist within the same flow, without leaving the add-to-playlist process. | Accepted |
+| D-093 | An empty playlist remains visible and displays a message that it has no tracks yet, together with an option to add tracks. | Accepted |
+| D-094 | A playlist's temporary sort selection is remembered only while that playlist remains open; temporary sorting never changes its saved manual order. | Accepted |
+
 ## Change control
 
 - Do not revise an accepted decision without explicit owner approval.
