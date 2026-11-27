@@ -137,6 +137,18 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-125 | Senna Music retains previous searches and provides a way to clear the search history. | Accepted |
 | D-126 | Keyboard shortcuts cover playback (Play/Pause, Previous, Next), focusing Search, navigation between main pages, volume/Mute, and displaying/managing Playback Queue. | Accepted |
 
+
+| D-127 | When the application window becomes very narrow, the left navigation automatically collapses to icons. | Accepted |
+| D-128 | In the collapsed icon-only navigation, hovering over an item displays its name in a tooltip. | Accepted |
+| D-129 | The active navigation item is indicated by both a changed background and a coloured line along its left edge. | Accepted |
+| D-130 | In a narrow application window, the bottom player reduces the amount of displayed information while retaining its essential playback controls. | Accepted |
+| D-131 | A central-workspace page title is displayed only when needed; it is not mandatory on every page. | Accepted |
+| D-132 | Grid card sizing is responsive: the number of cards per row adjusts automatically to the available workspace width. | Accepted |
+| D-133 | Search history appears as a dropdown below the shared search field. | Accepted |
+| D-134 | Search history can be cleared immediately without an additional confirmation prompt. | Accepted |
+| D-135 | Users can customize keyboard shortcuts through Settings. | Accepted |
+| D-136 | Keyboard shortcuts are discoverable both in Settings and in relevant menus/tooltips beside the associated functions. | Accepted |
+
 ## Change control
 
 - Do not revise an accepted decision without explicit owner approval.
