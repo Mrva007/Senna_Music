@@ -27,6 +27,7 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define renaming of user-created Favorites collections; renaming changes only the collection name and preserves its tracks and saved order.
 - [x] Define Favorites collection deletion access through both the three-dot menu and right-click context menu, with confirmation; custom collection cover images are not supported.
 - [x] Define Favorites collection display order (alphabetical by name) and confirm that no dedicated collection-search field is provided.
+- [x] Define both Favorites collection creation entry points: **New Collection** on the Favorites page and **+** beside the Favorites heading.
 - [ ] Define remaining playlist and Favorites collection-management interactions.
 - [ ] Define CLI and future AI-agent integration.
 - [ ] Define settings and system functions.
