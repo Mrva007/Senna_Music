@@ -8,9 +8,7 @@ Local working copies are for development and testing; they do not override GitHu
 
 ## 2. Current phase rule
 
-The project is in concept definition. Do not implement application code, select a technology stack, or create a production GUI until the owner has sufficiently defined and approved the concept and GUI and explicitly authorizes implementation.
-
-Documentation and project-management scaffolding are allowed during this phase.
+The owner explicitly authorized implementation on 2026-11-27. The project is now in V1 implementation. Do not return to concept-definition questioning unless an actual implementation blocker requires a decision. Preserve accepted decisions and build in small, testable PRs.
 
 ## 3. Before every change
 
@@ -45,7 +43,7 @@ Use three distinct categories:
 - **Proposal:** suggested, not yet approved.
 - **Open:** unresolved; must not be implemented as if accepted.
 
-Ask one focused question at a time during concept decisions. Do not repeat questions already answered.
+Avoid reopening settled decisions. Ask only when a genuine blocker cannot be resolved from the accepted specifications or a safe technical default. Prefer making reversible technical choices and documenting them over delaying implementation.
 
 ## 7. Safety and scope
 
