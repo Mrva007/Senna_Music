@@ -1,150 +1,41 @@
 # Senna Music — Project Status
 
-**Current phase:** Concept and product definition  
-**Implementation status:** Not started; explicitly not authorized  
-**Current milestone:** M0 — Project foundation and concept definition
+**Current milestone:** V1 desktop foundation  
+**Current version:** 0.1.0 (early development)  
+**Implementation:** Authorized by the owner on 2026-11-27  
+**Repository:** https://github.com/Mrva007/Senna_Music
 
-## Completed
+## Current GitHub state
 
-- [x] Repository created: `Mrva007/Senna_Music`.
-- [x] Initial project README established.
-- [x] Accepted product concept documented.
-- [x] Accepted decisions consolidated in a decision log.
-- [x] Open questions registered.
-- [x] GUI direction documented.
-- [x] Local Music accepted as a separate GUI page.
-- [x] Shared GUI shell accepted: left navigation and central workspace; navigation can collapse to an icon-only panel.
-- [x] Home page structure and global search presentation accepted.
-- [x] Complete primary navigation order accepted.
-- [x] Local Music, Playlists, Favorites, Connected Services, and Settings page inventories accepted.
-- [x] Track-list columns, track actions, multi-selection, sorting, and Track Details contents accepted.
-- [x] Compact and expanded Music Player structure and controls accepted.
-- [x] Playback Queue placement and playback-state restoration accepted.
-- [x] Compact Music Player controls confirmed: Play / Pause, Previous, and Next alongside track information and artwork.
-- [x] Shuffle and Repeat remain exclusive to the expanded Music Player; they are not shown in the compact player.
-- [x] Compact-player artwork/title click behaviour confirmed: only the dedicated expand button opens the expanded player.
-- [x] Modern minimalist visual direction, Windows-following initial theme, and Dark / Light / Automatic theme choices confirmed.
-- [x] Left navigation manual and automatic collapse behaviour, Settings central-workspace page, and whole-layout responsiveness confirmed.
-- [x] General confirmation dialogs, dual-mode notifications, Connected Services list presentation, and automatic reconnection with manual Retry confirmed.
-- [x] Download Queue columns, controls, task ordering, and single-download concurrency accepted.
-- [x] Unified download model confirmed: download each permitted track once to the user's chosen folder; offline listening plays that same local file, with no separate offline copy or storage location.
-- [x] Independent download destination, Artist / Album / Track folder structure, duplicate-skip behaviour, and format choices confirmed.
-- [x] Local Music scanning confirmed: user manually adds folders; Senna Music scans them automatically at startup.
-- [x] Missing local files are reconciled by removing their library entries only; files on disk are never deleted or modified by this process.
-- [x] Local Music scanning includes all subfolders recursively.
-- [x] Added folders are monitored/refreshed automatically in the background while the application is running.
-- [x] Newly discovered music files are added to the Local Music library automatically, without per-file confirmation.
-- [x] Local Music supported formats confirmed: MP3, M4A, FLAC, WAV, and OGG.
-- [x] Audio metadata fields confirmed: title, artist, album, track number, year, and genre.
-- [x] Metadata editing uses explicit Save / Cancel; edits are not written until Save.
-- [x] Bulk metadata editing for multiple selected tracks confirmed.
-- [x] Saved metadata changes are written directly into the original audio file where supported; no automatic backup copy is created.
-- [x] Damaged or unreadable local audio files remain visible with a red error indicator beside the track name.
-- [x] Retry and Details actions are available for damaged or unreadable local audio files.
-- [x] Error Details content confirmed: file name, file location, user-friendly error message, and technical error detail when available.
-- [x] Download Queue persistence confirmed: preserve waiting tasks across restarts and resume interrupted active downloads from the last safely saved position when technically supported by the provider/source.
-- [x] Playlist deletion behaviour confirmed: deleting a playlist removes only the playlist and its entries; music files and tracks in Local Music or Favorites are unaffected.
-- [x] Removing a track from a playlist affects only that playlist entry; the track remains in Local Music, Favorites, and all other playlists, and its local file is not deleted.
-- [x] Removing a track from Favorites removes only its Favorites designation; it remains in Local Music and all playlists containing it, and its local file is not deleted.
-- [x] Deleting a user-created Favorites collection removes only that collection and its entries; tracks remain in the main Favorites list, Local Music, and any playlists containing them; local files are not deleted.
-- [x] Tracks within each user-created Favorites collection can be manually reordered with Drag & Drop; the chosen order is saved persistently.
-- [x] The main Favorites list has its own persistent manual order, independent of the order in individual collections.
-- [x] The main Favorites list can be temporarily sorted by title, artist, or album without changing its saved manual order.
-- [x] Each user-created Favorites collection displays its current track count alongside its name.
-- [x] The main Favorites list does not display a total track count alongside its name.
-- [x] User-created Favorites collections can be renamed after creation; renaming changes only the collection name and preserves its tracks and saved order.
-- [x] User-created Favorites collections do not support custom cover images.
-- [x] Favorites collections can be deleted from either the three-dot menu or right-click context menu; both require confirmation and delete only the collection and its entries.
-- [x] Favorites collections are displayed alphabetically by name.
-- [x] Favorites collections do not have a dedicated search field.
-- [x] New Favorites collections can be created through either the **New Collection** button on the Favorites page or the **+** button beside the Favorites heading.
-- [x] Both Favorites collection creation entry points open a popup dialog with a collection-name field and **Create** / **Cancel** actions.
-- [x] Favorites collection names are unique; attempting to create an existing name is blocked and displays an explanatory message.
-- [x] The collection dialog's **Create** button stays disabled until a non-empty name is entered; empty or whitespace-only input is invalid.
-- [x] Favorites collection-name uniqueness is case-insensitive; names such as `Rock` and `rock` are duplicates.
-- [x] Leading and trailing whitespace is trimmed from a Favorites collection name before validation and duplicate comparison; ` Rock ` is normalized to `Rock`.
-- [x] Multiple consecutive spaces between words in a Favorites collection name are preserved as entered; they are not collapsed into one space.
-- [x] A duplicate Favorites collection-name validation message appears directly below the name field inside the creation popup.
-- [x] Removing a track from a user-created Favorites collection removes it only from that collection; it remains in the main Favorites list and all other Favorites collections containing it. The local audio file is not deleted.
-- [x] Playlist tracks can be manually reordered with Drag & Drop; the order is saved persistently. Display sorting by title, artist, or album does not change the saved manual order.
-- [x] Download quality selection confirmed: default in Settings with per-download override.
+- Implementation branch: feature/v1-desktop-foundation
+- The first implementation PR adds the PySide6 desktop shell, SQLite persistence foundation, Local Music folder registration, and Windows CI.
+- No PR is merged until its diff and verification are reviewed.
 
-- [x] GUI details confirmed: fixed-width left navigation, page-specific central layouts, standard track-list density, sticky column headers, Grid/List switching for Artists/Albums/Folders, album-card information, empty-state actions, loading indicators, search-history clearing, and keyboard shortcut groups.
-- [x] Additional GUI details confirmed: narrow-window navigation collapse and tooltips, active-item styling, adaptive compact-player information, conditional page titles, responsive Grid sizing, search-history dropdown and immediate clearing, customizable shortcuts, and shortcut discoverability.
-- [x] GUI visual system confirmed: consistent outline/filled active icon treatment, neutral sans-serif typography (14–15 px), clear typographic hierarchy, balanced spacing, slightly rounded corners, subtle borders without shadows, short subtle animations, and content-driven automatic navigation collapse.
+## Working foundation
 
-## In progress
+- Standalone, music-only, local-first desktop application.
+- Left navigation, central workspace, and bottom compact-player area.
+- Home search entry point; Local Music is a separate page.
+- Initial online sources: YouTube, Spotify, and SoundCloud.
+- Source-specific adapters feed one normalized result model.
+- User-selected music storage; one local file supports both in-app and external playback.
+- Shared GUI/Core architecture; CLI remains a later interface to the same Core.
 
-- [ ] Continue defining remaining GUI details and unresolved product questions; exact shell dimensions, specific icon assets, detailed visual tokens, precise responsive thresholds, and remaining provider/player behaviours are still open.
-- [ ] Define exact shared GUI dimensions after the GUI structure is complete.
-- [ ] Define exact quality/bitrate levels and resolve provider-specific playback and download capabilities.
-- [ ] Keep approved decisions, proposals, and open questions clearly separated.
+## Implementation sequence
 
-## Not started / blocked by concept approval
+1. Desktop foundation: application entry point, navigation shell, SQLite persistence, CI.
+2. Local Music: folder scanning, metadata, library views, and local playback.
+3. Search: YouTube, Spotify, and SoundCloud adapters; source settings; session/cookie support where needed.
+4. Downloads: yt-dlp/FFmpeg integration, unified queue, progress, pause/resume, duplicate handling, and file organization.
+5. Library features: playlists, favorites, player queue, lyrics, and remaining accepted interactions.
+6. Windows test build: packaging, configuration, and a repeatable test release.
 
-- Application source code and runtime.
-- Provider integrations.
-- Playback and download implementation.
-- Database and persistence implementation.
-- CLI implementation.
-- Packaging, installers, and release pipeline.
+## Current verification
 
-These are intentionally not started. Do not create application implementation until the owner explicitly approves the start of development after sufficient concept and GUI definition.
+- GitHub Actions is configured to run pytest and Ruff on Windows.
+- Test results for the current PR are pending CI execution.
+- The first GUI build is a foundation, not yet the complete first release.
 
-## Next action
+## Deferred beyond the first testable build
 
-Continue with the remaining unresolved GUI visual details (exact dimensions, specific icon assets, detailed visual tokens, and precise responsive thresholds). Then resolve provider-specific playback and download capabilities and exact audio quality / bitrate levels. Next, define provider authentication/account setup, CLI and AI-agent integration, settings/system functions, updates, backup/recovery, and installation/distribution. Do not revisit accepted decisions unless the owner requests a change.
-
-- [x] Duplicate-name validation message clears immediately when the entered collection name is changed to a non-duplicate.
-- [x] Playlist creation and rename popup, case-insensitive unique names, and duplicate-name validation behaviour confirmed.
-- [x] Playlist Add to Playlist actions confirmed for right-click and three-dot menus.
-- [x] Multi-select add-to-playlist flow can select an existing playlist or create one without leaving the flow.
-- [x] Empty playlists remain visible with a no-tracks message and add option.
-- [x] Temporary playlist sort selection is remembered only while that playlist is open; saved manual order remains unchanged.
-- [x] Playlist list is displayed alphabetically by name, with a track count beside each playlist.
-- [x] Playlist Rename and Delete actions are available through both the three-dot and right-click menus.
-- [x] Playlist deletion always requires a confirmation prompt.
-- [x] Playlist list ordering finalized: playlists remain alphabetical and cannot be manually reordered; track ordering within each playlist remains independently manual.
-- [x] Local Music folder-selection flow includes an explicit **Confirm** action.
-
-- [x] Expanded Music Player layout confirmed: it occupies the central workspace while the left navigation remains visible.
-- [x] Playback Queue confirmed as an always-visible right-side column inside the expanded player, with track reordering.
-- [x] Lyrics behaviour confirmed: best available source, synchronised-first with plain-text fallback, preferred language and manual selection, manual scrolling with automatic timing, no manual offset, and a clear unavailable-state message.
-
-
-## Newly confirmed provider decisions — D-155–D-162
-
-- [x] Official provider sign-in (OAuth or another supported authentication method) confirmed.
-- [x] In-app playback when permitted; otherwise offer to open the track in the official provider confirmed.
-- [x] Show all available sources when the same track exists on multiple services confirmed.
-- [x] Preferred/main service selectable in Settings confirmed.
-- [x] Automatic reconnection with a Retry option if reconnection fails confirmed.
-- [x] Switching to another service requires user confirmation confirmed.
-- [x] Downloads allowed only when the provider/source officially permits downloading the audio file confirmed.
-
-The official sign-in and online playback assumptions in D-155–D-161 have since been superseded by the local-first downloader/search direction (D-169). The local Music Player remains in scope. No application implementation has been started or authorized.
-
-
-## Provider research — compatibility blockers identified
-
-- [x] Reviewed official Spotify developer policy and playback documentation.
-- [x] Reviewed official YouTube API/player policies and playback documentation.
-- [x] Reviewed official SoundCloud API guide, API Terms of Use, and public API guidance.
-- [x] Reframed the earlier API-based streaming research as historical context after the owner clarified the local-first downloader/player direction.
-- [ ] Validate non-API search, source URL extraction, and download eligibility separately for YouTube, Spotify, and SoundCloud.
-
-Research findings are recorded in PRODUCT_SPECIFICATION.md and unresolved decisions in OPEN_QUESTIONS.md. D-155–D-161 are superseded by the local-first direction; D-162 remains the general restriction against bypassing source download rules. No provider integration or application implementation is authorized.
-
-
-## Local-first downloader and integrated search — owner decisions D-163–D-169
-
-- [x] Product direction clarified: Senna Music is primarily a local-first music downloader and player; the existing local Music Player remains in scope.
-- [x] Integrated search across YouTube, Spotify, and SoundCloud confirmed; all three are searched simultaneously by default.
-- [x] Results are combined into one compact list/table with a visible Source column and source filters.
-- [x] Each source uses its own search adapter; adapters normalize results for the shared interface and hand source URLs to the common download workflow where supported.
-- [x] yt-dlp and FFmpeg remain the planned shared download/processing tools; no replacement or new downloader engine is introduced by this decision.
-- [x] Torrent search recorded as a future extension, not an initial-version feature.
-- [x] Official API/OAuth is not assumed as a prerequisite for the initial source search; non-API methods remain subject to technical and rights validation.
-- [x] Initial source scope clarified as general YouTube, Spotify, and SoundCloud; separate YouTube Music playback is not assumed.
-
-Still open: source-by-source technical validation of non-API search and URL extraction, download eligibility/rights, and exact placement and interaction details. The prior official API/streaming research is retained as historical context but does not define the clarified local-first product direction. No implementation has started or been authorized.
+Torrent search, advanced lyrics translations, CLI/agent integration, automatic updates, backup/recovery, and detailed visual micro-adjustments.

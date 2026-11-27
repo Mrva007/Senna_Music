@@ -1,7 +1,7 @@
 # Senna Music — GUI Specification
 
-**Status:** Partially defined; detailed GUI definition remains in progress.  
-**Implementation:** Not authorized.
+**Status:** Accepted GUI behaviour; V1 implementation in progress.  
+**Implementation:** Authorized by owner on 2026-11-27.
 
 ## 1. Accepted overall layout
 
@@ -32,7 +32,7 @@ The accepted left-navigation order is:
 3. Playlists
 4. Favorites
 5. Download Queue
-6. Connected Services
+6. Search Sources
 7. Settings
 
 There is no separate Search navigation item. Search is available from the Home page.
@@ -96,9 +96,9 @@ Tasks can be reordered with Drag & Drop. Reordering must not interrupt the activ
 
 No separate download-history page is planned.
 
-### Connected Services
+### Search Sources
 
-Connected Services is a separate navigation destination and includes:
+Search Sources is a separate navigation destination and includes:
 
 - Connect / Disconnect
 - Account status
@@ -119,7 +119,7 @@ Accepted Settings categories:
 
 The standard track list is used across Local Music, search results, playlists, and Favorites unless a page-specific requirement says otherwise.
 
-- A single click on a track starts playback immediately.
+- A single click on a Local Music track starts playback immediately. An online search result opens its details view in the central workspace.
 - Multiple tracks can be selected using Ctrl/Shift-click.
 - Track actions are available through both a right-click context menu and a three-dot menu on each row.
 - Accepted individual actions: Play, Play Next, Add to Queue, Add to Playlist, Add / Remove Favorites, View Track Details, and Download (when permitted).
@@ -212,7 +212,7 @@ When the application closes, it saves the last played track, playback position, 
 - The complete GUI layout adapts to the application window size.
 - General action confirmations use a small, centered popup dialog.
 - Notifications appear as brief on-screen messages and are also retained in a notification-history panel.
-- Connected Services uses a provider list showing each service's connection status and available actions.
+- Search Sources uses a provider list showing each service's connection status and available actions.
 - If a provider is unavailable or a connection is interrupted, the application displays the status, automatically attempts reconnection, and offers a manual Retry action.
 
 ### Compact player navigation
@@ -254,14 +254,14 @@ Clicking the compact player's cover artwork or track name does not open the expa
 
 - Users connect music services through the provider's official sign-in flow (OAuth or another supported authentication method).
 - Play music inside Senna Music when the provider permits it. If in-app playback is not permitted, offer to open the track in the provider's official service.
-- When the same track is available from multiple connected services, show all available sources.
+- When the same track is returned by multiple search sources, keep each source result as a separate entry.
 - Users can select their preferred/main service in Settings.
 - If a service disconnects during playback, attempt automatic reconnection and offer Retry if it fails.
 - Switching to another service for playback requires user confirmation.
 - Download audio files only when the provider/source officially permits it.
 - Exact provider-specific playback capabilities, authentication steps, and restrictions still require verification and are not assumed by these general decisions.
 
-## 10. Not yet decided
+## 10. Remaining visual details not yet decided
 
 The following must not be treated as accepted design decisions:
 
@@ -277,3 +277,48 @@ The following must not be treated as accepted design decisions:
 ## 10. Working rule
 
 Record each GUI decision here only after the owner confirms it. Keep confirmed decisions separate from proposals and unresolved questions. Do not create production UI or implementation based on provisional suggestions.
+
+
+## 11. Integrated Search — latest confirmed behaviour
+
+This section consolidates the owner's latest search decisions and takes precedence over older, conflicting search descriptions above.
+
+### Search entry and query handling
+- Search is at the top of Home; there is no separate Search navigation item.
+- Search starts with the Search button (Enter also submits).
+- A query must contain at least two characters.
+- Clear with the X control or keyboard.
+- Trim leading/trailing whitespace; matching is case-insensitive and supports partial track, artist, and album names, combined artist + track queries, spelling tolerance, and both diacritic-sensitive and diacritic-insensitive matching.
+- Keep the last 20 queries in a dropdown below the search field. History can be cleared immediately.
+- Repeating a query always performs a fresh search.
+
+### Sources and result presentation
+- Initial sources: general YouTube, Spotify, SoundCloud, and Local Music.
+- All sources are disabled on first launch. The user enables sources on Search Sources; disabled sources are omitted from results. Source changes apply to the next search.
+- Enabled online sources are searched simultaneously.
+- Results from each source are added to one unified list as they arrive. Do not merge identical tracks from different sources.
+- Source is shown beside the track name, not as a separate column. Search results show track name, artist, album when available, and duration. Do not show thumbnails or a result count.
+- Default ordering is track name A–Z; support infinite scrolling.
+- Filters are available by individual source.
+- When no sources are enabled, show a message and a link to Search Sources.
+- If no results are found, show only a simple “No results” message.
+
+### Source failures
+- Allow each source up to 30 seconds to respond before marking it failed.
+- Show a failed-source message in the unified results list at that source's position.
+- Other sources continue normally; do not cancel the whole search because one source fails.
+
+### Result details and actions
+- Clicking an online result opens its detail view in the central workspace, replacing the results list.
+- Back and breadcrumb navigation return to the preserved results list and scroll position.
+- Detail content includes basic track fields, source link, download availability, available formats, and download quality.
+- Detail actions appear in a right-side panel.
+- Source links can open in the external browser or inside Senna Music.
+- Online-result bulk action is Download only. Skip selected tracks that cannot be downloaded and continue with the eligible tracks.
+- Explain visibly when a result cannot be downloaded.
+- Find Alternative is manual only. Show the best three matches first and allow the user to view the rest. Selecting an alternative opens its detail view; it never starts a download automatically. Keep original and alternative as separate history/download records. If no alternative exists, show a message and finish.
+
+### Search Sources page
+- Source controls are persistent only on this page.
+- Each source has enable/disable control and its source-specific settings/status.
+- YouTube and Spotify must support user-authenticated sessions when sign-in is required. The implementation will investigate browser-session/cookie handoff or another practical login flow. Passwords must not be stored in plaintext.

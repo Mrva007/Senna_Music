@@ -1,7 +1,7 @@
 # Senna Music — Product Specification
 
-**Status:** Concept in progress  
-**Implementation:** Not authorized  
+**Status:** V1 implementation  
+**Implementation:** Authorized by owner on 2026-11-27  
 **Source of truth:** This document, together with the GUI specification, decision log, and open-questions register.
 
 ## 1. Product vision
@@ -16,7 +16,7 @@ Senna Music is exclusively for music. Video is out of scope.
 
 Initial integrated search sources: YouTube, Spotify, and SoundCloud. The YouTube source means the general YouTube service; a separate YouTube Music playback integration is not assumed.
 
-The architecture must allow additional source adapters to be integrated later without changing the application's fundamental Core. The initial search concept does not depend on official provider APIs or OAuth. Each adapter must investigate source-specific non-API search and URL extraction, then validate technical feasibility, source terms, and applicable rights. Senna Music must not bypass DRM or access controls.
+The architecture must allow additional source adapters to be integrated later without changing the application's fundamental Core. The search architecture does not require official provider APIs or OAuth as a universal prerequisite. YouTube and Spotify must support user-authenticated sessions when sign-in is required; investigate browser-session/cookie handoff or another practical login flow. Never store account passwords in plaintext. Each source has its own adapter and may use Python libraries or page-based discovery where technically feasible. Spotify track metadata can be used to find a matching audio result from another supported source; direct extraction of Spotify's protected audio stream is not assumed.
 
 ## 3. Downloads and offline playback
 
@@ -33,7 +33,7 @@ The owner confirmed these download and file-organization rules:
 - Files are organized automatically into an Artist / Album / Track folder hierarchy.
 - If a target file already exists, the duplicate is skipped; it is not overwritten.
 - Format choices: original format when available, MP3, M4A, and FLAC, subject to source availability and applicable rights.
-- Download quality uses a default configured in Settings, with an option to override it for an individual download.
+- Download quality uses the default configured in Settings. There is no per-download quality override.
 
 Provider capabilities and applicable rights still determine whether a track can be downloaded at all and which formats/qualities are available.
 
@@ -53,7 +53,7 @@ Accepted left-navigation order:
 3. Playlists
 4. Favorites
 5. Download Queue
-6. Connected Services
+6. Search Sources
 7. Settings
 
 There is no separate Search navigation item; search is available from Home.
@@ -62,11 +62,17 @@ There is no separate Search navigation item; search is available from Home.
 
 Home places the shared search at the top, followed by Recently Played, Playlists, and Local Music sections stacked vertically. Sections with no data are hidden.
 
-One integrated search covers Local Music and the three initial online sources: YouTube, Spotify, and SoundCloud. Online sources are searched simultaneously by default, and their results are combined into one list. The user can filter by All Sources or an individual source. Results use a compact list/table rather than large preview cards and show track/title, artist, album when available, and a clearly visible Source column. Search history is retained in a dropdown below the search field and can be cleared immediately without confirmation.
+Search starts with the Search button (Enter also submits), requires at least two characters, and can be cleared with the X control or keyboard. Matching trims extra spaces, is case-insensitive, tolerates spelling mistakes, supports partial track/artist/album names and combined artist + track queries, and supports both diacritic-sensitive and insensitive matching. Keep the last 20 queries in a dropdown below the search field; history can be cleared immediately. Repeating a query always starts a fresh search.
 
-Each online source has its own search adapter because source search, result structure, and URL extraction differ. Adapters normalize results into a common format. A Download action passes the selected result's source URL to the local download workflow, which uses the already-planned yt-dlp and FFmpeg tools where supported. The shared downloader does not imply that every source or every item is downloadable. Source-specific technical restrictions, rights, and legal requirements still apply.
+The integrated search covers Local Music, YouTube, Spotify, and SoundCloud. All sources are disabled on first launch. The user enables sources on Search Sources; a disabled source is completely omitted from results. Enabled online sources are searched simultaneously. Results from individual sources appear as soon as they arrive and are combined into one list. Do not merge the same track returned by different sources. Source is displayed beside the track name, not in a separate column. Search results show track name, artist, album when available, and duration; they have no thumbnail and no result count. Default ordering is track name A–Z, with infinite scrolling and filters by individual source. Local Music is included as its own source/filter.
 
-The integrated search is a dedicated music-search interface, not a general-purpose browser. The concept does not assume official provider APIs or OAuth as a prerequisite. The exact non-API search and URL-acquisition method for each source must be technically validated before implementation. This clarification does not authorize DRM circumvention or bypassing access controls.
+If every source is disabled, show a message and a link to Search Sources. If no results are found, show only a simple “No results” message. Allow each source 30 seconds to respond before marking it failed. Show a failed-source message in the unified results list at that source's position; other sources continue normally.
+
+Clicking an online result opens its detail view in the central workspace, replacing the results list. Back and breadcrumb navigation return to the preserved results and scroll position. Details show basic track fields, source link, download availability, available formats, and download quality. Actions appear in a right-side panel. A source link can open in the external browser or inside Senna Music.
+
+Online search results provide Download as their bulk action. If selected tracks are unavailable for download, skip those tracks and continue with the eligible ones. Clearly explain when a result cannot be downloaded. Find Alternative is manual only: show the best three alternatives first and allow the user to view the rest. Selecting an alternative opens its details; it never starts a download automatically. Original and alternative have separate history/download records. If no alternative exists, show a message and finish.
+
+Each source has a dedicated adapter that normalizes results into the common model. The shared download workflow uses yt-dlp and FFmpeg where supported. Spotify track lookup may use Python-based matching to find a corresponding audio result from another supported source; the actual download source must remain visible.
 
 ## 6. Local music collection
 
@@ -126,7 +132,7 @@ The first version starts with one user profile. A multi-user system is not requi
 
 ## 10. Download queue
 
-There is one shared download queue for Spotify, YouTube Music, and SoundCloud.
+There is one shared download queue for downloads from supported YouTube, Spotify-resolved, and SoundCloud results.
 
 Accepted columns:
 - Status
@@ -208,20 +214,18 @@ Automatic collection cataloguing by artist, album, and genre is not part of the 
 - Provider integrations must respect APIs, licences, and terms.
 - GUI and CLI share one Core and one permission system.
 - Do not add unapproved features.
-- Do not begin application implementation until the concept and GUI are sufficiently defined and the owner explicitly approves development.
+- V1 implementation was explicitly authorized by the owner on 2026-11-27.
 
 
-## 14. Provider connection, source selection, and playback rules
+## 14. Source sessions and local-first workflow
 
-- Users connect each supported service through its official sign-in flow, using OAuth or another authentication method supported by that provider.
-- Senna Music plays a track inside the application when the provider permits in-app playback under its APIs, capabilities, licences, and terms.
-- If in-app playback is not permitted, Senna Music offers to open the track in the provider's official service.
-- If the same track is available from multiple connected services, show all available sources.
-- Users can choose a preferred/main music service in Settings.
-- If a service disconnects or loses connection during playback, Senna Music attempts to reconnect automatically and offers Retry if that attempt fails.
-- If the current service cannot play a track and another source is available, switching to that source requires user confirmation.
-- Download an audio file only when the service or source officially permits downloading that file. No restriction, DRM, or provider limitation may be bypassed.
-- These are general product rules. Exact playback, authentication, offline, and download capabilities must be checked separately for Spotify, YouTube Music, SoundCloud, and any future provider; no capability is assumed merely because a provider is listed.
+- YouTube and Spotify support a user-authenticated session when sign-in is required.
+- Prefer browser-session/cookie handoff or another practical sign-in flow; never store account passwords in plaintext.
+- Spotify is an initial integrated search source, not a direct audio-stream extraction source. Use Spotify track information to resolve a matching result from another supported source where available.
+- Always show the actual source used for a download.
+- Online search results open a details view; local tracks play in the local Music Player.
+- The application uses one local downloaded file for both in-app offline playback and external playback.
+- Source adapters remain independent and feed the shared search and download workflows.
 
 
 ## 15. Provider capability and policy research — 27 November 2026
@@ -281,3 +285,12 @@ The product direction was clarified after the initial provider playback research
 The initial integrated search scope is YouTube, Spotify, and SoundCloud, searched in parallel and presented in one source-labelled list. Search adapters are source-specific; download processing remains shared through yt-dlp and FFmpeg where supported. The earlier API/streaming compatibility findings describe the official API and playback routes that were researched; they do not, by themselves, establish that every page-based search or download method is technically possible or legally permitted. Those methods require separate source-by-source validation. No API, login, streaming, or download permission should be assumed.
 
 Torrent search is a future extension only. It is not part of the initial version and must be designed as an additional source adapter, limited to lawful content and use.
+
+
+## Implementation clarification — authenticated source access
+
+Following the owner's 2026-11-27 clarification, Spotify is not restricted to metadata-only display. Spotify remains an initial search source. The application should support user-authenticated sessions for Spotify and YouTube when a source requires sign-in, preferably through a practical browser-session/cookie handoff or another supported login flow. Passwords must never be stored in plaintext.
+
+Spotify track information may be used by a Python-based resolver to locate a corresponding audio result from another supported source (for example, matching title and artist), which then enters the common download workflow. This is not direct extraction of Spotify's protected audio stream. The resolver must display the actual download source and preserve separate source/download records.
+
+The first implementation target is a Windows desktop app built with Python, PySide6, and SQLite. The source adapters, authentication/session handling, yt-dlp/FFmpeg download workflow, and local audio playback are being implemented incrementally. This clarification supersedes the earlier Spotify metadata-only proposal and the concept-only implementation restriction.
