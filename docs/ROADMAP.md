@@ -26,6 +26,7 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define playlist track removal, safe playlist deletion, Favorites track removal and collection-track removal, safe Favorites collection deletion, persistent manual playlist ordering, and persistent manual ordering in both the main Favorites list and individual Favorites collections, plus temporary display sorting by title, artist, or album in playlists and the main Favorites list, and visible track counts for user-created Favorites collections (the main Favorites list has no total count beside its name).
 - [x] Define renaming of user-created Favorites collections; renaming changes only the collection name and preserves its tracks and saved order.
 - [x] Define Favorites collection deletion access through both the three-dot menu and right-click context menu, with confirmation; custom collection cover images are not supported.
+- [x] Define Favorites collection display order (alphabetical by name) and confirm that no dedicated collection-search field is provided.
 - [ ] Define remaining playlist and Favorites collection-management interactions.
 - [ ] Define CLI and future AI-agent integration.
 - [ ] Define settings and system functions.
