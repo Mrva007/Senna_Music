@@ -273,7 +273,7 @@ Official sources:
 
 ### Overall compatibility conclusion
 
-The current concept of one application aggregating and playing tracks from Spotify, YouTube Music, and SoundCloud cannot be treated as approved merely because each provider exposes an API or player. Spotify and SoundCloud have explicit restrictions against cross-service content/stream aggregation; YouTube's API does not provide the required audio-only/background/offline experience. Obtain provider-specific written permissions or revise the provider scope/playback model before implementation. Local Music playback remains independent of these online-provider restrictions.
+Historical conclusion for the earlier API-based multi-provider streaming concept: Spotify and SoundCloud API terms contain cross-service aggregation restrictions, and YouTube's reviewed APIs do not provide the desired audio-only/background/offline playback model. This conclusion applies to those API/streaming approaches, not automatically to the now-approved local-first search/downloader concept. The latter requires separate source-by-source technical and rights validation, as described below.
 
 
 ## Local-first search and future sources — owner clarification
