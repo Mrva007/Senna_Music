@@ -78,3 +78,4 @@ A task is complete only when:
 - [x] Define playlist creation/rename validation, Add to Playlist flows, empty-playlist state, and temporary sort-selection lifetime (D-087–D-094).
 - [x] Define alphabetical playlist display, per-playlist track counts, Rename/Delete menu access, and delete confirmation (D-095–D-098).
 - [x] Confirm that the playlist list itself cannot be manually reordered (D-099).
+- [x] Define an explicit **Confirm** action in the Local Music folder-selection flow (D-100).
