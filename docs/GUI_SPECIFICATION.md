@@ -224,6 +224,13 @@ Clicking the compact player's cover artwork or track name does not open the expa
 - Loading states use Skeleton and Spinner indicators; a Progress Bar is shown when progress is known.
 - Previous searches are retained, with an option to clear search history.
 - Keyboard shortcuts cover playback (Play/Pause, Previous, Next), focusing Search, navigation between main pages, volume/Mute, and displaying/managing Playback Queue.
+- When the application window becomes very narrow, the left navigation automatically collapses to icons. Hovering over an icon displays its name in a tooltip.
+- The active navigation item is indicated by both a changed background and a coloured line along its left edge.
+- In a narrow window, the bottom player reduces the amount of displayed information while retaining essential playback controls.
+- A central-workspace page title is displayed only when needed; it is not mandatory on every page.
+- Grid card sizing is responsive: the number of cards per row adjusts automatically to the available workspace width.
+- Search history appears as a dropdown below the shared search field and can be cleared immediately without an additional confirmation prompt.
+- Keyboard shortcuts are customizable through Settings and are discoverable both there and in relevant menus/tooltips beside associated functions.
 
 ## 10. Not yet decided
 
