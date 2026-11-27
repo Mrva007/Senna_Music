@@ -76,6 +76,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-069 | The main Favorites list supports its own manually arranged track order, saved persistently and independently of the order in individual user-created Favorites collections. | Accepted |
 | D-070 | The main Favorites list can also be temporarily sorted by track title, artist, or album. Temporary sorting does not change its saved manual order. | Accepted |
 | D-071 | Each user-created Favorites collection displays its current track count alongside its name. | Accepted |
+| D-072 | The main Favorites list does not display a total track count alongside its name. | Accepted |
 
 ## Change control
 
