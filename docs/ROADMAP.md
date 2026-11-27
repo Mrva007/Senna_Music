@@ -27,7 +27,10 @@ This roadmap tracks the agreed order of product definition and later delivery. I
 - [x] Define expanded Music Player layout: central workspace with navigation retained, always-visible Playback Queue in a right-side column, and lyrics below track information when available.
 - [x] Define compact Music Player controls: Play / Pause, Previous, and Next alongside track information and artwork.
 - [x] Confirm Shuffle and Repeat controls are available only in the expanded Music Player, not the compact player.
-- [ ] Define search and provider connection.
+- [x] Define integrated local-first music search: search YouTube, Spotify, and SoundCloud simultaneously, combine results in one source-labelled list, and provide source filters.
+- [x] Define separate source search adapters with a shared normalized result model and common yt-dlp / FFmpeg download workflow where supported.
+- [ ] Validate non-API search and URL extraction, download eligibility, and rights separately for each initial source.
+- [ ] Define exact integrated-search placement and detailed row interactions.
 - [x] Define lyrics source priority, synchronisation, language preference, fallback, and unavailable-state behaviour.
 - [ ] Define provider-specific playback behaviour.
 - [x] Define unified download/offline-playback model: one local downloaded file is used for both in-app offline playback and external playback.
@@ -108,3 +111,6 @@ A task is complete only when:
 - [x] Research official Spotify, YouTube, and SoundCloud developer capabilities and restrictions.
 - [ ] Resolve provider policy compatibility and owner decisions before online-provider implementation.
 - [ ] Obtain written provider permission where required or revise initial provider scope/playback behaviour.
+
+
+- [ ] Later phase: evaluate and define a torrent-search adapter for lawful content; not part of the initial version.
