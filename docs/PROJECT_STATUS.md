@@ -55,6 +55,7 @@
 - [x] Both Favorites collection creation entry points open a popup dialog with a collection-name field and **Create** / **Cancel** actions.
 - [x] Favorites collection names are unique; attempting to create an existing name is blocked and displays an explanatory message.
 - [x] The collection dialog's **Create** button stays disabled until a non-empty name is entered; empty or whitespace-only input is invalid.
+- [x] Favorites collection-name uniqueness is case-insensitive; names such as `Rock` and `rock` are duplicates.
 - [x] Removing a track from a user-created Favorites collection removes it only from that collection; it remains in the main Favorites list and all other Favorites collections containing it. The local audio file is not deleted.
 - [x] Playlist tracks can be manually reordered with Drag & Drop; the order is saved persistently. Display sorting by title, artist, or album does not change the saved manual order.
 - [x] Download quality selection confirmed: default in Settings with per-download override.
