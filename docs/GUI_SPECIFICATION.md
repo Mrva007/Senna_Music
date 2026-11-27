@@ -63,7 +63,7 @@ Local Music is a separate page with these views:
 
 ### Playlists
 
-Playlists is one navigation destination containing the user's playlists. Individual playlists are not separate permanent navigation items. Deleting a playlist removes only the playlist and its playlist entries; it never deletes the underlying music files or removes tracks from Local Music or Favorites.
+Playlists is one navigation destination containing the user's playlists. Individual playlists are not separate permanent navigation items. Removing a track from a playlist removes only that entry from the current playlist; the track remains in Local Music, Favorites, and every other playlist, and its local audio file is not deleted. Deleting a playlist removes only the playlist and its playlist entries; it never deletes the underlying music files or removes tracks from Local Music or Favorites.
 
 ### Favorites
 
