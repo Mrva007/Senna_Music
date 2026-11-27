@@ -192,7 +192,7 @@ The user manages playlists manually:
 - Reorder tracks
 - Play an entire playlist
 
-All playlists are accessed through the single Playlists navigation destination. Individual playlists are not separate permanent navigation items.
+Deleting a playlist removes only that playlist and its playlist entries. It never deletes the underlying music files and never removes the tracks from Local Music or Favorites. All playlists are accessed through the single Playlists navigation destination. Individual playlists are not separate permanent navigation items.
 
 Automatic collection cataloguing by artist, album, and genre is not part of the agreed concept.
 
