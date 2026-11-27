@@ -160,6 +160,15 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-145 | UI animations are short and subtle. | Accepted |
 | D-146 | Navigation automatically collapses according to the space required by the content. | Accepted |
 
+| D-147 | Lyrics are selected from a combination of available sources, prioritising the best available source. | Accepted |
+| D-148 | Prefer synchronised lyrics when available; otherwise use plain, non-synchronised lyrics. | Accepted |
+| D-149 | If synchronised lyrics are unavailable but plain lyrics are available, display the plain lyrics automatically. | Accepted |
+| D-150 | A preferred lyrics language is configurable in Settings, and the user can manually change the language. | Accepted |
+| D-151 | Translated lyrics are deferred and are not a priority for the first version. | Accepted |
+| D-152 | During playback, synchronised lyrics follow the current line, while the user retains the ability to scroll manually. | Accepted |
+| D-153 | Lyrics synchronisation is automatic; users do not manually adjust timing. | Accepted |
+| D-154 | When lyrics are unavailable, show a clear message and include the reason when it is known. | Accepted |
+
 ## Change control
 
 - Do not revise an accepted decision without explicit owner approval.
