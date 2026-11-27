@@ -212,3 +212,16 @@ Automatic collection cataloguing by artist, album, and genre is not part of the 
 - GUI and CLI share one Core and one permission system.
 - Do not add unapproved features.
 - Do not begin application implementation until the concept and GUI are sufficiently defined and the owner explicitly approves development.
+
+
+## 14. Provider connection, source selection, and playback rules
+
+- Users connect each supported service through its official sign-in flow, using OAuth or another authentication method supported by that provider.
+- Senna Music plays a track inside the application when the provider permits in-app playback under its APIs, capabilities, licences, and terms.
+- If in-app playback is not permitted, Senna Music offers to open the track in the provider's official service.
+- If the same track is available from multiple connected services, show all available sources.
+- Users can choose a preferred/main music service in Settings.
+- If a service disconnects or loses connection during playback, Senna Music attempts to reconnect automatically and offers Retry if that attempt fails.
+- If the current service cannot play a track and another source is available, switching to that source requires user confirmation.
+- Download an audio file only when the service or source officially permits downloading that file. No restriction, DRM, or provider limitation may be bypassed.
+- These are general product rules. Exact playback, authentication, offline, and download capabilities must be checked separately for Spotify, YouTube Music, SoundCloud, and any future provider; no capability is assumed merely because a provider is listed.
