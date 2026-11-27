@@ -66,6 +66,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-059 | A damaged or unreadable Local Music file offers a Details action to display information about the error. | Accepted |
 | D-060 | The error Details view shows the file name, file location, a user-friendly error message, and a technical error detail when available. | Accepted |
 | D-061 | Preserve the Download Queue across application restarts. Waiting tasks remain queued; an interrupted active download resumes from its last safely saved position when the provider/source technically supports resuming. | Accepted |
+| D-062 | Deleting a playlist removes only the playlist and its playlist entries; it never deletes the underlying music files or removes tracks from Local Music or Favorites. | Accepted |
 
 ## Change control
 
