@@ -38,6 +38,7 @@
 - [x] Error Details content confirmed: file name, file location, user-friendly error message, and technical error detail when available.
 - [x] Download Queue persistence confirmed: preserve waiting tasks across restarts and resume interrupted active downloads from the last safely saved position when technically supported by the provider/source.
 - [x] Playlist deletion behaviour confirmed: deleting a playlist removes only the playlist and its entries; music files and tracks in Local Music or Favorites are unaffected.
+- [x] Removing a track from a playlist affects only that playlist entry; the track remains in Local Music, Favorites, and all other playlists, and its local file is not deleted.
 - [x] Download quality selection confirmed: default in Settings with per-download override.
 
 ## In progress
