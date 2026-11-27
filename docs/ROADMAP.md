@@ -109,8 +109,8 @@ A task is complete only when:
 
 
 - [x] Research official Spotify, YouTube, and SoundCloud developer capabilities and restrictions.
-- [ ] Resolve provider policy compatibility and owner decisions before online-provider implementation.
-- [ ] Obtain written provider permission where required or revise initial provider scope/playback behaviour.
+- [ ] Validate the approved local-first search and download approach against each source's technical constraints, terms, and applicable rights before implementation.
+- [ ] Revisit optional online-provider streaming only if the owner later brings it back into scope.
 
 
 - [ ] Later phase: evaluate and define a torrent-search adapter for lawful content; not part of the initial version.
