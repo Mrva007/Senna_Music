@@ -113,6 +113,17 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-103 | In the expanded Music Player, available lyrics are displayed below the track information. | Accepted |
 | D-104 | The compact Music Player includes Play / Pause, Previous, and Next controls alongside the track information and artwork. | Accepted |
 | D-105 | Shuffle and Repeat controls are not displayed in the compact Music Player; they remain available in the expanded player. | Accepted |
+| D-106 | Clicking the compact player's cover artwork or track name does not open the expanded player; the dedicated expand button is the entry point. | Accepted |
+| D-107 | Senna Music uses a modern, minimalist visual style. | Accepted |
+| D-108 | On first launch, the application theme follows the Windows theme. | Accepted |
+| D-109 | Theme choices include Dark, Light, and Automatic. | Accepted |
+| D-110 | Left navigation supports both manual collapse/expand and automatic adaptation to the application window size. | Accepted |
+| D-111 | Settings opens as a page in the central workspace. | Accepted |
+| D-112 | Notifications use both brief on-screen messages and a notification panel containing notification history. | Accepted |
+| D-113 | General action confirmations use a small, centered popup dialog. | Accepted |
+| D-114 | The complete GUI layout adapts to the application window size. | Accepted |
+| D-115 | Connected Services presents providers in a list with their connection status and available actions. | Accepted |
+| D-116 | When a provider is unavailable or its connection is interrupted, Senna Music displays the status and automatically attempts reconnection, while also offering a retry action. | Accepted |
 
 ## Change control
 

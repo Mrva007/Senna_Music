@@ -195,19 +195,36 @@ Playback Queue is displayed inside the expanded player. The queue supports reord
 
 When the application closes, it saves the last played track, playback position, and Playback Queue for restoration at the next launch.
 
-## 8. Not yet decided
+## 8. Accepted visual style and shared GUI behaviour
+
+- Visual direction: modern and minimalist.
+- On first launch, the application follows the Windows theme.
+- Available theme choices are Dark, Light, and Automatic.
+- The left navigation supports manual collapse/expand and automatic adaptation to the application window size.
+- Settings opens as a page in the central workspace.
+- The complete GUI layout adapts to the application window size.
+- General action confirmations use a small, centered popup dialog.
+- Notifications appear as brief on-screen messages and are also retained in a notification-history panel.
+- Connected Services uses a provider list showing each service's connection status and available actions.
+- If a provider is unavailable or a connection is interrupted, the application displays the status, automatically attempts reconnection, and offers a manual Retry action.
+
+### Compact player navigation
+
+Clicking the compact player's cover artwork or track name does not open the expanded player. The dedicated expand button is used to open it.
+
+## 9. Not yet decided
 
 The following must not be treated as accepted design decisions:
 
-- Exact dimensions of the shared left navigation, central workspace, and bottom player.
-- Icons, visual styling, themes, and detailed responsive behaviour.
+- Exact dimensions of the shared left navigation, central workspace, and bottom player remain open.
+- Exact icon set, visual tokens, and detailed responsive breakpoints remain open; the modern minimalist direction, theme options/default, and general responsive behaviour are accepted.
 - Provider-specific playback presentation and states.
 - Remaining Local Music file-management behaviour beyond the accepted scanning, metadata-editing, and damaged-file handling rules. Folder selection includes an explicit **Confirm** action. The user adds folders manually; they are scanned recursively at startup and monitored in the background. Entries for moved/deleted files are removed from the library without touching disk files. Metadata editing is defined: title, artist, album, track number, year, and genre; explicit Save / Cancel; bulk editing; direct writing to the original file without automatic backup where supported. Damaged/unreadable files remain visible with a red error indicator beside the track name and offer Retry and Details. Details shows file name, file location, a user-friendly error message, and technical error detail when available.
 - Remaining playlist presentation and management details not yet specified.
 - Exact download quality/bitrate levels and provider-specific download restrictions. The unified local download and offline-playback model is accepted.
-- General dialogs and notifications beyond the already-defined damaged-file error state.
+- Additional dialog and notification details beyond the accepted general confirmation popup and brief-message / notification-history pattern.
 - Lyrics availability, source, synchronisation, and fallback behaviour; presentation is accepted as below the track information in the expanded player.
 
-## 9. Working rule
+## 10. Working rule
 
 Record each GUI decision here only after the owner confirms it. Keep confirmed decisions separate from proposals and unresolved questions. Do not create production UI or implementation based on provisional suggestions.
