@@ -1,7 +1,7 @@
 # Senna Music — GUI Specification
 
-**Status:** Partially defined; detailed GUI definition remains in progress.  
-**Implementation:** Not authorized.
+**Status:** Accepted GUI behaviour; V1 implementation in progress.  
+**Implementation:** Authorized by owner on 2026-11-27.
 
 ## 1. Accepted overall layout
 
@@ -119,7 +119,7 @@ Accepted Settings categories:
 
 The standard track list is used across Local Music, search results, playlists, and Favorites unless a page-specific requirement says otherwise.
 
-- A single click on a track starts playback immediately.
+- A single click on a Local Music track starts playback immediately. An online search result opens its details view in the central workspace.
 - Multiple tracks can be selected using Ctrl/Shift-click.
 - Track actions are available through both a right-click context menu and a three-dot menu on each row.
 - Accepted individual actions: Play, Play Next, Add to Queue, Add to Playlist, Add / Remove Favorites, View Track Details, and Download (when permitted).
@@ -254,14 +254,14 @@ Clicking the compact player's cover artwork or track name does not open the expa
 
 - Users connect music services through the provider's official sign-in flow (OAuth or another supported authentication method).
 - Play music inside Senna Music when the provider permits it. If in-app playback is not permitted, offer to open the track in the provider's official service.
-- When the same track is available from multiple connected services, show all available sources.
+- When the same track is returned by multiple search sources, keep each source result as a separate entry.
 - Users can select their preferred/main service in Settings.
 - If a service disconnects during playback, attempt automatic reconnection and offer Retry if it fails.
 - Switching to another service for playback requires user confirmation.
 - Download audio files only when the provider/source officially permits it.
 - Exact provider-specific playback capabilities, authentication steps, and restrictions still require verification and are not assumed by these general decisions.
 
-## 10. Not yet decided
+## 10. Remaining visual details not yet decided
 
 The following must not be treated as accepted design decisions:
 
