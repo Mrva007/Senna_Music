@@ -105,7 +105,7 @@ Bulk actions for selected tracks:
 
 Track Details shows track name, artist, album, duration, source, file format, file location, and track artwork.
 
-Favorites supports favourite tracks and user-created collections. Removing a track from Favorites removes only its Favorites designation; the track remains in Local Music and every playlist containing it, and its local audio file is not deleted. Deleting a user-created Favorites collection removes only that collection and its entries; tracks remain in the main Favorites list, Local Music, and any playlists containing them, and local audio files are not deleted.
+Favorites supports favourite tracks and user-created collections. Tracks within each user-created Favorites collection can be manually reordered by drag and drop, and the chosen order is saved persistently. Removing a track from Favorites removes only its Favorites designation; the track remains in Local Music and every playlist containing it, and its local audio file is not deleted. Deleting a user-created Favorites collection removes only that collection and its entries; tracks remain in the main Favorites list, Local Music, and any playlists containing them, and local audio files are not deleted.
 
 ## 8. GUI and CLI
 
