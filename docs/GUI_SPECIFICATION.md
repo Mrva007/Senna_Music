@@ -222,7 +222,7 @@ The following must not be treated as accepted design decisions:
 - Remaining Local Music file-management behaviour beyond the accepted scanning, metadata-editing, and damaged-file handling rules. Folder selection includes an explicit **Confirm** action. The user adds folders manually; they are scanned recursively at startup and monitored in the background. Entries for moved/deleted files are removed from the library without touching disk files. Metadata editing is defined: title, artist, album, track number, year, and genre; explicit Save / Cancel; bulk editing; direct writing to the original file without automatic backup where supported. Damaged/unreadable files remain visible with a red error indicator beside the track name and offer Retry and Details. Details shows file name, file location, a user-friendly error message, and technical error detail when available.
 - Remaining playlist presentation and management details not yet specified.
 - Exact download quality/bitrate levels and provider-specific download restrictions. The unified local download and offline-playback model is accepted.
-- General dialogs and notifications beyond the already-defined damaged-file error state.
+- Additional dialog and notification details beyond the accepted general confirmation popup and brief-message / notification-history pattern.
 - Lyrics availability, source, synchronisation, and fallback behaviour; presentation is accepted as below the track information in the expanded player.
 
 ## 10. Working rule
