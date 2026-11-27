@@ -1,15 +1,16 @@
 # Senna Music — Project Status
 
-**Current milestone:** V1 desktop foundation  
+**Current milestone:** Local Music — recursive scan and library list  
 **Current version:** 0.1.0 (early development)  
 **Implementation:** Authorized by the owner on 2026-11-27  
 **Repository:** https://github.com/Mrva007/Senna_Music
 
 ## Current GitHub state
 
-- Implementation branch: feature/v1-desktop-foundation
-- The first implementation PR adds the PySide6 desktop shell, SQLite persistence foundation, Local Music folder registration, and Windows CI.
-- No PR is merged until its diff and verification are reviewed.
+- PR #15 (desktop foundation) is merged into `main`.
+- Current implementation branch: `feature/local-music-library-scan`.
+- The current PR work adds recursive audio scanning, metadata extraction, persistent track indexing, and the first Local Music track table.
+- CI verification for the current work is pending; do not treat it as passed until GitHub reports the result.
 
 ## Working foundation
 
@@ -23,8 +24,8 @@
 
 ## Implementation sequence
 
-1. Desktop foundation: application entry point, navigation shell, SQLite persistence, CI.
-2. Local Music: folder scanning, metadata, library views, and local playback.
+1. Desktop foundation: merged — application entry point, navigation shell, SQLite persistence, and CI workflow.
+2. Local Music: folder registration is implemented; recursive scanning, metadata, persistent track indexing, and track-list UI are in the current PR. Folder monitoring, artwork, track details, and local playback remain.
 3. Search: YouTube, Spotify, and SoundCloud adapters; source settings; session/cookie support where needed.
 4. Downloads: yt-dlp/FFmpeg integration, unified queue, progress, pause/resume, duplicate handling, and file organization.
 5. Library features: playlists, favorites, player queue, lyrics, and remaining accepted interactions.
@@ -32,9 +33,10 @@
 
 ## Current verification
 
-- GitHub Actions is configured to run pytest and Ruff on Windows.
-- Test results for the current PR are pending CI execution.
-- The first GUI build is a foundation, not yet the complete first release.
+- Windows GitHub Actions workflow runs pytest and Ruff for pull requests and pushes to main.
+- PR #15 merged; its workflow result was not returned by the available status query.
+- Current Local Music branch requires its own CI result before merge.
+- The application is an early development build, not yet the complete first release.
 
 ## Deferred beyond the first testable build
 
