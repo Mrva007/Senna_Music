@@ -186,7 +186,12 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-167 | Torrent search is a planned future extension, not part of the initial search-source scope. The source-adapter architecture should allow it to be added later. Torrent use must respect applicable rights and law. | Accepted — future scope |
 
 | D-168 | The initial integrated search sources are YouTube, Spotify, and SoundCloud. The YouTube source is the general YouTube service, not a separate YouTube Music playback integration. | Accepted |
-| D-169 | The initial integrated search must not depend on official provider APIs or OAuth as a prerequisite. Each source adapter will investigate non-API search/page-based discovery and source-URL extraction, subject to technical feasibility, source terms, and applicable rights. No online provider streaming integration is assumed as part of the primary product direction. | Accepted — implementation method remains to be validated |
+| D-169 | The initial integrated search must not depend on official provider APIs or OAuth as a prerequisite. Each source adapter will investigate non-API search/page-based discovery and source-URL extraction, subject to technical feasibility, source terms, and applicable rights. No online provider streaming integration is assumed as part of the primary product direction. | Accepted — clarified by D-170 and D-171 |
+
+| D-170 | Spotify remains an initial integrated search source; the earlier metadata-only restriction is withdrawn. Senna Music should support Spotify track lookup and use Python-based matching/resolution to find a corresponding downloadable result from another supported source where available. Direct extraction of Spotify's protected audio stream is not assumed. | Accepted |
+| D-171 | YouTube and Spotify must support a user-authenticated session when the source requires sign-in. Investigate browser-session/cookie integration or another practical sign-in flow; never store account passwords in plaintext. | Accepted |
+| D-172 | The owner authorized V1 application implementation on 2026-11-27. Prior concept-only implementation restriction is lifted. | Accepted |
+| D-173 | The first implementation target is a Windows desktop application using Python, PySide6, and SQLite. Source/download and audio libraries are integrated incrementally behind the shared Core. | Accepted |
 
 ## Change control
 
