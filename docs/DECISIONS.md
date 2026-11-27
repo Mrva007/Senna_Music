@@ -57,6 +57,60 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-050 | Local Music supports MP3, M4A, FLAC, WAV, and OGG audio files. | Accepted |
 | D-051 | Users can edit supported audio metadata in Senna Music, and changes are written into the audio file itself where the format supports the relevant metadata. | Accepted |
 | D-052 | Damaged or unreadable local audio files remain visible in the library with an error indication. | Accepted |
+| D-053 | Local Music metadata editing exposes the basic fields: title, artist, album, track number, year, and genre. | Accepted |
+| D-054 | Metadata edits use an explicit Save / Cancel workflow; changes are not written until the user saves. | Accepted |
+| D-055 | Users can bulk-edit metadata for multiple selected tracks. | Accepted |
+| D-056 | Metadata edits write directly to the original audio file where supported; Senna Music does not create an automatic backup copy before editing. | Accepted |
+| D-057 | Damaged or unreadable Local Music files show a red error indicator beside the track name. | Accepted |
+| D-058 | A damaged or unreadable Local Music file offers a Retry action to attempt loading it again. | Accepted |
+| D-059 | A damaged or unreadable Local Music file offers a Details action to display information about the error. | Accepted |
+| D-060 | The error Details view shows the file name, file location, a user-friendly error message, and a technical error detail when available. | Accepted |
+| D-061 | Preserve the Download Queue across application restarts. Waiting tasks remain queued; an interrupted active download resumes from its last safely saved position when the provider/source technically supports resuming. | Accepted |
+| D-062 | Deleting a playlist removes only the playlist and its playlist entries; it never deletes the underlying music files or removes tracks from Local Music or Favorites. | Accepted |
+| D-063 | Removing a track from a playlist removes only that playlist entry. The track remains in Local Music, Favorites, and every other playlist; its local audio file is not deleted. | Accepted |
+| D-064 | Removing a track from Favorites removes only its Favorites designation. The track remains in Local Music and every playlist containing it; its local audio file is not deleted. | Accepted |
+| D-065 | Playlist tracks can be manually reordered by drag and drop, and the chosen order is saved persistently. Users may also sort the displayed list by title, artist, or album without changing the saved manual order. | Accepted |
+| D-066 | Deleting a Favorites collection removes only the collection and its collection entries. Tracks remain in the main Favorites list, Local Music, and any playlists containing them; local audio files are not deleted. | Accepted |
+| D-067 | Tracks within each user-created Favorites collection can be manually reordered by drag and drop, and the chosen order is saved persistently. | Accepted |
+| D-068 | Removing a track from a user-created Favorites collection removes it only from that collection. The track remains in the main Favorites list and in every other Favorites collection that contains it; the local audio file is not deleted. | Accepted |
+| D-069 | The main Favorites list supports its own manually arranged track order, saved persistently and independently of the order in individual user-created Favorites collections. | Accepted |
+| D-070 | The main Favorites list can also be temporarily sorted by track title, artist, or album. Temporary sorting does not change its saved manual order. | Accepted |
+| D-071 | Each user-created Favorites collection displays its current track count alongside its name. | Accepted |
+| D-072 | The main Favorites list does not display a total track count alongside its name. | Accepted |
+| D-073 | Users can rename a user-created Favorites collection after it has been created. Renaming changes only the collection name; its tracks and saved order remain unchanged. | Accepted |
+| D-074 | User-created Favorites collections do not support custom cover images. | Accepted |
+| D-075 | A user-created Favorites collection can be deleted either from its three-dot menu or by right-clicking the collection; both actions require confirmation. Deletion removes only the collection and its entries, not tracks or local audio files elsewhere. | Accepted |
+| D-076 | User-created Favorites collections are displayed alphabetically by collection name. | Accepted |
+| D-077 | Favorites collections do not have a dedicated search field. | Accepted |
+| D-078 | A new Favorites collection can be created either with a **New Collection** button on the Favorites page or with a **+** button beside the Favorites heading. | Accepted |
+| D-079 | Selecting either Favorites collection creation entry point opens a popup dialog with a name field and **Create** / **Cancel** actions. | Accepted |
+| D-080 | Favorites collection names must be unique. If a user tries to create a collection with a name that already exists, creation is blocked and the application displays a message that the name already exists. | Accepted |
+| D-081 | The Create button in the Favorites collection popup remains disabled until the name field contains a non-empty name; an empty or whitespace-only value is not valid. | Accepted |
+| D-082 | Favorites collection names are compared without regard to letter case; names such as `Rock` and `rock` are duplicates, and creation is blocked. | Accepted |
+| D-083 | Leading and trailing whitespace is trimmed from a Favorites collection name before validation and duplicate comparison; for example, ` Rock ` is normalized to `Rock`. | Accepted |
+| D-084 | Multiple consecutive spaces between words in a Favorites collection name are preserved as entered; they are not collapsed into a single space. | Accepted |
+| D-085 | When a duplicate Favorites collection name is entered, the validation message is displayed directly below the name field inside the creation popup. | Accepted |
+| D-086 | The duplicate-name validation message disappears immediately when the user edits the collection name so that it is no longer a duplicate. | Accepted |
+
+| D-087 | Creating a playlist opens a popup dialog with a playlist-name field and **Create** / **Cancel** actions, following the accepted Favorites collection creation-dialog pattern. | Accepted |
+| D-088 | Playlist names must be unique; duplicate comparison is case-insensitive. | Accepted |
+| D-089 | When a duplicate playlist name is entered, the validation message appears below the name field and clears immediately when the user edits the name to a non-duplicate. | Accepted |
+| D-090 | Renaming a playlist uses the same popup and name-validation rules as playlist creation. | Accepted |
+| D-091 | Tracks can be added to a playlist from either the right-click context menu or the row's three-dot menu using **Add to Playlist**. | Accepted |
+| D-092 | When multiple tracks are selected, the user can add them to an existing playlist or create a new playlist within the same flow, without leaving the add-to-playlist process. | Accepted |
+| D-093 | An empty playlist remains visible and displays a message that it has no tracks yet, together with an option to add tracks. | Accepted |
+| D-094 | A playlist's temporary sort selection is remembered only while that playlist remains open; temporary sorting never changes its saved manual order. | Accepted |
+
+| D-095 | Playlists are displayed alphabetically by playlist name. | Accepted |
+| D-096 | Each playlist displays its current track count alongside its name. | Accepted |
+| D-097 | Playlist Rename and Delete actions are available through both the three-dot menu and the right-click context menu. | Accepted |
+| D-098 | Deleting a playlist always requires confirmation before the playlist and its entries are deleted. | Accepted |
+| D-099 | The playlist list itself remains alphabetically ordered by playlist name; users cannot manually reorder playlists. This does not affect the separately accepted manual ordering of tracks inside each playlist. | Accepted |
+| D-100 | When adding folders to Local Music, the folder-selection flow provides an explicit **Confirm** action to complete the selection. | Accepted |
+
+| D-101 | The expanded Music Player occupies the central workspace while the left navigation remains visible. | Accepted |
+| D-102 | In the expanded Music Player, Playback Queue is displayed as a right-side column and remains visible. | Accepted |
+| D-103 | In the expanded Music Player, available lyrics are displayed below the track information. | Accepted |
 
 ## Change control
 

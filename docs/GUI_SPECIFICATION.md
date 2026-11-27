@@ -63,11 +63,11 @@ Local Music is a separate page with these views:
 
 ### Playlists
 
-Playlists is one navigation destination containing the user's playlists. Individual playlists are not separate permanent navigation items.
+Playlists is one navigation destination containing the user's playlists. Individual playlists are not separate permanent navigation items. The playlist list is displayed alphabetically by playlist name, and each playlist shows its current track count beside its name. Users cannot manually reorder the playlist list; this is separate from the persistent manual Drag & Drop ordering of tracks within an individual playlist. Both the three-dot menu and right-click context menu provide Rename and Delete actions. Delete always opens a confirmation prompt before removing the playlist and its entries. Creating a playlist opens a popup with a playlist-name field and **Create** / **Cancel** actions, following the accepted Favorites collection dialog pattern. Playlist names must be unique using case-insensitive comparison. A duplicate-name message appears below the name field and clears immediately when the entered name is edited to a non-duplicate. Renaming uses the same popup and validation rules as creation. Tracks can be added from either the right-click context menu or the row's three-dot menu through **Add to Playlist**. For multiple selected tracks, the user can choose an existing playlist or create a new one without leaving the add-to-playlist flow. An empty playlist remains visible and shows a no-tracks-yet message with an option to add tracks. Tracks can be manually reordered with Drag & Drop; the selected order is saved persistently. Users can temporarily sort by title, artist, or album without changing the saved manual order; the selected sort is remembered only while that playlist remains open. Removing a track from a playlist removes only that entry from the current playlist; the track remains in Local Music, Favorites, and every other playlist, and its local audio file is not deleted. Deleting a playlist removes only the playlist and its entries; it never deletes the underlying music files or removes tracks from Local Music or Favorites.
 
 ### Favorites
 
-Favorites supports favourite tracks and user-created collections.
+Favorites supports favourite tracks and user-created collections. A new collection can be created either with a **New Collection** button on the Favorites page or with a **+** button beside the Favorites heading. Selecting either entry point opens a popup dialog containing a collection-name field and **Create** / **Cancel** actions. Collection names must be unique. If the entered name already exists, the collection is not created and the dialog displays a message that the name already exists directly below the name field and disappears immediately when the user edits the name so that it is no longer a duplicate. The **Create** button remains disabled until the field contains a non-empty name; an empty or whitespace-only value is invalid. Name comparison is case-insensitive, so names such as `Rock` and `rock` are treated as duplicates and creation is blocked. Leading and trailing whitespace is automatically trimmed before validation and duplicate comparison, so ` Rock ` is normalized to `Rock`. Multiple consecutive spaces between words are preserved as entered and are not collapsed; for example, `Rock   Classics` remains `Rock   Classics`. Each user-created Favorites collection displays its current track count alongside its name (for example, `Rock Classics (24)`). The main Favorites list does not display a total track count alongside its name. The main Favorites list supports its own manually arranged track order, saved persistently and independently of the order in individual user-created Favorites collections. The main Favorites list can also be temporarily sorted by track title, artist, or album. Temporary sorting does not change its saved manual order.  Tracks within each user-created Favorites collection can be manually reordered by drag and drop, and the chosen order is saved persistently. Removing a track from a user-created Favorites collection removes it only from that collection. The track remains in the main Favorites list and in every other Favorites collection that contains it; the local audio file is not deleted. Removing a track from the main Favorites list removes only its Favorites designation; the track remains in Local Music and every playlist containing it, and its local audio file is not deleted. Deleting a user-created Favorites collection removes only that collection and its entries; tracks remain in the main Favorites list, Local Music, and any playlists containing them, and local audio files are not deleted. Users can rename a user-created Favorites collection after creation; renaming changes only its name and does not affect its tracks or their saved order. User-created Favorites collections have no custom cover-image option. Collections are displayed alphabetically by name. There is no dedicated search field for Favorites collections. The collection's three-dot menu and its right-click context menu both provide Delete; either path opens the same confirmation prompt. Deletion removes only the collection and its entries, never the underlying audio files or tracks in the main Favorites list, Local Music, or playlists.
 
 ### Download Queue
 
@@ -160,18 +160,20 @@ The progress bar supports click and drag seeking.
 
 ### Expanded player
 
-The expanded player contains:
+The expanded player occupies the central workspace; the left navigation remains visible.
 
+The main player area contains:
 - Large cover artwork
 - Track information
 - Playback controls
 - Progress bar
 - Volume control
 - Shuffle / Repeat
-- Playback Queue access
-- Lyrics, when available
+- Lyrics below the track information, when available
 
-The expanded player does not currently include a separately accepted Track Details section.
+Playback Queue is displayed in a dedicated right-side column within the expanded player and remains visible. The queue supports reordering tracks.
+
+The expanded player does not include a separately accepted Track Details section.
 
 Controls:
 
@@ -195,11 +197,11 @@ The following must not be treated as accepted design decisions:
 - Exact dimensions of the shared left navigation, central workspace, and bottom player.
 - Icons, visual styling, themes, and detailed responsive behaviour.
 - Provider-specific playback presentation and states.
-- Exact editable metadata fields and metadata-editing workflow. Supported formats are MP3, M4A, FLAC, WAV, and OGG; metadata changes are written into the audio file itself where supported. Damaged or unreadable files remain visible in the library with an error indication. Detailed error presentation and remaining file-management behaviour are still open. The user adds folders manually; they are scanned recursively at startup and monitored in the background. Entries for moved/deleted files are removed from the library without touching disk files.
-- Detailed playlist editing interactions and collection management.
+- Remaining Local Music file-management behaviour beyond the accepted scanning, metadata-editing, and damaged-file handling rules. Folder selection includes an explicit **Confirm** action. The user adds folders manually; they are scanned recursively at startup and monitored in the background. Entries for moved/deleted files are removed from the library without touching disk files. Metadata editing is defined: title, artist, album, track number, year, and genre; explicit Save / Cancel; bulk editing; direct writing to the original file without automatic backup where supported. Damaged/unreadable files remain visible with a red error indicator beside the track name and offer Retry and Details. Details shows file name, file location, a user-friendly error message, and technical error detail when available.
+- Remaining playlist presentation and management details not yet specified.
 - Exact download quality/bitrate levels and provider-specific download restrictions. The unified local download and offline-playback model is accepted.
-- Dialogs, notifications, and error-state presentation.
-- Detailed lyrics availability and display behaviour.
+- General dialogs and notifications beyond the already-defined damaged-file error state.
+- Lyrics availability, source, synchronisation, and fallback behaviour; presentation is accepted as below the track information in the expanded player.
 
 ## 9. Working rule
 

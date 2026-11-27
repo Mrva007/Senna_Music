@@ -78,9 +78,9 @@ One shared search covers music from connected/supported online providers and Loc
 - Senna Music uses that location for downloaded music files.
 - Local Music is a distinct page with All Tracks, Artists, Albums, and Folders views.
 
-The user manually adds the folders that Senna Music should scan. Scanning is recursive and includes all subfolders. Senna Music automatically scans those folders at startup and continues monitoring them in the background while the application is running. Newly discovered music files are added to the library automatically, without a separate confirmation step. If a previously indexed file has been moved or deleted, the application removes its entry from the library; it does not delete or modify files on disk.
+The user manually adds the folders that Senna Music should scan through a folder-selection flow with an explicit **Confirm** action to complete the selection. Scanning is recursive and includes all subfolders. Senna Music automatically scans those folders at startup and continues monitoring them in the background while the application is running. Newly discovered music files are added to the library automatically, without a separate confirmation step. If a previously indexed file has been moved or deleted, the application removes its entry from the library; it does not delete or modify files on disk.
 
-Local Music supports MP3, M4A, FLAC, WAV, and OGG files. Senna Music reads supported audio metadata and allows the user to edit it, saving changes into the audio file itself (where the format supports the relevant metadata). If a file is damaged or cannot be read, it remains visible in the library with an error indication rather than being silently omitted. Exact metadata fields, editing workflow, and detailed error presentation remain open.
+Local Music supports MP3, M4A, FLAC, WAV, and OGG files. Senna Music reads supported audio metadata and allows the user to edit these basic fields: title, artist, album, track number, year, and genre. The editing workflow uses explicit Save / Cancel controls; changes are not written until the user selects Save. Users can bulk-edit metadata for multiple selected tracks. When saved, changes are written directly into the original audio file where the format supports the relevant metadata. Senna Music does not create an automatic backup copy before editing. If a file is damaged or cannot be read, it remains visible in the library with a red error indicator beside its track name rather than being silently omitted. The available actions are Retry (attempt to load the file again) and Details. The Details view shows the file name, file location, a user-friendly error message, and a technical error detail when available.
 
 ## 7. Track lists, actions, and Favorites
 
@@ -105,7 +105,7 @@ Bulk actions for selected tracks:
 
 Track Details shows track name, artist, album, duration, source, file format, file location, and track artwork.
 
-Favorites supports favourite tracks and user-created collections.
+Favorites supports favourite tracks and user-created collections. A new collection can be created either with a **New Collection** button on the Favorites page or with a **+** button beside the Favorites heading. Selecting either entry point opens a popup dialog containing a collection-name field and **Create** / **Cancel** actions. Collection names must be unique: if the entered name already exists, creation is blocked and the user sees a message that the name already exists directly below the name field inside the creation popup. The message disappears immediately when the user edits the name so that it is no longer a duplicate. The **Create** button remains disabled until the name field contains a non-empty name; empty or whitespace-only input is invalid. Name comparison is case-insensitive, so names such as `Rock` and `rock` are treated as duplicates and creation is blocked. Leading and trailing whitespace is automatically trimmed before validation and duplicate comparison, so ` Rock ` is normalized to `Rock`. Multiple consecutive spaces between words are preserved as entered and are not collapsed; for example, `Rock   Classics` remains `Rock   Classics`. Each user-created Favorites collection displays its current track count alongside its name (for example, `Rock Classics (24)`). The main Favorites list does not display a total track count alongside its name. The main Favorites list supports its own manually arranged track order, saved persistently and independently of the order in individual user-created Favorites collections. The main Favorites list can also be temporarily sorted by track title, artist, or album. Temporary sorting does not change its saved manual order.  Tracks within each user-created Favorites collection can be manually reordered by drag and drop, and the chosen order is saved persistently. Removing a track from a user-created Favorites collection removes it only from that collection. The track remains in the main Favorites list and in every other Favorites collection that contains it; the local audio file is not deleted. Removing a track from the main Favorites list removes only its Favorites designation; the track remains in Local Music and every playlist containing it, and its local audio file is not deleted. Deleting a user-created Favorites collection removes only that collection and its entries; tracks remain in the main Favorites list, Local Music, and any playlists containing them, and local audio files are not deleted. Users can rename a user-created Favorites collection after creation; renaming changes only its name and does not affect its tracks or their saved order. User-created Favorites collections do not support custom cover images. User-created Favorites collections are displayed alphabetically by name. The Favorites collections view does not include a dedicated collection-search field. A collection can be deleted either through its three-dot menu or by right-clicking it; both paths show a confirmation prompt. Deletion removes only the collection and its entries; tracks remain in the main Favorites list, Local Music, and any playlists containing them, and local audio files are not deleted.
 
 ## 8. GUI and CLI
 
@@ -150,6 +150,8 @@ Queue behaviour:
 - Drag & Drop reordering changes task priority without interrupting the active download.
 - Newly added tasks go to the end of the queue.
 - Only one download runs at a time.
+- The queue is preserved when the application closes. Waiting tasks remain queued after restart.
+- If an active download was interrupted, Senna Music resumes it from the last safely saved position when the provider/source technically supports resuming. If resuming is not supported, the task remains available for a safe retry; the application must not claim that partial progress can be resumed.
 
 No separate Download History page is planned; the Download Queue is for current and waiting tasks.
 
@@ -164,7 +166,7 @@ Compact player information:
 - Album
 - Favorite button
 
-The expanded player includes large cover artwork, track information, playback controls, progress bar, volume control, Shuffle / Repeat, Playback Queue access, and lyrics when available.
+The expanded player occupies the central workspace while the left navigation remains visible. Its main area includes large cover artwork, track information, playback controls, progress bar, volume control, Shuffle / Repeat, and available lyrics below the track information. Playback Queue is displayed in a dedicated, always-visible right-side column within the expanded player and supports track reordering.
 
 Controls:
 - Play / Pause
@@ -182,15 +184,19 @@ When the application closes, it saves the last played track, playback position, 
 
 ## 12. Playlists
 
-The user manages playlists manually:
-- Create
-- Rename
-- Delete
-- Add and remove tracks
-- Reorder tracks
-- Play an entire playlist
+The user manages playlists:
+- Create, rename, and delete playlists. Playlist entries are displayed alphabetically by playlist name, and each playlist displays its current track count alongside its name. The playlist list itself cannot be manually reordered; manual Drag & Drop ordering applies to tracks within an individual playlist.
+- Rename and Delete are available through both the playlist's three-dot menu and right-click context menu. Deleting a playlist always requires a confirmation prompt.
+- Add and remove tracks.
+- Reorder tracks manually using Drag & Drop; the chosen order is saved persistently.
+- Temporarily sort a playlist by title, artist, or album without changing its saved manual order. The selected sort is remembered only while that playlist remains open.
+- Play an entire playlist.
 
-All playlists are accessed through the single Playlists navigation destination. Individual playlists are not separate permanent navigation items.
+Creating a playlist opens a popup with a playlist-name field and **Create** / **Cancel** actions, following the accepted Favorites collection dialog pattern. Playlist names must be unique, with case-insensitive comparison. If the entered name is a duplicate, a validation message appears below the name field and disappears immediately when the user edits the name to a non-duplicate. Renaming a playlist uses the same popup and validation rules as creation.
+
+Tracks can be added to a playlist from the right-click context menu or the row's three-dot menu through **Add to Playlist**. When multiple tracks are selected, the user can choose an existing playlist or create a new one within the same flow, without leaving the add-to-playlist process. An empty playlist remains visible and displays a message that it has no tracks yet, with an option to add tracks.
+
+Removing a track from Favorites removes only its Favorites designation; the track remains in Local Music and every playlist containing it, and its local audio file is not deleted. Removing a track from a playlist removes only that entry from the current playlist. The track remains in Local Music, Favorites, and every other playlist; its local audio file is not deleted. Deleting a playlist removes only that playlist and its playlist entries. It never deletes the underlying music files and never removes the tracks from Local Music or Favorites. All playlists are accessed through the single Playlists navigation destination. Individual playlists are not separate permanent navigation items.
 
 Automatic collection cataloguing by artist, album, and genre is not part of the agreed concept.
 
