@@ -52,7 +52,7 @@ The selected GUI direction is the simple option B:
 - Music player at the bottom.
 - No unnecessary recommendation or decorative sections.
 
-Senna Music uses the shared GUI structure intended for future applications: a left navigation menu and a central workspace. The structure is consistent across applications; application-specific content appears in the central workspace. Exact dimensions remain open. The left navigation has a fixed width and cannot be resized by dragging its edge. Central workspace layout is page-specific. Artists, Albums, and Folders views support switching between Grid and List. Album cards show artwork, album name, artist, and year.
+Senna Music uses the shared GUI structure intended for future applications: a left navigation menu and a central workspace. The structure is consistent across applications; application-specific content appears in the central workspace. Exact dimensions remain open. The left navigation has a fixed width and cannot be resized by dragging its edge; when the application window becomes very narrow it automatically collapses to icons, with item names shown on hover. The active navigation item uses both a changed background and a coloured left-edge line. Central workspace layout is page-specific, and page titles appear only when needed. Artists, Albums, and Folders views support switching between Grid and List. Album cards show artwork, album name, artist, and year. Grid card counts adapt automatically to available workspace width. In narrow windows, the bottom player reduces displayed information but retains essential playback controls.
 
 Accepted left-navigation order:
 1. Home
@@ -69,7 +69,7 @@ There is no separate Search navigation item; search is available from Home.
 
 Home places the shared search at the top, followed by Recently Played, Playlists, and Local Music sections stacked vertically. Sections with no data are hidden.
 
-One shared search covers music from connected/supported online providers and Local Music. Results identify their source and can be filtered by source (All Sources, Spotify, YouTube Music, SoundCloud, or Local Music). Results use a list layout with track name, artist, album, and source. Previous searches are retained and users can clear the search history.
+One shared search covers music from connected/supported online providers and Local Music. Results identify their source and can be filtered by source (All Sources, Spotify, YouTube Music, SoundCloud, or Local Music). Results use a list layout with track name, artist, album, and source. Previous searches are retained and appear in a dropdown below the shared search field; users can clear the history immediately without a confirmation prompt.
 
 ## 6. Local music collection
 
@@ -117,7 +117,7 @@ The standard graphical interface.
 ### CLI
 A command interface for controlling the application and supporting future AI-agent integration. Intended operations include search, playback, downloads, and task monitoring, subject to permissions.
 
-Both interfaces use the same Core and the same permission system. There must not be two independent permission systems. Keyboard shortcuts cover playback (Play/Pause, Previous, Next), focusing Search, navigation between main pages, volume/Mute, and displaying/managing Playback Queue. Empty pages or sections show a message with a clear next-action button. Loading states use Skeleton and Spinner indicators, with a Progress Bar when progress is known.
+Both interfaces use the same Core and the same permission system. There must not be two independent permission systems. Keyboard shortcuts cover playback (Play/Pause, Previous, Next), focusing Search, navigation between main pages, volume/Mute, and displaying/managing Playback Queue. Users can customize shortcuts through Settings; shortcuts are discoverable both in Settings and in relevant menus/tooltips beside the associated functions. Empty pages or sections show a message with a clear next-action button. Loading states use Skeleton and Spinner indicators, with a Progress Bar when progress is known.
 
 CLI commands, API contracts, and permission details remain open.
 
