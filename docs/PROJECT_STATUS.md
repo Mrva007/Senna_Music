@@ -95,3 +95,4 @@ Continue defining remaining GUI details and product questions, including exact q
 - [x] Playlist Rename and Delete actions are available through both the three-dot and right-click menus.
 - [x] Playlist deletion always requires a confirmation prompt.
 - [x] Playlist list ordering finalized: playlists remain alphabetical and cannot be manually reordered; track ordering within each playlist remains independently manual.
+- [x] Local Music folder-selection flow includes an explicit **Confirm** action.
