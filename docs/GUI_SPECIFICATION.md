@@ -63,7 +63,7 @@ Local Music is a separate page with these views:
 
 ### Playlists
 
-Playlists is one navigation destination containing the user's playlists. Individual playlists are not separate permanent navigation items.
+Playlists is one navigation destination containing the user's playlists. Individual playlists are not separate permanent navigation items. Deleting a playlist removes only the playlist and its playlist entries; it never deletes the underlying music files or removes tracks from Local Music or Favorites.
 
 ### Favorites
 
@@ -196,7 +196,7 @@ The following must not be treated as accepted design decisions:
 - Icons, visual styling, themes, and detailed responsive behaviour.
 - Provider-specific playback presentation and states.
 - Remaining Local Music file-management behaviour beyond the accepted scanning, metadata-editing, and damaged-file handling rules. The user adds folders manually; they are scanned recursively at startup and monitored in the background. Entries for moved/deleted files are removed from the library without touching disk files. Metadata editing is defined: title, artist, album, track number, year, and genre; explicit Save / Cancel; bulk editing; direct writing to the original file without automatic backup where supported. Damaged/unreadable files remain visible with a red error indicator beside the track name and offer Retry and Details. Details shows file name, file location, a user-friendly error message, and technical error detail when available.
-- Detailed playlist editing interactions and collection management.
+- Detailed playlist editing interactions and collection management beyond the accepted safe-deletion rule: deleting a playlist removes only the playlist and its entries, leaving music files and Local Music/Favorites entries untouched.
 - Exact download quality/bitrate levels and provider-specific download restrictions. The unified local download and offline-playback model is accepted.
 - General dialogs and notifications beyond the already-defined damaged-file error state.
 - Detailed lyrics availability and display behaviour.
