@@ -212,7 +212,20 @@ When the application closes, it saves the last played track, playback position, 
 
 Clicking the compact player's cover artwork or track name does not open the expanded player. The dedicated expand button is used to open it.
 
-## 9. Not yet decided
+## 9. Additional accepted layout and interaction details
+
+- Left navigation width is fixed; users cannot resize it by dragging its edge.
+- The central workspace layout is page-specific and may differ between pages.
+- Track lists use a standard, balanced row density.
+- Track-list column headers remain visible while scrolling long lists.
+- Artists, Albums, and Folders views can switch between Grid and List layouts.
+- Album cards show cover artwork, album name, artist, and year.
+- Empty pages or sections show a message and a clear action button for the next step.
+- Loading states use Skeleton and Spinner indicators; a Progress Bar is shown when progress is known.
+- Previous searches are retained, with an option to clear search history.
+- Keyboard shortcuts cover playback (Play/Pause, Previous, Next), focusing Search, navigation between main pages, volume/Mute, and displaying/managing Playback Queue.
+
+## 10. Not yet decided
 
 The following must not be treated as accepted design decisions:
 
