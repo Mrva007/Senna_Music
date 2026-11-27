@@ -21,6 +21,7 @@
 - [x] Compact and expanded Music Player structure and controls accepted.
 - [x] Playback Queue placement and playback-state restoration accepted.
 - [x] Compact Music Player controls confirmed: Play / Pause, Previous, and Next alongside track information and artwork.
+- [x] Shuffle and Repeat remain exclusive to the expanded Music Player; they are not shown in the compact player.
 - [x] Download Queue columns, controls, task ordering, and single-download concurrency accepted.
 - [x] Unified download model confirmed: download each permitted track once to the user's chosen folder; offline listening plays that same local file, with no separate offline copy or storage location.
 - [x] Independent download destination, Artist / Album / Track folder structure, duplicate-skip behaviour, and format choices confirmed.

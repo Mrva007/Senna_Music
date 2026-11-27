@@ -112,6 +112,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-102 | In the expanded Music Player, Playback Queue is displayed as a right-side column and remains visible. | Accepted |
 | D-103 | In the expanded Music Player, available lyrics are displayed below the track information. | Accepted |
 | D-104 | The compact Music Player includes Play / Pause, Previous, and Next controls alongside the track information and artwork. | Accepted |
+| D-105 | Shuffle and Repeat controls are not displayed in the compact Music Player; they remain available in the expanded player. | Accepted |
 
 ## Change control
 
