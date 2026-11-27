@@ -68,6 +68,8 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-061 | Preserve the Download Queue across application restarts. Waiting tasks remain queued; an interrupted active download resumes from its last safely saved position when the provider/source technically supports resuming. | Accepted |
 | D-062 | Deleting a playlist removes only the playlist and its playlist entries; it never deletes the underlying music files or removes tracks from Local Music or Favorites. | Accepted |
 | D-063 | Removing a track from a playlist removes only that playlist entry. The track remains in Local Music, Favorites, and every other playlist; its local audio file is not deleted. | Accepted |
+| D-064 | Removing a track from Favorites removes only its Favorites designation. The track remains in Local Music and every playlist containing it; its local audio file is not deleted. | Accepted |
+| D-065 | Playlist tracks can be manually reordered by drag and drop, and the chosen order is saved persistently. Users may also sort the displayed list by title, artist, or album without changing the saved manual order. | Accepted |
 
 ## Change control
 
