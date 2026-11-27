@@ -90,6 +90,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-083 | Leading and trailing whitespace is trimmed from a Favorites collection name before validation and duplicate comparison; for example, ` Rock ` is normalized to `Rock`. | Accepted |
 | D-084 | Multiple consecutive spaces between words in a Favorites collection name are preserved as entered; they are not collapsed into a single space. | Accepted |
 | D-085 | When a duplicate Favorites collection name is entered, the validation message is displayed directly below the name field inside the creation popup. | Accepted |
+| D-086 | The duplicate-name validation message disappears immediately when the user edits the collection name so that it is no longer a duplicate. | Accepted |
 
 ## Change control
 
