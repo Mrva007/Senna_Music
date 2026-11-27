@@ -53,7 +53,7 @@ def read_track_metadata(file_path: Path) -> dict[str, Any]:
             genre=_tag_value(tags, "genre"),
             duration=float(audio.info.length) if audio.info and audio.info.length else None,
         )
-    except Exception as error:  # damaged files must remain visible in the library
+    except Exception as error:  # noqa: BLE001 - malformed audio must remain visible
         result["scan_error"] = f"{type(error).__name__}: {error}"
     return result
 
