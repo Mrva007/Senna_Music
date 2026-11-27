@@ -37,6 +37,7 @@
 - [x] Retry and Details actions are available for damaged or unreadable local audio files.
 - [x] Error Details content confirmed: file name, file location, user-friendly error message, and technical error detail when available.
 - [x] Download Queue persistence confirmed: preserve waiting tasks across restarts and resume interrupted active downloads from the last safely saved position when technically supported by the provider/source.
+- [x] Playlist deletion behaviour confirmed: deleting a playlist removes only the playlist and its entries; music files and tracks in Local Music or Favorites are unaffected.
 - [x] Download quality selection confirmed: default in Settings with per-download override.
 
 ## In progress
@@ -59,4 +60,4 @@ These are intentionally not started. Do not create application implementation un
 
 ## Next action
 
-Continue defining remaining GUI details and product questions, including exact quality/bitrate levels, provider capabilities, and detailed playlist/Favorites interactions. Local Music folder selection, recursive scanning, startup scanning, background monitoring, automatic addition of newly discovered files, missing-file reconciliation, supported audio formats, writing metadata changes into files where supported, basic editable fields, explicit Save / Cancel, bulk editing, no automatic backup, and visibility of damaged files with a red error indicator plus Retry and Details actions are accepted. The unified download/offline-playback model and Settings default with per-download quality override are also accepted. Do not revisit previously accepted decisions unless the owner requests a change.
+Continue defining remaining GUI details and product questions, including exact quality/bitrate levels, provider capabilities, and remaining playlist/Favorites interactions. Playlist deletion is defined: it removes only the playlist and its entries, never music files or tracks in Local Music or Favorites. Local Music folder selection, recursive scanning, startup scanning, background monitoring, automatic addition of newly discovered files, missing-file reconciliation, supported audio formats, writing metadata changes into files where supported, basic editable fields, explicit Save / Cancel, bulk editing, no automatic backup, and visibility of damaged files with a red error indicator plus Retry and Details actions are accepted. The unified download/offline-playback model and Settings default with per-download quality override are also accepted. Do not revisit previously accepted decisions unless the owner requests a change.
