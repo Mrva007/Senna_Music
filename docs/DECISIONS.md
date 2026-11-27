@@ -82,6 +82,7 @@ This log records owner-approved product decisions. Proposals and unresolved ques
 | D-075 | A user-created Favorites collection can be deleted either from its three-dot menu or by right-clicking the collection; both actions require confirmation. Deletion removes only the collection and its entries, not tracks or local audio files elsewhere. | Accepted |
 | D-076 | User-created Favorites collections are displayed alphabetically by collection name. | Accepted |
 | D-077 | Favorites collections do not have a dedicated search field. | Accepted |
+| D-078 | A new Favorites collection can be created either with a **New Collection** button on the Favorites page or with a **+** button beside the Favorites heading. | Accepted |
 
 ## Change control
 
