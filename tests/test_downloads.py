@@ -17,6 +17,7 @@ def sample_task():
         "source": "YouTube",
         "source_url": "https://youtube.com/watch?v=abc",
         "download_url": "https://youtube.com/watch?v=abc",
+        "destination_root": "C:/Music",
         "title": "Song",
         "artist": "Artist",
         "album": "Album",

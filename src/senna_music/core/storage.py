@@ -83,6 +83,7 @@ def initialize_database(path: str | Path | None = None) -> None:
                 source TEXT NOT NULL,
                 source_url TEXT NOT NULL,
                 download_url TEXT NOT NULL,
+                destination_root TEXT NOT NULL,
                 title TEXT NOT NULL,
                 artist TEXT NOT NULL DEFAULT '',
                 album TEXT NOT NULL DEFAULT '',
@@ -97,16 +98,21 @@ def initialize_database(path: str | Path | None = None) -> None:
             );
             """
         )
+        connection.execute(
+            "UPDATE download_queue SET status = 'queued', progress = 0 "
+            "WHERE status IN ('downloading', 'paused')"
+        )
+
 
 def add_download_task(task: dict[str, Any], path: str | Path | None = None) -> int:
     with closing(connect(path)) as connection, connection:
         cursor = connection.execute(
             """
             INSERT INTO download_queue (
-                source, source_url, download_url, title, artist, album,
+                source, source_url, download_url, destination_root, title, artist, album,
                 requested_format, quality, status, progress
             ) VALUES (
-                :source, :source_url, :download_url, :title, :artist, :album,
+                :source, :source_url, :download_url, :destination_root, :title, :artist, :album,
                 :requested_format, :quality, 'queued', 0
             )
             """,

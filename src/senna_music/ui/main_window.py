@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import shutil
+import threading
 import unicodedata
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -36,6 +38,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from senna_music.core.downloads import DownloadCancelled, download_audio
 from senna_music.core.collections import (
     add_favorites,
     add_tracks_to_favorite_collection,
@@ -59,12 +62,19 @@ from senna_music.core.metadata import read_cover_art, update_track_metadata
 from senna_music.core.scanner import scan_library
 from senna_music.core.search import SearchResult, search_source
 from senna_music.core.storage import (
+    add_download_task,
     add_library_folder,
+    clear_finished_download_tasks,
+    delete_download_task,
+    get_next_download_task,
     get_setting,
+    list_download_tasks,
     list_library_folders,
     list_tracks,
     remove_library_folder,
+    retry_download_task,
     set_setting,
+    update_download_task,
 )
 
 PAGES = [
@@ -128,6 +138,86 @@ class SearchWorker(QThread):
             executor.shutdown(wait=False, cancel_futures=True)
 
 
+
+class DownloadQueueWorker(QThread):
+    progress_changed = Signal(int, float)
+    task_changed = Signal(int)
+    queue_finished = Signal()
+
+    def __init__(self, ffmpeg_location: str = "", parent=None) -> None:
+        super().__init__(parent)
+        self.ffmpeg_location = ffmpeg_location
+        self.cancel_event = threading.Event()
+        self.pause_event = threading.Event()
+        self.pause_event.set()
+        self.stop_event = threading.Event()
+        self.active_task_id: int | None = None
+
+    def pause(self) -> None:
+        self.pause_event.clear()
+        if self.active_task_id is not None:
+            update_download_task(self.active_task_id, status="paused")
+            self.task_changed.emit(self.active_task_id)
+
+    def resume(self) -> None:
+        self.pause_event.set()
+        if self.active_task_id is not None:
+            update_download_task(self.active_task_id, status="downloading")
+            self.task_changed.emit(self.active_task_id)
+
+    def cancel_current(self) -> None:
+        self.cancel_event.set()
+
+    def stop_after_current(self) -> None:
+        self.stop_event.set()
+        self.cancel_current()
+        self.resume()
+
+    def _progress(self, task_id: int, percent: float) -> None:
+        update_download_task(task_id, progress=percent)
+        self.progress_changed.emit(task_id, percent)
+
+    def run(self) -> None:
+        while not self.stop_event.is_set():
+            self.pause_event.wait()
+            if self.stop_event.is_set():
+                break
+            task = get_next_download_task()
+            if task is None:
+                break
+            task_id = int(task["id"])
+            self.active_task_id = task_id
+            update_download_task(task_id, status="downloading", error="")
+            self.task_changed.emit(task_id)
+            try:
+                result = download_audio(
+                    task,
+                    task["destination_root"],
+                    progress_callback=lambda value: self._progress(task_id, value),
+                    cancel_event=self.cancel_event,
+                    pause_event=self.pause_event,
+                    ffmpeg_location=self.ffmpeg_location,
+                )
+                update_download_task(
+                    task_id,
+                    status=result["status"],
+                    progress=100 if result["status"] in {"completed", "skipped"} else 0,
+                    destination_path=result.get("path", ""),
+                    error=result.get("message", ""),
+                )
+            except DownloadCancelled as error:
+                update_download_task(task_id, status="cancelled", error=str(error))
+            except Exception as error:  # noqa: BLE001 - record task failures for the queue UI
+                update_download_task(task_id, status="failed", error=str(error))
+            finally:
+                self.cancel_event.clear()
+                self.active_task_id = None
+                self.task_changed.emit(task_id)
+            if self.stop_event.is_set():
+                break
+        self.queue_finished.emit()
+
+
 class LibraryScanThread(QThread):
     completed = Signal(int)
     failed = Signal(str)
@@ -152,6 +242,7 @@ class MainWindow(QMainWindow):
         self._current_track_path: str | None = None
         self._slider_is_pressed = False
         self._search_worker: SearchWorker | None = None
+        self._download_worker: DownloadQueueWorker | None = None
 
         self.player = QMediaPlayer(self)
         self.audio_output = QAudioOutput(self)
@@ -289,6 +380,15 @@ class MainWindow(QMainWindow):
                 QHeaderView.ResizeMode.Stretch
             )
             self.search_results_table.setSortingEnabled(True)
+            self.search_results_table.setSelectionMode(
+                QTableWidget.SelectionMode.ExtendedSelection
+            )
+            self.search_results_table.setContextMenuPolicy(
+                Qt.ContextMenuPolicy.CustomContextMenu
+            )
+            self.search_results_table.customContextMenuRequested.connect(
+                self._search_result_menu
+            )
             self.search_results_table.cellDoubleClicked.connect(self._open_search_result)
             layout.addWidget(self.search_results_table, 2)
             self._refresh_search_history()
@@ -351,6 +451,40 @@ class MainWindow(QMainWindow):
             layout.addWidget(remove_button, 0, Qt.AlignmentFlag.AlignLeft)
             self._refresh_folders()
             self._refresh_tracks()
+
+
+        elif name == "Download Queue":
+            actions = QHBoxLayout()
+            controls = (
+                ("Start Queue", self._start_download_queue),
+                ("Pause", self._pause_download_queue),
+                ("Resume", self._resume_download_queue),
+                ("Cancel Current", self._cancel_current_download),
+                ("Retry Selected", self._retry_selected_downloads),
+                ("Remove Selected", self._remove_selected_downloads),
+                ("Clear Finished", self._clear_finished_downloads),
+            )
+            for label, callback in controls:
+                button = QPushButton(label)
+                button.clicked.connect(callback)
+                actions.addWidget(button)
+            layout.addLayout(actions)
+            self.download_status = QLabel("Downloads are stored in the folder selected in Settings.")
+            self.download_status.setObjectName("muted")
+            layout.addWidget(self.download_status)
+            self.download_table = QTableWidget(0, 7)
+            self.download_table.setHorizontalHeaderLabels(
+                ["Track", "Artist", "Album", "Format", "Status", "Progress", "Source"]
+            )
+            self.download_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+            self.download_table.setSelectionMode(QTableWidget.SelectionMode.ExtendedSelection)
+            self.download_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+            self.download_table.verticalHeader().setVisible(False)
+            self.download_table.horizontalHeader().setSectionResizeMode(
+                QHeaderView.ResizeMode.Stretch
+            )
+            layout.addWidget(self.download_table, 1)
+            self._refresh_download_queue()
 
         elif name == "Search Sources":
             intro = QLabel("Enable the sources you want included in the next search.")
@@ -506,10 +640,53 @@ class MainWindow(QMainWindow):
             self._refresh_favorites()
             self._refresh_favorite_collections()
 
+
         elif name == "Settings":
-            intro = QLabel("Application preferences will be added incrementally.")
-            intro.setObjectName("muted")
-            layout.addWidget(intro)
+            layout.addWidget(QLabel("Download destination"))
+            destination_row = QHBoxLayout()
+            self.download_folder_input = QLineEdit(get_setting("download_folder", ""))
+            self.download_folder_input.setPlaceholderText("Choose where downloaded music is stored")
+            destination_row.addWidget(self.download_folder_input, 1)
+            browse_destination = QPushButton("Browse")
+            browse_destination.clicked.connect(self._select_download_folder)
+            destination_row.addWidget(browse_destination)
+            layout.addLayout(destination_row)
+
+            layout.addWidget(QLabel("Default download format"))
+            self.download_format_combo = QComboBox()
+            self.download_format_combo.addItems(["original", "mp3", "m4a", "flac"])
+            current_format = get_setting("download_format", "original")
+            self.download_format_combo.setCurrentText(current_format)
+            layout.addWidget(self.download_format_combo)
+
+            layout.addWidget(QLabel("Default audio quality"))
+            self.download_quality_combo = QComboBox()
+            self.download_quality_combo.addItems(["128", "192", "256", "320"])
+            self.download_quality_combo.setCurrentText(get_setting("download_quality", "192"))
+            layout.addWidget(self.download_quality_combo)
+
+            layout.addWidget(QLabel("FFmpeg executable or folder (optional)"))
+            ffmpeg_row = QHBoxLayout()
+            self.ffmpeg_path_input = QLineEdit(get_setting("ffmpeg_location", ""))
+            self.ffmpeg_path_input.setPlaceholderText(
+                shutil.which("ffmpeg") or "FFmpeg is not on PATH"
+            )
+            ffmpeg_row.addWidget(self.ffmpeg_path_input, 1)
+            browse_ffmpeg = QPushButton("Browse")
+            browse_ffmpeg.clicked.connect(self._select_ffmpeg)
+            ffmpeg_row.addWidget(browse_ffmpeg)
+            layout.addLayout(ffmpeg_row)
+
+            ffmpeg_status = QLabel(
+                "FFmpeg detected on PATH." if shutil.which("ffmpeg")
+                else "FFmpeg is required for MP3/M4A/FLAC conversion. Set its executable or folder."
+            )
+            ffmpeg_status.setObjectName("muted")
+            ffmpeg_status.setWordWrap(True)
+            layout.addWidget(ffmpeg_status)
+            save_settings = QPushButton("Save Settings")
+            save_settings.clicked.connect(self._save_download_settings)
+            layout.addWidget(save_settings)
             layout.addStretch(1)
 
         else:
@@ -1374,6 +1551,200 @@ class MainWindow(QMainWindow):
             for row in sorted({index.row() for index in table.selectionModel().selectedRows()})
             if table.item(row, 0) is not None
         ]
+
+
+    def _select_download_folder(self) -> None:
+        current = self.download_folder_input.text().strip()
+        folder = QFileDialog.getExistingDirectory(self, "Select Download Folder", current)
+        if folder:
+            self.download_folder_input.setText(folder)
+
+    def _select_ffmpeg(self) -> None:
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Select FFmpeg executable", "", "FFmpeg executable (ffmpeg.exe);;All files (*)"
+        )
+        if path:
+            self.ffmpeg_path_input.setText(path)
+
+    def _save_download_settings(self) -> None:
+        folder = self.download_folder_input.text().strip()
+        if folder and not Path(folder).expanduser().is_dir():
+            QMessageBox.warning(self, "Invalid folder", "The download folder does not exist.")
+            return
+        set_setting("download_folder", folder)
+        set_setting("download_format", self.download_format_combo.currentText())
+        set_setting("download_quality", self.download_quality_combo.currentText())
+        set_setting("ffmpeg_location", self.ffmpeg_path_input.text().strip())
+        QMessageBox.information(self, "Settings saved", "Download settings were saved.")
+
+    def _search_result_menu(self, position) -> None:
+        clicked_row = self.search_results_table.rowAt(position.y())
+        if clicked_row < 0:
+            return
+        selected_rows = {
+            index.row() for index in self.search_results_table.selectionModel().selectedRows()
+        }
+        if clicked_row not in selected_rows:
+            self.search_results_table.setCurrentCell(clicked_row, 0)
+            selected_rows = {clicked_row}
+        results = []
+        for row in sorted(selected_rows):
+            item = self.search_results_table.item(row, 0)
+            if item is None:
+                continue
+            result = item.data(Qt.ItemDataRole.UserRole)
+            if isinstance(result, SearchResult) and result.download_url:
+                results.append(result)
+        if not results:
+            return
+        menu = QMenu(self)
+        if len(results) == 1:
+            format_menu = menu.addMenu("Download as")
+            actions = {
+                format_menu.addAction(label): value
+                for label, value in (
+                    ("Original", "original"), ("MP3", "mp3"),
+                    ("M4A", "m4a"), ("FLAC", "flac"),
+                )
+            }
+            chosen = menu.exec(self.search_results_table.viewport().mapToGlobal(position))
+            if chosen in actions:
+                self._enqueue_search_results(results, actions[chosen])
+        else:
+            download_action = menu.addAction("Download Selected")
+            chosen = menu.exec(self.search_results_table.viewport().mapToGlobal(position))
+            if chosen == download_action:
+                self._enqueue_search_results(results)
+
+    def _enqueue_search_results(
+        self, results: list[SearchResult], requested_format: str | None = None
+    ) -> None:
+        destination = get_setting("download_folder", "")
+        if not destination or not Path(destination).expanduser().is_dir():
+            destination = QFileDialog.getExistingDirectory(
+                self, "Choose Download Folder", str(Path.home())
+            )
+            if not destination:
+                return
+            set_setting("download_folder", destination)
+            if hasattr(self, "download_folder_input"):
+                self.download_folder_input.setText(destination)
+        file_format = requested_format or get_setting("download_format", "original")
+        quality = get_setting("download_quality", "192")
+        queued = 0
+        unavailable = 0
+        for result in results:
+            if not result.download_url:
+                unavailable += 1
+                continue
+            add_download_task({
+                "source": result.source,
+                "source_url": result.url,
+                "download_url": result.download_url,
+                "destination_root": destination,
+                "title": result.title,
+                "artist": result.artist,
+                "album": result.album,
+                "requested_format": file_format,
+                "quality": quality,
+            })
+            queued += 1
+        self._refresh_download_queue()
+        if queued:
+            self.download_status.setText(f"{queued} download(s) added to the queue.")
+            self._start_download_queue()
+        if unavailable:
+            QMessageBox.information(
+                self, "Some results unavailable",
+                f"{unavailable} result(s) do not have a supported download URL.",
+            )
+
+    def _refresh_download_queue(self) -> None:
+        if not hasattr(self, "download_table"):
+            return
+        tasks = list_download_tasks()
+        self.download_table.setRowCount(len(tasks))
+        for row, task in enumerate(tasks):
+            values = [
+                task["title"], task["artist"], task["album"],
+                task["requested_format"].upper(), task["status"].title(),
+                f"{task['progress']:.0f}%", task["source"],
+            ]
+            for column, value in enumerate(values):
+                item = QTableWidgetItem(str(value or ""))
+                if column == 0:
+                    item.setData(Qt.ItemDataRole.UserRole, task["id"])
+                    if task["error"]:
+                        item.setToolTip(task["error"])
+                self.download_table.setItem(row, column, item)
+
+    def _start_download_queue(self) -> None:
+        if self._download_worker is not None and self._download_worker.isRunning():
+            self._download_worker.resume()
+            return
+        if get_next_download_task() is None:
+            self._refresh_download_queue()
+            return
+        ffmpeg_location = get_setting("ffmpeg_location", "")
+        self._download_worker = DownloadQueueWorker(ffmpeg_location, self)
+        self._download_worker.progress_changed.connect(self._download_progress_changed)
+        self._download_worker.task_changed.connect(
+            lambda _task_id: self._refresh_download_queue()
+        )
+        self._download_worker.queue_finished.connect(self._download_queue_finished)
+        self._download_worker.start()
+        self.download_status.setText("Download queue is running…")
+
+    def _download_progress_changed(self, _task_id: int, _progress: float) -> None:
+        self._refresh_download_queue()
+
+    def _download_queue_finished(self) -> None:
+        self._refresh_download_queue()
+        self._download_worker = None
+        self.download_status.setText("Download queue is idle.")
+
+    def _pause_download_queue(self) -> None:
+        if self._download_worker is not None and self._download_worker.isRunning():
+            self._download_worker.pause()
+            self.download_status.setText("Download paused.")
+
+    def _resume_download_queue(self) -> None:
+        if self._download_worker is not None and self._download_worker.isRunning():
+            self._download_worker.resume()
+        else:
+            self._start_download_queue()
+
+    def _cancel_current_download(self) -> None:
+        if self._download_worker is not None and self._download_worker.isRunning():
+            self._download_worker.cancel_current()
+
+    def _selected_download_ids(self) -> list[int]:
+        return [
+            int(self.download_table.item(row, 0).data(Qt.ItemDataRole.UserRole))
+            for row in sorted({
+                index.row() for index in self.download_table.selectionModel().selectedRows()
+            })
+            if self.download_table.item(row, 0) is not None
+        ]
+
+    def _retry_selected_downloads(self) -> None:
+        for task_id in self._selected_download_ids():
+            task = next((item for item in list_download_tasks() if item["id"] == task_id), None)
+            if task and task["status"] in {"failed", "cancelled"}:
+                retry_download_task(task_id)
+        self._refresh_download_queue()
+        self._start_download_queue()
+
+    def _remove_selected_downloads(self) -> None:
+        active_id = self._download_worker.active_task_id if self._download_worker else None
+        for task_id in self._selected_download_ids():
+            if task_id != active_id:
+                delete_download_task(task_id)
+        self._refresh_download_queue()
+
+    def _clear_finished_downloads(self) -> None:
+        clear_finished_download_tasks()
+        self._refresh_download_queue()
 
     def _show_track_details(self, track: dict) -> None:
         details = (
