@@ -19,6 +19,7 @@ def connect(path: str | Path | None = None) -> sqlite3.Connection:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(db_path)
     connection.row_factory = sqlite3.Row
+    connection.execute('PRAGMA foreign_keys = ON')
     return connection
 
 
@@ -50,6 +51,32 @@ def initialize_database(path: str | Path | None = None) -> None:
                 modified_ns INTEGER NOT NULL,
                 scan_error TEXT NOT NULL DEFAULT '',
                 scanned_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS playlists (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL COLLATE NOCASE UNIQUE,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS playlist_tracks (
+                playlist_id INTEGER NOT NULL REFERENCES playlists(id) ON DELETE CASCADE,
+                track_path TEXT NOT NULL REFERENCES tracks(path) ON DELETE CASCADE,
+                position INTEGER NOT NULL,
+                PRIMARY KEY (playlist_id, track_path)
+            );
+            CREATE TABLE IF NOT EXISTS favorites (
+                track_path TEXT PRIMARY KEY REFERENCES tracks(path) ON DELETE CASCADE,
+                position INTEGER NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS favorite_collections (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL COLLATE NOCASE UNIQUE,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS favorite_collection_tracks (
+                collection_id INTEGER NOT NULL REFERENCES favorite_collections(id) ON DELETE CASCADE,
+                track_path TEXT NOT NULL REFERENCES tracks(path) ON DELETE CASCADE,
+                position INTEGER NOT NULL,
+                PRIMARY KEY (collection_id, track_path)
             );
             """
         )
