@@ -60,3 +60,27 @@ def test_fetch_lyrics_reports_instrumental_track(monkeypatch):
     )
     result = lyrics.fetch_lyrics("Song", "Artist")
     assert result.status == "instrumental"
+
+def test_fetch_lyrics_uses_plain_provider_as_fallback(monkeypatch):
+    monkeypatch.setattr(lyrics, "_request", lambda *_args, **_kwargs: None)
+    fallback = lyrics.LyricsResult(
+        "found", plain_lyrics="Plain text lyrics", language="en", provider="Lyrics.ovh"
+    )
+    monkeypatch.setattr(lyrics, "_fetch_lyrics_ovh", lambda *_args: fallback)
+    result = lyrics.fetch_lyrics("Song", "Artist")
+    assert result.provider == "Lyrics.ovh"
+    assert result.plain_lyrics == "Plain text lyrics"
+
+
+def test_fetch_lyrics_uses_fallback_when_lrclib_is_unavailable(monkeypatch):
+    def fail_request(*_args, **_kwargs):
+        raise lyrics.LyricsProviderError("rate limited")
+
+    monkeypatch.setattr(lyrics, "_request", fail_request)
+    fallback = lyrics.LyricsResult(
+        "found", plain_lyrics="Fallback lyrics", language="en", provider="Lyrics.ovh"
+    )
+    monkeypatch.setattr(lyrics, "_fetch_lyrics_ovh", lambda *_args: fallback)
+    result = lyrics.fetch_lyrics("Song", "Artist")
+    assert result.status == "found"
+    assert result.provider == "Lyrics.ovh"

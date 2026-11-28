@@ -177,7 +177,10 @@ def fetch_lyrics(
     plain = str(best.get("plainLyrics") or "").strip()
     selected_text = synced or plain
     if not selected_text:
-        return LyricsResult("not_found", message="The provider returned no lyrics text.")
+        fallback = _fetch_lyrics_ovh(title, artist)
+        return fallback or LyricsResult(
+            "not_found", message="The providers returned no lyrics text."
+        )
 
     return LyricsResult(
         "found",
