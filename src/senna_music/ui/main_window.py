@@ -3,10 +3,14 @@ from __future__ import annotations
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QThread, QTimer, QUrl, Signal
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
     QCheckBox,
+    QDialog,
+    QDialogButtonBox,
     QFileDialog,
+    QFormLayout,
     QFrame,
     QHBoxLayout,
     QHeaderView,
@@ -25,6 +29,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from senna_music.core.metadata import read_cover_art, update_track_metadata
 from senna_music.core.scanner import scan_library
 from senna_music.core.storage import (
     add_library_folder,
@@ -364,6 +369,15 @@ class MainWindow(QMainWindow):
                 item = QTableWidgetItem(value)
                 if column == 0:
                     item.setData(Qt.ItemDataRole.UserRole, track["path"])
+                    if not track["scan_error"]:
+                        artwork = read_cover_art(track["path"])
+                        if artwork:
+                            pixmap = QPixmap()
+                            if pixmap.loadFromData(artwork):
+                                item.setIcon(QIcon(pixmap.scaled(
+                                    32, 32, Qt.AspectRatioMode.KeepAspectRatio,
+                                    Qt.TransformationMode.SmoothTransformation,
+                                )))
                     if track["scan_error"]:
                         item.setText("⚠ " + value)
                         item.setToolTip(track["scan_error"])
@@ -524,23 +538,93 @@ class MainWindow(QMainWindow):
         item = self.track_table.itemAt(position)
         if item is None:
             return
-        self.track_table.setCurrentCell(item.row(), 0)
-        track = self._selected_track()
-        if track is None:
+        selected_rows = {
+            index.row() for index in self.track_table.selectionModel().selectedRows()
+        }
+        if item.row() not in selected_rows:
+            self.track_table.setCurrentCell(item.row(), 0)
+            selected_rows = {item.row()}
+        selected_tracks = []
+        for row in selected_rows:
+            cell = self.track_table.item(row, 0)
+            if cell is None:
+                continue
+            path = cell.data(Qt.ItemDataRole.UserRole)
+            match = next((track for track in self._tracks if track["path"] == path), None)
+            if match is not None:
+                selected_tracks.append(match)
+        if not selected_tracks:
             return
         menu = QMenu(self)
         play_action = menu.addAction("Play")
         details_action = menu.addAction("View Track Details")
+        menu.addSeparator()
+        edit_label = "Edit Metadata" if len(selected_tracks) == 1 else "Edit Metadata for Selected"
+        edit_action = menu.addAction(edit_label)
         retry_action = None
-        if track["scan_error"]:
+        if any(track["scan_error"] for track in selected_tracks):
             retry_action = menu.addAction("Retry")
-        selected = menu.exec(self.track_table.viewport().mapToGlobal(position))
-        if selected == play_action:
-            self._play_track(track)
-        elif selected == details_action:
-            self._show_track_details(track)
-        elif retry_action is not None and selected == retry_action:
+        chosen = menu.exec(self.track_table.viewport().mapToGlobal(position))
+        if chosen == play_action:
+            self._play_track(selected_tracks[0])
+        elif chosen == details_action:
+            self._show_track_details(selected_tracks[0])
+        elif chosen == edit_action:
+            self._edit_track_metadata(selected_tracks)
+        elif retry_action is not None and chosen == retry_action:
             self._start_scan()
+
+
+    def _edit_track_metadata(self, tracks: list[dict]) -> None:
+        if not tracks:
+            return
+        bulk = len(tracks) > 1
+        dialog = QDialog(self)
+        dialog.setWindowTitle(
+            "Edit Track Metadata" if not bulk else f"Edit Metadata · {len(tracks)} tracks"
+        )
+        form = QFormLayout(dialog)
+        fields = {
+            "title": "Title", "artist": "Artist", "album": "Album",
+            "track_number": "Track number", "year": "Year", "genre": "Genre",
+        }
+        inputs: dict[str, QLineEdit] = {}
+        for key, label in fields.items():
+            field = QLineEdit()
+            if bulk:
+                field.setPlaceholderText("Leave blank to keep unchanged")
+            else:
+                field.setText(str(tracks[0].get(key) or ""))
+            form.addRow(label, field)
+            inputs[key] = field
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        form.addRow(buttons)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+        updates = {
+            key: field.text() for key, field in inputs.items()
+            if not bulk or field.text().strip()
+        }
+        if not updates:
+            return
+        failures: list[str] = []
+        for track in tracks:
+            try:
+                update_track_metadata(track["path"], updates)
+            except (OSError, ValueError) as error:
+                failures.append(f"{Path(track['path']).name}: {error}")
+        scan_library()
+        self._refresh_tracks()
+        if failures:
+            QMessageBox.warning(
+                self, "Some metadata could not be saved", "\\n".join(failures)
+            )
+        else:
+            QMessageBox.information(self, "Metadata saved", "Track metadata was updated.")
 
     def _show_track_details(self, track: dict) -> None:
         details = (
