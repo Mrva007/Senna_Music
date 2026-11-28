@@ -32,7 +32,6 @@ from senna_music.core.storage import (
     set_setting,
 )
 
-
 PAGES = [
     ("Home", "Home"),
     ("Local Music", "Local Music"),
