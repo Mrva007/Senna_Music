@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from mutagen import File as MutagenFile
+from mutagen import MutagenError
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import sanitize_filename
 
@@ -36,7 +38,7 @@ def _write_download_tags(path: Path, task: dict[str, Any]) -> None:
     if audio.tags is None:
         try:
             audio.add_tags()
-        except Exception:
+        except (MutagenError, OSError, ValueError):
             return
     for field in ("title", "artist", "album"):
         value = str(task.get(field) or "").strip()
@@ -44,7 +46,7 @@ def _write_download_tags(path: Path, task: dict[str, Any]) -> None:
             audio.tags[field] = [value]
     try:
         audio.save()
-    except Exception:
+    except (MutagenError, OSError, ValueError):
         return
 
 
