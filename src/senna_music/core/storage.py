@@ -83,6 +83,7 @@ def initialize_database(path: str | Path | None = None) -> None:
                 source TEXT NOT NULL,
                 source_url TEXT NOT NULL,
                 download_url TEXT NOT NULL,
+                destination_root TEXT NOT NULL,
                 title TEXT NOT NULL,
                 artist TEXT NOT NULL DEFAULT '',
                 album TEXT NOT NULL DEFAULT '',
@@ -97,16 +98,29 @@ def initialize_database(path: str | Path | None = None) -> None:
             );
             """
         )
+        columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(download_queue)")
+        }
+        if "destination_root" not in columns:
+            connection.execute(
+                "ALTER TABLE download_queue ADD COLUMN destination_root TEXT NOT NULL DEFAULT ''"
+            )
+        connection.execute(
+            "UPDATE download_queue SET status = 'queued', progress = 0 "
+            "WHERE status IN ('downloading', 'paused')"
+        )
+        connection.commit()
+
 
 def add_download_task(task: dict[str, Any], path: str | Path | None = None) -> int:
     with closing(connect(path)) as connection, connection:
         cursor = connection.execute(
             """
             INSERT INTO download_queue (
-                source, source_url, download_url, title, artist, album,
+                source, source_url, download_url, destination_root, title, artist, album,
                 requested_format, quality, status, progress
             ) VALUES (
-                :source, :source_url, :download_url, :title, :artist, :album,
+                :source, :source_url, :download_url, :destination_root, :title, :artist, :album,
                 :requested_format, :quality, 'queued', 0
             )
             """,

@@ -56,6 +56,7 @@ def download_audio(
     progress_callback: Callable[[float], None] | None = None,
     cancel_event: threading.Event | None = None,
     pause_event: threading.Event | None = None,
+    ffmpeg_location: str = "",
 ) -> dict[str, Any]:
     """Download one supported audio URL without overwriting an existing file."""
     url = str(task.get("download_url") or "").strip()
@@ -90,9 +91,13 @@ def download_audio(
         "overwrites": False,
         "progress_hooks": [progress_hook],
     }
+    if ffmpeg_location.strip():
+        options["ffmpeg_location"] = ffmpeg_location.strip()
 
     with YoutubeDL(options) as probe:
         info = probe.extract_info(url, download=False)
+    if cancel_event is not None and cancel_event.is_set():
+        raise DownloadCancelled("Download cancelled by user.")
     if not info:
         raise RuntimeError("The source did not return downloadable audio.")
     extension = str(info.get("ext") or "mp3").lower()
