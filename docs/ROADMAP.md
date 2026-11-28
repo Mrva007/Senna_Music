@@ -12,13 +12,13 @@ The roadmap tracks implementation work, not a second copy of the decision log. A
 - [x] Add Windows CI for tests and linting.
 - [x] Merge the desktop foundation PR #15.
 - [x] Run the foundation CI and identify the Ruff failures (pytest passed; Ruff findings are corrected in PR #16).
-- [ ] Confirm the lint fixes with a green CI run.
+- [x] Confirm the lint fixes with a green CI run (PR #16; 7 tests passed and Ruff passed).
 
 ### 2. Local Music
 - [x] Add and persist music folders.
-- [x] Recursively scan supported audio formats and populate the library (PR #16; final verification pending).
-- [x] Read and display track metadata and damaged-file states (PR #16; final verification pending).
-- [x] Start a library scan automatically on application launch (PR #16; final verification pending).
+- [x] Recursively scan supported audio formats and populate the library (PR #16; Windows CI passed).
+- [x] Read and display track metadata and damaged-file states (PR #16; Windows CI passed).
+- [x] Start a library scan automatically on application launch (PR #16; Windows CI passed).
 - [ ] Monitor folders while the application is running.
 - [ ] Add cover-art thumbnails, track details, and accepted row/context actions.
 - [ ] Implement local playback and the compact/expanded player.
