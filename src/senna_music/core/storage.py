@@ -98,10 +98,18 @@ def initialize_database(path: str | Path | None = None) -> None:
             );
             """
         )
+        columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(download_queue)")
+        }
+        if "destination_root" not in columns:
+            connection.execute(
+                "ALTER TABLE download_queue ADD COLUMN destination_root TEXT NOT NULL DEFAULT ''"
+            )
         connection.execute(
             "UPDATE download_queue SET status = 'queued', progress = 0 "
             "WHERE status IN ('downloading', 'paused')"
         )
+        connection.commit()
 
 
 def add_download_task(task: dict[str, Any], path: str | Path | None = None) -> int:
