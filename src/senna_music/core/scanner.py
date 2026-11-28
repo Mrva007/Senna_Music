@@ -64,8 +64,19 @@ def scan_library(database: str | Path | None = None) -> int:
     for folder in list_library_folders(database):
         root = Path(folder)
         found: set[str] = set()
-        if root.is_dir():
-            for current, directories, filenames in os.walk(root, followlinks=False):
+        # A temporarily unavailable drive or an unreadable subfolder must not
+        # make previously indexed tracks disappear from the library.
+        if not root.is_dir():
+            continue
+        scan_complete = True
+
+        def mark_incomplete(_error: OSError) -> None:
+            nonlocal scan_complete
+            scan_complete = False
+
+        for current, directories, filenames in os.walk(
+            root, followlinks=False, onerror=mark_incomplete
+        ):
                 directories[:] = [
                     name for name in directories if not (Path(current) / name).is_symlink()
                 ]
@@ -87,6 +98,8 @@ def scan_library(database: str | Path | None = None) -> int:
                         found.add(record["path"])
                         total += 1
                     except OSError:
+                        scan_complete = False
                         continue
-        remove_missing_tracks(root, found, database)
+        if scan_complete:
+            remove_missing_tracks(root, found, database)
     return total
