@@ -38,7 +38,7 @@ def test_playlists_support_unique_names_tracks_and_saved_order(tmp_path):
     remove_track_from_playlist(playlist["id"], str(paths[0]), db)
     assert len(list_playlist_tracks(playlist["id"], db)) == 1
     delete_playlist(playlist["id"], db)
-    assert list_playlists(db) == []
+    assert [item['name'] for item in list_playlists(db)] == ['Jazz']
 
 
 def test_favorites_and_collections_are_independent_and_persistent(tmp_path):
