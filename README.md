@@ -8,13 +8,15 @@ The application is music-only. Video playback is out of scope.
 
 **Version:** 0.1.0 — V1 implementation in progress.
 
-The merged desktop foundation provides:
-- A runnable PySide6 desktop shell with the agreed left navigation, central workspace, and bottom player area.
-- Home search entry point and dedicated Search Sources page.
-- Local Music folder selection and persistent folder registration.
-- A per-user SQLite database and Windows CI workflow.
+The desktop foundation provides a runnable PySide6 shell, navigation, SQLite persistence, and Windows CI. Local Music currently includes:
+- Recursive scanning of MP3, M4A, FLAC, WAV, and OGG files.
+- Mutagen metadata reading and persistent SQLite track indexing.
+- Startup scanning plus periodic background rescanning while the application is open.
+- Safe handling of unavailable folders and incomplete scans.
+- Local audio playback, previous/next, play/pause, seeking, and volume controls.
+- Track details and error information from the Local Music context menu.
 
-The current Local Music implementation milestone adds recursive scanning of MP3, M4A, FLAC, WAV, and OGG files, Mutagen metadata reading, persistent track indexing, and a visible track list. Local playback, folder monitoring, cover art, and remaining library interactions are still in progress. Do not treat this early build as a complete player.
+The application is still under active V1 development. Online search adapters, downloads, playlists, Favorites, expanded player, lyrics, and Windows packaging remain in the roadmap.
 
 ## Initial source direction
 
@@ -30,7 +32,7 @@ The shared download workflow is planned around yt-dlp and FFmpeg where supported
 ## Technology baseline
 
 - Python 3.11+
-- PySide6 / Qt for the Windows desktop GUI
+- PySide6 / Qt for the Windows desktop GUI and multimedia playback
 - SQLite for local application data
 - Mutagen for local audio metadata
 - yt-dlp and FFmpeg for supported source download/processing workflows

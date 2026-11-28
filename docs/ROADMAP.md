@@ -11,19 +11,20 @@ The roadmap tracks implementation work, not a second copy of the decision log. A
 - [x] Add SQLite persistence for settings and registered music folders.
 - [x] Add Windows CI for tests and linting.
 - [x] Merge the desktop foundation PR #15.
-- [x] Run the foundation CI and identify the Ruff failures (pytest passed; Ruff findings are corrected in PR #16).
-- [x] Confirm the lint fixes with a green CI run (PR #16; 7 tests passed and Ruff passed).
+- [x] Verify the desktop foundation and correct its Ruff findings in PR #16.
 
 ### 2. Local Music
 - [x] Add and persist music folders.
-- [x] Recursively scan supported audio formats and populate the library (PR #16; Windows CI passed).
-- [x] Read and display track metadata and damaged-file states (PR #16; Windows CI passed).
-- [x] Start a library scan automatically on application launch (PR #16; Windows CI passed).
-- [ ] Monitor folders while the application is running.
-- [ ] Add cover-art thumbnails, track details, and accepted row/context actions.
-- [ ] Implement local playback and the compact/expanded player.
-- [x] Use the folder picker's explicit confirmation action when registering a folder.
-- [ ] Add background folder monitoring while the application is running.
+- [x] Recursively scan supported audio formats and populate the library.
+- [x] Read and display track metadata and damaged-file states.
+- [x] Start a library scan automatically on application launch.
+- [x] Periodically rescan registered folders in a background thread while the app runs.
+- [x] Play local tracks with Play/Pause, Previous/Next, seeking, and volume.
+- [x] Show track details and scan errors from the track context menu.
+- [x] Use the folder picker's explicit Confirm action when registering a folder.
+- [ ] Add cover-art thumbnails and complete accepted row/context actions.
+- [ ] Add metadata editing with explicit Save/Cancel and bulk-edit support.
+- [ ] Implement compact/expanded player layout and persistent playback queue/state.
 
 ### 3. Integrated search and source sessions
 - [ ] Implement the shared search result model and source adapter contract.
@@ -31,7 +32,7 @@ The roadmap tracks implementation work, not a second copy of the decision log. A
 - [ ] Implement Spotify track lookup and matching-source resolution.
 - [ ] Implement SoundCloud search and URL handoff.
 - [ ] Add source enable/disable settings and authenticated session/cookie configuration where required.
-- [ ] Preserve the accepted streaming-results, error, filter, sorting, history, and alternative-selection behaviour.
+- [ ] Preserve accepted streaming-results, error, filter, sorting, history, and alternative-selection behaviour.
 
 ### 4. Downloads
 - [ ] Integrate yt-dlp and FFmpeg for supported URLs.
