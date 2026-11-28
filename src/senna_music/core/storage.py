@@ -78,7 +78,95 @@ def initialize_database(path: str | Path | None = None) -> None:
                 position INTEGER NOT NULL,
                 PRIMARY KEY (collection_id, track_path)
             );
+            CREATE TABLE IF NOT EXISTS download_queue (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                source TEXT NOT NULL,
+                source_url TEXT NOT NULL,
+                download_url TEXT NOT NULL,
+                title TEXT NOT NULL,
+                artist TEXT NOT NULL DEFAULT '',
+                album TEXT NOT NULL DEFAULT '',
+                requested_format TEXT NOT NULL DEFAULT 'original',
+                quality TEXT NOT NULL DEFAULT '192',
+                status TEXT NOT NULL DEFAULT 'queued',
+                progress REAL NOT NULL DEFAULT 0,
+                destination_path TEXT NOT NULL DEFAULT '',
+                error TEXT NOT NULL DEFAULT '',
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
             """
+        )
+
+def add_download_task(task: dict[str, Any], path: str | Path | None = None) -> int:
+    with closing(connect(path)) as connection, connection:
+        cursor = connection.execute(
+            """
+            INSERT INTO download_queue (
+                source, source_url, download_url, title, artist, album,
+                requested_format, quality, status, progress
+            ) VALUES (
+                :source, :source_url, :download_url, :title, :artist, :album,
+                :requested_format, :quality, 'queued', 0
+            )
+            """,
+            task,
+        )
+        return int(cursor.lastrowid)
+
+
+def list_download_tasks(path: str | Path | None = None) -> list[dict[str, Any]]:
+    with closing(connect(path)) as connection:
+        rows = connection.execute(
+            "SELECT * FROM download_queue ORDER BY id DESC"
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
+def get_next_download_task(path: str | Path | None = None) -> dict[str, Any] | None:
+    with closing(connect(path)) as connection:
+        row = connection.execute(
+            "SELECT * FROM download_queue WHERE status = 'queued' ORDER BY id LIMIT 1"
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def update_download_task(
+    task_id: int, path: str | Path | None = None, **updates: Any
+) -> None:
+    allowed = {
+        "status", "progress", "destination_path", "error", "requested_format", "quality"
+    }
+    unknown = set(updates) - allowed
+    if unknown:
+        raise ValueError(f"Unsupported download fields: {', '.join(sorted(unknown))}")
+    if not updates:
+        return
+    assignments = ", ".join(f"{key} = ?" for key in updates)
+    values = [*updates.values(), task_id]
+    with closing(connect(path)) as connection, connection:
+        connection.execute(
+            f"UPDATE download_queue SET {assignments}, updated_at = CURRENT_TIMESTAMP "
+            "WHERE id = ?",
+            values,
+        )
+
+
+def retry_download_task(task_id: int, path: str | Path | None = None) -> None:
+    update_download_task(
+        task_id, path, status="queued", progress=0, error="", destination_path=""
+    )
+
+
+def delete_download_task(task_id: int, path: str | Path | None = None) -> None:
+    with closing(connect(path)) as connection, connection:
+        connection.execute("DELETE FROM download_queue WHERE id = ?", (task_id,))
+
+
+def clear_finished_download_tasks(path: str | Path | None = None) -> None:
+    with closing(connect(path)) as connection, connection:
+        connection.execute(
+            "DELETE FROM download_queue WHERE status IN ('completed', 'skipped', 'cancelled')"
         )
 
 
