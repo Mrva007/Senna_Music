@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import json
 from pathlib import Path
+import unicodedata
+
+import keyring
 
 from PySide6.QtCore import Qt, QThread, QTimer, QUrl, Signal
-from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtGui import QDesktopServices, QIcon, QPixmap
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
     QCheckBox,
+    QComboBox,
     QDialog,
     QDialogButtonBox,
     QFileDialog,
@@ -52,6 +58,7 @@ from senna_music.core.collections import (
 )
 from senna_music.core.metadata import read_cover_art, update_track_metadata
 from senna_music.core.scanner import scan_library
+from senna_music.core.search import SearchResult, search_source
 from senna_music.core.storage import (
     add_library_folder,
     get_setting,
@@ -71,6 +78,55 @@ PAGES = [
     ("Settings", "Settings"),
 ]
 MONITOR_INTERVAL_MS = 60_000
+KEYRING_SERVICE = "Senna Music"
+SEARCH_HISTORY_LIMIT = 20
+
+
+class SearchWorker(QThread):
+    results_ready = Signal(str, object)
+    source_failed = Signal(str, str)
+
+    def __init__(
+        self,
+        query: str,
+        sources: list[str],
+        spotify_client_id: str,
+        spotify_client_secret: str,
+        parent=None,
+    ) -> None:
+        super().__init__(parent)
+        self.query = query
+        self.sources = sources
+        self.spotify_client_id = spotify_client_id
+        self.spotify_client_secret = spotify_client_secret
+
+    def run(self) -> None:
+        executor = ThreadPoolExecutor(max_workers=max(1, len(self.sources)))
+        futures = {
+            executor.submit(
+                search_source,
+                source,
+                self.query,
+                10,
+                self.spotify_client_id,
+                self.spotify_client_secret,
+            ): source
+            for source in self.sources
+        }
+        try:
+            for future in as_completed(futures, timeout=30):
+                source = futures[future]
+                try:
+                    self.results_ready.emit(source, future.result())
+                except Exception as error:  # noqa: BLE001
+                    self.source_failed.emit(source, str(error))
+        except TimeoutError:
+            for future, source in futures.items():
+                if not future.done():
+                    future.cancel()
+                    self.source_failed.emit(source, "Search timed out after 30 seconds.")
+        finally:
+            executor.shutdown(wait=False, cancel_futures=True)
 
 
 class LibraryScanThread(QThread):
@@ -96,6 +152,7 @@ class MainWindow(QMainWindow):
         self._tracks: list[dict] = []
         self._current_track_path: str | None = None
         self._slider_is_pressed = False
+        self._search_worker: SearchWorker | None = None
 
         self.player = QMediaPlayer(self)
         self.audio_output = QAudioOutput(self)
@@ -184,17 +241,58 @@ class MainWindow(QMainWindow):
             self.search_input.setPlaceholderText("Search tracks, artists or albums…")
             self.search_input.setMinimumHeight(44)
             self.search_input.returnPressed.connect(self._search)
-            search_button = QPushButton("Search")
-            search_button.setMinimumHeight(44)
-            search_button.clicked.connect(self._search)
+            self.search_button = QPushButton("Search")
+            self.search_button.setMinimumHeight(44)
+            self.search_button.clicked.connect(self._search)
             search_row.addWidget(self.search_input, 1)
-            search_row.addWidget(search_button)
+            search_row.addWidget(self.search_button)
             layout.addLayout(search_row)
+
+            history_row = QHBoxLayout()
+            history_row.addWidget(QLabel("Recent searches"))
+            self.search_history_combo = QComboBox()
+            self.search_history_combo.addItem("Choose a recent search")
+            self.search_history_combo.activated.connect(self._select_search_history)
+            history_row.addWidget(self.search_history_combo, 1)
+            clear_history_button = QPushButton("Clear History")
+            clear_history_button.clicked.connect(self._clear_search_history)
+            history_row.addWidget(clear_history_button)
+            layout.addLayout(history_row)
+
+            filter_row = QHBoxLayout()
+            filter_row.addWidget(QLabel("Filter"))
+            self.search_filter = QComboBox()
+            self.search_filter.addItems(
+                ["All Sources", "Local Music", "YouTube", "Spotify", "SoundCloud"]
+            )
+            self.search_filter.currentTextChanged.connect(self._apply_search_filter)
+            filter_row.addWidget(self.search_filter)
+            filter_row.addStretch(1)
+            layout.addLayout(filter_row)
+
             self.search_status = QLabel(
                 "Enable one or more sources on Search Sources to start online discovery."
             )
             self.search_status.setObjectName("muted")
             layout.addWidget(self.search_status)
+            self.search_results_table = QTableWidget(0, 5)
+            self.search_results_table.setHorizontalHeaderLabels(
+                ["Track", "Artist", "Album", "Duration", "Source"]
+            )
+            self.search_results_table.setSelectionBehavior(
+                QTableWidget.SelectionBehavior.SelectRows
+            )
+            self.search_results_table.setEditTriggers(
+                QTableWidget.EditTrigger.NoEditTriggers
+            )
+            self.search_results_table.verticalHeader().setVisible(False)
+            self.search_results_table.horizontalHeader().setSectionResizeMode(
+                QHeaderView.ResizeMode.Stretch
+            )
+            self.search_results_table.setSortingEnabled(True)
+            self.search_results_table.cellDoubleClicked.connect(self._open_search_result)
+            layout.addWidget(self.search_results_table, 2)
+            self._refresh_search_history()
             for section in ("Recently Played", "Playlists", "Local Music"):
                 heading = QLabel(section)
                 heading.setObjectName("sectionTitle")
@@ -282,6 +380,31 @@ class MainWindow(QMainWindow):
                 row_layout.addWidget(toggle)
                 row_layout.addWidget(status)
                 layout.addWidget(row)
+
+            spotify_label = QLabel("Spotify Developer credentials (for public track metadata)")
+            spotify_label.setObjectName("muted")
+            layout.addWidget(spotify_label)
+            self.spotify_client_id_input = QLineEdit(
+                keyring.get_password(KEYRING_SERVICE, "spotify_client_id") or ""
+            )
+            self.spotify_client_id_input.setPlaceholderText("Spotify Client ID")
+            layout.addWidget(self.spotify_client_id_input)
+            self.spotify_client_secret_input = QLineEdit(
+                keyring.get_password(KEYRING_SERVICE, "spotify_client_secret") or ""
+            )
+            self.spotify_client_secret_input.setPlaceholderText("Spotify Client Secret")
+            self.spotify_client_secret_input.setEchoMode(QLineEdit.EchoMode.Password)
+            layout.addWidget(self.spotify_client_secret_input)
+            save_credentials = QPushButton("Save Spotify Credentials")
+            save_credentials.clicked.connect(self._save_spotify_credentials)
+            layout.addWidget(save_credentials)
+            credentials_help = QLabel(
+                "Create an app in the Spotify Developer Dashboard. Credentials are stored "
+                "in the Windows credential store, not in the Senna Music database."
+            )
+            credentials_help.setObjectName("muted")
+            credentials_help.setWordWrap(True)
+            layout.addWidget(credentials_help)
 
             layout.addStretch(1)
 
@@ -447,6 +570,200 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentWidget(self._pages[name])
         for page_name, button in self._nav_buttons.items():
             button.setChecked(page_name == name)
+
+
+    @staticmethod
+    def _normalize_search_text(value: str) -> str:
+        decomposed = unicodedata.normalize("NFKD", value.casefold())
+        return "".join(char for char in decomposed if not unicodedata.combining(char)).strip()
+
+    def _remember_search(self, query: str) -> None:
+        try:
+            history = json.loads(get_setting("search_history", "[]"))
+        except (TypeError, ValueError):
+            history = []
+        history = [item for item in history if item.casefold() != query.casefold()]
+        history.insert(0, query)
+        set_setting("search_history", json.dumps(history[:SEARCH_HISTORY_LIMIT]))
+        self._refresh_search_history()
+
+    def _refresh_search_history(self) -> None:
+        if not hasattr(self, "search_history_combo"):
+            return
+        try:
+            history = json.loads(get_setting("search_history", "[]"))
+        except (TypeError, ValueError):
+            history = []
+        self.search_history_combo.blockSignals(True)
+        self.search_history_combo.clear()
+        self.search_history_combo.addItem("Choose a recent search")
+        self.search_history_combo.addItems(history[:SEARCH_HISTORY_LIMIT])
+        self.search_history_combo.setCurrentIndex(0)
+        self.search_history_combo.blockSignals(False)
+
+    def _select_search_history(self, index: int) -> None:
+        if index <= 0:
+            return
+        self.search_input.setText(self.search_history_combo.itemText(index))
+        self._search()
+
+    def _clear_search_history(self) -> None:
+        set_setting("search_history", "[]")
+        self._refresh_search_history()
+
+    def _save_spotify_credentials(self) -> None:
+        client_id = self.spotify_client_id_input.text().strip()
+        client_secret = self.spotify_client_secret_input.text().strip()
+        if not client_id or not client_secret:
+            QMessageBox.warning(
+                self, "Missing credentials", "Enter both Spotify Client ID and Client Secret."
+            )
+            return
+        try:
+            keyring.set_password(KEYRING_SERVICE, "spotify_client_id", client_id)
+            keyring.set_password(KEYRING_SERVICE, "spotify_client_secret", client_secret)
+        except Exception as error:  # noqa: BLE001
+            QMessageBox.critical(
+                self, "Credential storage failed",
+                f"Windows credential storage is unavailable: {error}",
+            )
+            return
+        QMessageBox.information(
+            self, "Credentials saved", "Spotify app credentials were saved securely."
+        )
+
+    def _search(self) -> None:
+        query = self.search_input.text().strip()
+        if len(query) < 2:
+            self.search_status.setText("Enter at least 2 characters to search.")
+            return
+        if self._search_worker is not None and self._search_worker.isRunning():
+            return
+
+        self._remember_search(query)
+        self.search_results_table.setRowCount(0)
+        normalized_query = self._normalize_search_text(query)
+        local_matches = []
+        for track in self._tracks:
+            searchable = " ".join(
+                [track["title"], track["artist"], track["album"]]
+            )
+            if normalized_query in self._normalize_search_text(searchable):
+                local_matches.append(track)
+        for track in local_matches:
+            self._append_search_row(
+                {
+                    "source": "Local Music",
+                    "title": track["title"],
+                    "artist": track["artist"],
+                    "album": track["album"],
+                    "duration": track["duration"],
+                    "local_track": track,
+                }
+            )
+
+        enabled = [
+            source for source in ("YouTube", "Spotify", "SoundCloud")
+            if get_setting(f"source_enabled:{source.casefold()}", "false") == "true"
+        ]
+        if not enabled:
+            self.search_status.setText(
+                f"{len(local_matches)} local matches. No online sources are enabled."
+            )
+            self._apply_search_filter(self.search_filter.currentText())
+            return
+
+        client_id = keyring.get_password(KEYRING_SERVICE, "spotify_client_id") or ""
+        client_secret = keyring.get_password(KEYRING_SERVICE, "spotify_client_secret") or ""
+        self.search_status.setText("Searching enabled sources…")
+        self.search_button.setEnabled(False)
+        self._search_worker = SearchWorker(
+            query, enabled, client_id, client_secret, self
+        )
+        self._search_worker.results_ready.connect(self._on_source_results)
+        self._search_worker.source_failed.connect(self._on_source_failed)
+        self._search_worker.finished.connect(self._search_completed)
+        self._search_worker.start()
+        self._apply_search_filter(self.search_filter.currentText())
+
+    def _append_search_row(self, result: dict | SearchResult) -> None:
+        self.search_results_table.setSortingEnabled(False)
+        row = self.search_results_table.rowCount()
+        self.search_results_table.insertRow(row)
+        if isinstance(result, SearchResult):
+            values = [
+                result.title, result.artist, result.album,
+                self._format_duration(result.duration), result.source,
+            ]
+            payload = result
+        else:
+            values = [
+                result["title"], result["artist"], result["album"],
+                self._format_duration(result["duration"]), result["source"],
+            ]
+            payload = result
+        for column, value in enumerate(values):
+            item = QTableWidgetItem(str(value or ""))
+            if column == 0:
+                item.setData(Qt.ItemDataRole.UserRole, payload)
+            self.search_results_table.setItem(row, column, item)
+        self.search_results_table.setSortingEnabled(True)
+        self._apply_search_filter(self.search_filter.currentText())
+
+    def _on_source_results(self, _source: str, results: list[SearchResult]) -> None:
+        for result in results:
+            self._append_search_row(result)
+
+    def _on_source_failed(self, source: str, message: str) -> None:
+        self._append_search_row({
+            "source": source,
+            "title": "Search failed",
+            "artist": message,
+            "album": "",
+            "duration": None,
+        })
+
+    def _search_completed(self) -> None:
+        self.search_button.setEnabled(True)
+        self._search_worker = None
+        if self.search_results_table.rowCount() == 0:
+            self.search_status.setText("No results found.")
+        else:
+            self.search_status.setText("Search complete.")
+        self._apply_search_filter(self.search_filter.currentText())
+
+    def _apply_search_filter(self, source: str) -> None:
+        if not hasattr(self, "search_results_table"):
+            return
+        for row in range(self.search_results_table.rowCount()):
+            source_item = self.search_results_table.item(row, 4)
+            row_source = source_item.text() if source_item else ""
+            self.search_results_table.setRowHidden(
+                row, source != "All Sources" and row_source != source
+            )
+
+    def _open_search_result(self, row: int, _column: int) -> None:
+        item = self.search_results_table.item(row, 0)
+        if item is None:
+            return
+        result = item.data(Qt.ItemDataRole.UserRole)
+        if isinstance(result, dict) and result.get("local_track"):
+            self._play_track(result["local_track"])
+            return
+        if not isinstance(result, SearchResult):
+            return
+        details = (
+            f"{result.title}\\n{result.artist}\\n{result.album}\\n"
+            f"Source: {result.source}\\n\\n{result.url}"
+        )
+        message = QMessageBox(self)
+        message.setWindowTitle("Search Result Details")
+        message.setText(details)
+        open_button = message.addButton("Open Source", QMessageBox.ButtonRole.AcceptRole)
+        message.addButton(QMessageBox.StandardButton.Close)
+        message.exec()
+        if message.clickedButton() == open_button:
+            QDesktopServices.openUrl(QUrl(result.url))
 
     def _search(self) -> None:
         query = self.search_input.text().strip()
