@@ -141,3 +141,67 @@ def test_existing_download_queue_schema_is_migrated(tmp_path):
     columns = {row[1] for row in connection.execute("PRAGMA table_info(download_queue)")}
     connection.close()
     assert "destination_root" in columns
+
+def test_download_audio_uses_requested_format_and_ffmpeg(monkeypatch, tmp_path):
+    instances = []
+
+    class FakeYDL:
+        def __init__(self, options):
+            self.params = options
+            instances.append(self)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+        def extract_info(self, _url, download=False):
+            assert download is False
+            return {"ext": "webm"}
+
+        def download(self, _urls):
+            output = self.params["outtmpl"].replace("%(ext)s", "mp3")
+            from pathlib import Path
+
+            Path(output).parent.mkdir(parents=True, exist_ok=True)
+            Path(output).write_bytes(b"fake audio")
+            return 0
+
+    monkeypatch.setattr("senna_music.core.downloads.YoutubeDL", FakeYDL)
+    monkeypatch.setattr("senna_music.core.downloads.MutagenFile", lambda *_args, **_kwargs: None)
+    task = sample_task()
+    task["requested_format"] = "mp3"
+    result = download_audio(
+        task, tmp_path, ffmpeg_location="C:/tools/ffmpeg/ffmpeg.exe"
+    )
+
+    assert result["status"] == "completed"
+    assert result["path"].endswith(".mp3")
+    assert instances[-1].params["ffmpeg_location"] == "C:/tools/ffmpeg/ffmpeg.exe"
+    assert instances[-1].params["postprocessors"][0]["preferredcodec"] == "mp3"
+
+
+def test_download_audio_cancels_before_starting_transfer(monkeypatch, tmp_path):
+    import threading
+
+    class FakeYDL:
+        def __init__(self, _options):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+        def extract_info(self, _url, download=False):
+            return {"ext": "webm"}
+
+    monkeypatch.setattr("senna_music.core.downloads.YoutubeDL", FakeYDL)
+    cancel = threading.Event()
+    cancel.set()
+    from senna_music.core.downloads import DownloadCancelled
+
+    with pytest.raises(DownloadCancelled, match="cancelled"):
+        download_audio(sample_task(), tmp_path, cancel_event=cancel)
