@@ -5,7 +5,7 @@ import re
 import time
 from dataclasses import dataclass
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 
 from langdetect import LangDetectException, detect
@@ -26,6 +26,7 @@ class LyricsResult:
     plain_lyrics: str = ""
     language: str = "unknown"
     message: str = ""
+    provider: str = "LRCLIB"
 
 
 def _request(endpoint: str, params: dict[str, str]) -> dict | list | None:
@@ -90,6 +91,28 @@ def _candidate_score(
     )
 
 
+
+def _fetch_lyrics_ovh(title: str, artist: str) -> LyricsResult | None:
+    url = (
+        "https://api.lyrics.ovh/v1/"
+        f"{quote(artist.strip(), safe='')}/{quote(title.strip(), safe='')}"
+    )
+    request = Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
+    try:
+        with urlopen(request, timeout=8) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except (HTTPError, URLError, TimeoutError, json.JSONDecodeError):
+        return None
+    plain = str(payload.get("lyrics") or "").strip() if isinstance(payload, dict) else ""
+    if not plain:
+        return None
+    return LyricsResult(
+        "found",
+        plain_lyrics=plain,
+        language=_language(plain),
+        provider="Lyrics.ovh",
+    )
+
 def fetch_lyrics(
     title: str,
     artist: str,
@@ -108,26 +131,35 @@ def fetch_lyrics(
     if duration and duration > 0:
         params["duration"] = str(round(duration))
 
-    exact = _request("get", params)
-    records = [exact] if isinstance(exact, dict) else []
-    exact_language = _language(
-        (exact or {}).get("syncedLyrics") or (exact or {}).get("plainLyrics") or ""
-    )
-    if not records or (language != "auto" and exact_language != language):
-        if records:
-            time.sleep(0.25)
-        search_params = {
-            "track_name": title.strip(),
-            "artist_name": artist.strip(),
-        }
-        if album.strip():
-            search_params["album_name"] = album.strip()
-        searched = _request("search", search_params)
-        if isinstance(searched, list):
-            records.extend(item for item in searched if isinstance(item, dict))
+    try:
+        exact = _request("get", params)
+        records = [exact] if isinstance(exact, dict) else []
+        exact_language = _language(
+            (exact or {}).get("syncedLyrics") or (exact or {}).get("plainLyrics") or ""
+        )
+        if not records or (language != "auto" and exact_language != language):
+            if records:
+                time.sleep(0.25)
+            search_params = {
+                "track_name": title.strip(),
+                "artist_name": artist.strip(),
+            }
+            if album.strip():
+                search_params["album_name"] = album.strip()
+            searched = _request("search", search_params)
+            if isinstance(searched, list):
+                records.extend(item for item in searched if isinstance(item, dict))
+    except LyricsProviderError as error:
+        fallback = _fetch_lyrics_ovh(title, artist)
+        if fallback:
+            return fallback
+        return LyricsResult("error", message=str(error))
 
     if not records:
-        return LyricsResult("not_found", message="No lyrics were found for this track.")
+        fallback = _fetch_lyrics_ovh(title, artist)
+        return fallback or LyricsResult(
+            "not_found", message="No lyrics were found from the available providers."
+        )
 
     best = min(
         records,
@@ -152,6 +184,7 @@ def fetch_lyrics(
         synced_lyrics=synced,
         plain_lyrics=plain,
         language=_language(selected_text),
+        provider="LRCLIB",
     )
 
 

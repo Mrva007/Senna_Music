@@ -1482,6 +1482,13 @@ class MainWindow(QMainWindow):
             left.addWidget(self.expanded_position_slider)
             lyrics_header = QHBoxLayout()
             lyrics_header.addWidget(QLabel("Lyrics"))
+            self.lyrics_follow_button = QPushButton("Follow")
+            self.lyrics_follow_button.setCheckable(True)
+            self.lyrics_follow_button.setChecked(True)
+            self.lyrics_follow_button.setToolTip(
+                "Follow the current lyric line; turn off to scroll manually"
+            )
+            lyrics_header.addWidget(self.lyrics_follow_button)
             self.lyrics_language_combo = QComboBox()
             self.lyrics_language_combo.addItems([
                 "Auto", "English", "Bosnian", "Croatian", "Serbian",
@@ -1685,13 +1692,13 @@ class MainWindow(QMainWindow):
                 self._lyrics_lines = parse_lrc(result.synced_lyrics)
                 self.lyrics_text.setPlainText("\\n".join(line for _, line in self._lyrics_lines))
                 self.lyrics_status_label.setText(
-                    f"Synchronized lyrics · {result.language.upper()}"
+                    f"Synchronized lyrics · {result.language.upper()} · {result.provider}"
                 )
             else:
                 self._lyrics_lines = []
                 self.lyrics_text.setPlainText(result.plain_lyrics)
                 self.lyrics_status_label.setText(
-                    f"Plain lyrics · {result.language.upper()}"
+                    f"Plain lyrics · {result.language.upper()} · {result.provider}"
                 )
         else:
             self._lyrics_lines = []
@@ -1704,6 +1711,7 @@ class MainWindow(QMainWindow):
             self._expanded_player_dialog is None
             or not self._lyrics_lines
             or not hasattr(self, "lyrics_text")
+            or not self.lyrics_follow_button.isChecked()
         ):
             return
         active_index = -1
@@ -2535,7 +2543,10 @@ class MainWindow(QMainWindow):
 
 
     def closeEvent(self, event) -> None:
-        workers = [self._scan_thread, self._search_worker, self._download_worker]
+        workers = [
+            self._scan_thread, self._search_worker, self._download_worker,
+            *self._lyrics_workers,
+        ]
         if self._download_worker is not None and self._download_worker.isRunning():
             self._download_worker.stop_after_current()
         for worker in workers:
