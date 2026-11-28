@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
-from pathlib import Path
 import unicodedata
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 import keyring
 
