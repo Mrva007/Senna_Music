@@ -77,29 +77,29 @@ def scan_library(database: str | Path | None = None) -> int:
         for current, directories, filenames in os.walk(
             root, followlinks=False, onerror=mark_incomplete
         ):
-                directories[:] = [
-                    name for name in directories if not (Path(current) / name).is_symlink()
-                ]
-                for filename in filenames:
-                    file_path = Path(current) / filename
-                    if file_path.is_symlink() or file_path.suffix.casefold() not in SUPPORTED_FORMATS:
-                        continue
-                    try:
-                        stat = file_path.stat()
-                        metadata = read_track_metadata(file_path)
-                        record = {
-                            "path": str(file_path.resolve()),
-                            **metadata,
-                            "file_format": file_path.suffix.lstrip(".").upper(),
-                            "file_size": stat.st_size,
-                            "modified_ns": stat.st_mtime_ns,
-                        }
-                        save_track(record, database)
-                        found.add(record["path"])
-                        total += 1
-                    except OSError:
-                        scan_complete = False
-                        continue
+            directories[:] = [
+                name for name in directories if not (Path(current) / name).is_symlink()
+            ]
+            for filename in filenames:
+                file_path = Path(current) / filename
+                if file_path.is_symlink() or file_path.suffix.casefold() not in SUPPORTED_FORMATS:
+                    continue
+                try:
+                    stat = file_path.stat()
+                    metadata = read_track_metadata(file_path)
+                    record = {
+                        "path": str(file_path.resolve()),
+                        **metadata,
+                        "file_format": file_path.suffix.lstrip(".").upper(),
+                        "file_size": stat.st_size,
+                        "modified_ns": stat.st_mtime_ns,
+                    }
+                    save_track(record, database)
+                    found.add(record["path"])
+                    total += 1
+                except OSError:
+                    scan_complete = False
+                    continue
         if scan_complete:
             remove_missing_tracks(root, found, database)
     return total
