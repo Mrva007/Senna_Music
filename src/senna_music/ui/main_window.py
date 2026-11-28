@@ -14,8 +14,8 @@ from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QHeaderView,
-    QLabel,
     QInputDialog,
+    QLabel,
     QLineEdit,
     QListWidget,
     QListWidgetItem,
@@ -682,9 +682,7 @@ class MainWindow(QMainWindow):
         edit_label = "Edit Metadata" if len(selected_tracks) == 1 else "Edit Metadata for Selected"
         edit_action = menu.addAction(edit_label)
         menu.addSeparator()
-        add_favorite_action = menu.addAction(
-            "Add to Favorites" if len(selected_tracks) > 1 else "Add to Favorites"
-        )
+        add_favorite_action = menu.addAction("Add to Favorites")
         playlist_menu = menu.addMenu("Add to Playlist")
         playlist_actions = {
             playlist_menu.addAction(item["name"]): item["id"]
