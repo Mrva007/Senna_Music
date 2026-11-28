@@ -7,7 +7,7 @@ from senna_music.core.collections import (
     rename_favorite_collection, rename_playlist, reorder_favorites,
     reorder_playlist_tracks,
 )
-from senna_music.core.storage import initialize_database, save_track, remove_missing_tracks
+from senna_music.core.storage import initialize_database, remove_missing_tracks, save_track
 
 
 def add_track(db, path, title):
