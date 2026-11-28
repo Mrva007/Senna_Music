@@ -107,3 +107,31 @@ def test_scan_preserves_index_when_registered_folder_is_temporarily_unavailable(
     music.rename(tmp_path / "Music temporarily offline")
     assert scan_library(database) == 0
     assert len(list_tracks(database)) == 1
+
+
+def test_scan_does_not_remove_tracks_after_partial_folder_read_error(tmp_path, monkeypatch):
+    database = tmp_path / "senna.sqlite3"
+    music = tmp_path / "Music"
+    music.mkdir()
+    audio_file = music / "still-there.wav"
+    audio_file.write_bytes(b"audio")
+    initialize_database(database)
+    add_library_folder(music, database)
+    monkeypatch.setattr(
+        "senna_music.core.scanner.read_track_metadata",
+        lambda path: {
+            "title": path.stem, "artist": "", "album": "", "track_number": "",
+            "year": "", "genre": "", "duration": None, "scan_error": "",
+        },
+    )
+    scan_library(database)
+    assert len(list_tracks(database)) == 1
+
+    def incomplete_walk(root, followlinks=False, onerror=None):
+        if onerror is not None:
+            onerror(PermissionError("temporary access denied"))
+        yield str(root), [], []
+
+    monkeypatch.setattr("senna_music.core.scanner.os.walk", incomplete_walk)
+    assert scan_library(database) == 0
+    assert len(list_tracks(database)) == 1
