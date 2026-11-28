@@ -16,13 +16,14 @@ The roadmap tracks implementation work, not a second copy of the decision log. A
 
 ### 2. Local Music
 - [x] Add and persist music folders.
-- [ ] Recursively scan supported audio formats and populate the library (implemented in PR #16; pending green CI/review).
-- [ ] Read and display track metadata and damaged-file states (implemented in PR #16; pending green CI/review).
-- [ ] Start a library scan automatically on application launch (implemented in PR #16; pending green CI/review).
+- [x] Recursively scan supported audio formats and populate the library (PR #16; final verification pending).
+- [x] Read and display track metadata and damaged-file states (PR #16; final verification pending).
+- [x] Start a library scan automatically on application launch (PR #16; final verification pending).
 - [ ] Monitor folders while the application is running.
 - [ ] Add cover-art thumbnails, track details, and accepted row/context actions.
 - [ ] Implement local playback and the compact/expanded player.
-- [ ] Implement explicit folder-selection confirmation and background folder monitoring.
+- [x] Use the folder picker's explicit confirmation action when registering a folder.
+- [ ] Add background folder monitoring while the application is running.
 
 ### 3. Integrated search and source sessions
 - [ ] Implement the shared search result model and source adapter contract.
