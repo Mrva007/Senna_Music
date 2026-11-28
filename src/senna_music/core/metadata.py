@@ -19,7 +19,7 @@ def update_track_metadata(file_path: str | Path, updates: dict[str, str]) -> Non
     if audio.tags is None:
         try:
             audio.add_tags()
-        except Exception as error:  # noqa: BLE001
+        except Exception as error:
             raise ValueError(f"Metadata cannot be added to this file: {error}") from error
     for field, value in updates.items():
         key = TAG_KEYS[field]
@@ -30,7 +30,7 @@ def update_track_metadata(file_path: str | Path, updates: dict[str, str]) -> Non
             del audio.tags[key]
     try:
         audio.save()
-    except Exception as error:  # noqa: BLE001
+    except Exception as error:
         raise ValueError(f"Metadata could not be saved: {error}") from error
 
 
