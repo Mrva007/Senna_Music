@@ -538,26 +538,40 @@ class MainWindow(QMainWindow):
         item = self.track_table.itemAt(position)
         if item is None:
             return
-        self.track_table.setCurrentCell(item.row(), 0)
-        track = self._selected_track()
-        if track is None:
+        selected_rows = {
+            index.row() for index in self.track_table.selectionModel().selectedRows()
+        }
+        if item.row() not in selected_rows:
+            self.track_table.setCurrentCell(item.row(), 0)
+            selected_rows = {item.row()}
+        selected_tracks = []
+        for row in selected_rows:
+            cell = self.track_table.item(row, 0)
+            if cell is None:
+                continue
+            path = cell.data(Qt.ItemDataRole.UserRole)
+            match = next((track for track in self._tracks if track["path"] == path), None)
+            if match is not None:
+                selected_tracks.append(match)
+        if not selected_tracks:
             return
         menu = QMenu(self)
         play_action = menu.addAction("Play")
         details_action = menu.addAction("View Track Details")
         menu.addSeparator()
-        edit_action = menu.addAction("Edit Metadata")
+        edit_label = "Edit Metadata" if len(selected_tracks) == 1 else "Edit Metadata for Selected"
+        edit_action = menu.addAction(edit_label)
         retry_action = None
-        if track["scan_error"]:
+        if any(track["scan_error"] for track in selected_tracks):
             retry_action = menu.addAction("Retry")
-        selected = menu.exec(self.track_table.viewport().mapToGlobal(position))
-        if selected == play_action:
-            self._play_track(track)
-        elif selected == details_action:
-            self._show_track_details(track)
-        elif selected == edit_action:
-            self._edit_track_metadata([track])
-        elif retry_action is not None and selected == retry_action:
+        chosen = menu.exec(self.track_table.viewport().mapToGlobal(position))
+        if chosen == play_action:
+            self._play_track(selected_tracks[0])
+        elif chosen == details_action:
+            self._show_track_details(selected_tracks[0])
+        elif chosen == edit_action:
+            self._edit_track_metadata(selected_tracks)
+        elif retry_action is not None and chosen == retry_action:
             self._start_scan()
 
 
