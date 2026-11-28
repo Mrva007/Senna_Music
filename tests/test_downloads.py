@@ -1,5 +1,3 @@
-import threading
-
 import pytest
 
 from senna_music.core.downloads import build_target_path, download_audio

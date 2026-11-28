@@ -89,31 +89,30 @@ def download_audio(
         "progress_hooks": [progress_hook],
     }
 
-    with YoutubeDL(options) as downloader:
-        info = downloader.extract_info(url, download=False)
-        if not info:
-            raise RuntimeError("The source did not return downloadable audio.")
-        extension = str(info.get("ext") or "mp3").lower()
-        target_extension = requested_format if requested_format != "original" else extension
-        target = build_target_path(task, root, target_extension)
-        if target.exists():
-            return {
-                "status": "skipped",
-                "path": str(target),
-                "message": "A file with this name already exists; it was not overwritten.",
-            }
+    with YoutubeDL(options) as probe:
+        info = probe.extract_info(url, download=False)
+    if not info:
+        raise RuntimeError("The source did not return downloadable audio.")
+    extension = str(info.get("ext") or "mp3").lower()
+    target_extension = requested_format if requested_format != "original" else extension
+    target = build_target_path(task, root, target_extension)
+    if target.exists():
+        return {
+            "status": "skipped",
+            "path": str(target),
+            "message": "A file with this name already exists; it was not overwritten.",
+        }
 
-        output_stem = str(target.with_suffix(""))
-        options["outtmpl"] = output_stem + ".%(ext)s"
-        if requested_format != "original":
-            options["postprocessors"] = [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": requested_format,
-                    "preferredquality": str(task.get("quality") or "192"),
-                }
-            ]
-        downloader.params.update(options)
+    options["outtmpl"] = str(target.with_suffix("")) + ".%(ext)s"
+    if requested_format != "original":
+        options["postprocessors"] = [
+            {
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": requested_format,
+                "preferredquality": str(task.get("quality") or "192"),
+            }
+        ]
+    with YoutubeDL(options) as downloader:
         result = downloader.download([url])
         if result:
             raise RuntimeError(f"yt-dlp returned download error code {result}.")
