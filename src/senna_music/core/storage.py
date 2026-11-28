@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sqlite3
 from contextlib import closing
 from pathlib import Path
@@ -9,7 +10,10 @@ from platformdirs import user_data_path
 
 
 def database_path() -> Path:
-    """Return the per-user SQLite database path."""
+    """Return the per-user SQLite database path, with an environment override for CLI/tests."""
+    override = os.environ.get("SENNA_MUSIC_DATABASE")
+    if override:
+        return Path(override).expanduser()
     folder = user_data_path("Senna Music", "Admir", ensure_exists=True)
     return folder / "senna_music.sqlite3"
 

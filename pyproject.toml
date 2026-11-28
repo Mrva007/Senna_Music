@@ -23,6 +23,7 @@ dev = ["pytest>=8.0", "ruff>=0.6"]
 
 [project.scripts]
 senna-music = "senna_music.app:main"
+senna-music-cli = "senna_music.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
