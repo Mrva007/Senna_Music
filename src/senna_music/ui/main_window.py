@@ -1049,6 +1049,13 @@ class MainWindow(QMainWindow):
         self.scan_button.setEnabled(True)
         self.scan_status.setText(f"Library updated · {count} audio files found.")
         self._refresh_tracks()
+        if self._current_track_path:
+            current_track = next(
+                (track for track in self._tracks if track["path"] == self._current_track_path),
+                None,
+            )
+            if current_track:
+                self._update_player_display(current_track)
         self._scan_thread = None
 
     def _scan_failed(self, message: str) -> None:
