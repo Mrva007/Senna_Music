@@ -33,7 +33,8 @@ def test_playlists_support_unique_names_tracks_and_saved_order(tmp_path):
     reorder_playlist_tracks(playlist["id"], [str(paths[1]), str(paths[0])], db)
     assert [t["path"] for t in list_playlist_tracks(playlist["id"], db)] == [str(paths[1]), str(paths[0])]
     assert rename_playlist(playlist["id"], " Road ", db)
-    assert not rename_playlist(playlist["id"], "road", db)
+    assert create_playlist("Jazz", db)
+    assert not rename_playlist(playlist["id"], "jazz", db)
     remove_track_from_playlist(playlist["id"], str(paths[0]), db)
     assert len(list_playlist_tracks(playlist["id"], db)) == 1
     delete_playlist(playlist["id"], db)
