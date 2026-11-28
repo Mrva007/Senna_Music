@@ -16,6 +16,7 @@ from senna_music.core.collections import (
     delete_playlist,
     list_favorites,
     list_playlists,
+    list_playlist_tracks,
     remove_favorite,
     remove_track_from_playlist,
     rename_playlist,
@@ -37,6 +38,7 @@ from senna_music.core.storage import (
     remove_library_folder,
     retry_download_task,
     update_download_task,
+    get_setting,
 )
 
 KEYRING_SERVICE = "Senna Music"
@@ -67,7 +69,9 @@ def _parser() -> argparse.ArgumentParser:
 
     search = commands.add_parser("search", help="Search an enabled online provider.")
     search.add_argument("query")
-    search.add_argument("--source", choices=["YouTube", "Spotify", "SoundCloud"], required=True)
+    search.add_argument(
+        "--source", choices=["all", "YouTube", "Spotify", "SoundCloud"], default="all"
+    )
     search.add_argument("--limit", type=int, default=10)
 
     download = commands.add_parser("download", help="Add an audio download to the queue.")
@@ -78,8 +82,8 @@ def _parser() -> argparse.ArgumentParser:
     download.add_argument("--artist", default="")
     download.add_argument("--album", default="")
     download.add_argument("--destination", required=True)
-    download.add_argument("--format", choices=["original", "mp3", "m4a", "flac"], default="original")
-    download.add_argument("--quality", choices=["128", "192", "256", "320"], default="192")
+    download.add_argument("--format", choices=["original", "mp3", "m4a", "flac"])
+    download.add_argument("--quality", choices=["128", "192", "256", "320"])
 
     queue = commands.add_parser("queue", help="Manage the persistent download queue.")
     queue_commands = queue.add_subparsers(dest="action", required=True)
@@ -104,6 +108,8 @@ def _parser() -> argparse.ArgumentParser:
     add = playlist_commands.add_parser("add")
     add.add_argument("playlist_id", type=int)
     add.add_argument("track_paths", nargs="+")
+    tracks = playlist_commands.add_parser("tracks")
+    tracks.add_argument("playlist_id", type=int)
     remove_track = playlist_commands.add_parser("remove")
     remove_track.add_argument("playlist_id", type=int)
     remove_track.add_argument("track_path")
@@ -136,7 +142,10 @@ def _run_queue() -> int:
         task_id = int(task["id"])
         update_download_task(task_id, status="downloading", error="")
         try:
-            result = download_audio(task, task["destination_root"])
+            result = download_audio(
+                task, task["destination_root"],
+                ffmpeg_location=get_setting("ffmpeg_location", ""),
+            )
             update_download_task(
                 task_id,
                 status=result["status"],
@@ -176,21 +185,52 @@ def main(argv: list[str] | None = None) -> int:
                 if not folder.is_dir():
                     raise ValueError(f"Folder does not exist: {folder}")
                 added = add_library_folder(folder)
-                _emit({"added": added, "folder": str(folder.resolve())})
+                payload = {"added": added, "folder": str(folder.resolve())}
                 if added:
-                    _emit({"scanned_tracks": scan_library()})
+                    payload["scanned_tracks"] = scan_library()
+                _emit(payload)
             elif args.action == "remove-folder":
                 removed = remove_library_folder(args.path)
                 _emit({"removed": removed, "folder": args.path, "files_deleted": False})
             return 0
 
         if args.command == "search":
+            sources = (
+                [
+                    source for source in ("YouTube", "Spotify", "SoundCloud")
+                    if get_setting(f"source_enabled:{source.casefold()}", "false") == "true"
+                ]
+                if args.source == "all" else [args.source]
+            )
             client_id = keyring.get_password(KEYRING_SERVICE, "spotify_client_id") or ""
             client_secret = keyring.get_password(KEYRING_SERVICE, "spotify_client_secret") or ""
-            results = search_source(
-                args.source, args.query, args.limit, client_id, client_secret
-            )
-            _emit([asdict(result) for result in results])
+            results = []
+            errors = {}
+            query = args.query.casefold().strip()
+            for track in list_tracks():
+                searchable = " ".join(
+                    [track["title"], track["artist"], track["album"]]
+                ).casefold()
+                if query in searchable:
+                    results.append({
+                        "source": "Local Music",
+                        "title": track["title"],
+                        "artist": track["artist"],
+                        "album": track["album"],
+                        "duration": track["duration"],
+                        "url": track["path"],
+                        "download_url": "",
+                        "thumbnail": "",
+                    })
+            for source in sources:
+                try:
+                    found = search_source(
+                        source, args.query, args.limit, client_id, client_secret
+                    )
+                    results.extend(asdict(result) for result in found)
+                except RuntimeError as error:
+                    errors[source] = str(error)
+            _emit({"results": results, "errors": errors})
             return 0
 
         if args.command == "download":
@@ -205,8 +245,8 @@ def main(argv: list[str] | None = None) -> int:
                 "title": args.title,
                 "artist": args.artist,
                 "album": args.album,
-                "requested_format": args.format,
-                "quality": args.quality,
+                "requested_format": args.format or get_setting("download_format", "original"),
+                "quality": args.quality or get_setting("download_quality", "192"),
             })
             _emit({"queued": True, "task_id": task_id})
             return 0
@@ -247,6 +287,9 @@ def main(argv: list[str] | None = None) -> int:
             elif args.action == "add":
                 added = add_tracks_to_playlist(args.playlist_id, args.track_paths)
                 _emit({"added": added, "playlist_id": args.playlist_id})
+            elif args.action == "tracks":
+                _emit(list_playlist_tracks(args.playlist_id))
+                return 0
             elif args.action == "remove":
                 remove_track_from_playlist(args.playlist_id, args.track_path)
                 _emit({"removed": args.track_path, "playlist_id": args.playlist_id})
