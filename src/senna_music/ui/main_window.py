@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import QTimer, Qt, QUrl, Signal, QThread
+from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
     QCheckBox,
     QFileDialog,
@@ -13,8 +14,10 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QListWidget,
     QMainWindow,
+    QMenu,
     QMessageBox,
     QPushButton,
+    QSlider,
     QStackedWidget,
     QTableWidget,
     QTableWidgetItem,
@@ -41,6 +44,7 @@ PAGES = [
     ("Search Sources", "Search Sources"),
     ("Settings", "Settings"),
 ]
+MONITOR_INTERVAL_MS = 60_000
 
 
 class LibraryScanThread(QThread):
@@ -63,9 +67,27 @@ class MainWindow(QMainWindow):
         self._nav_buttons: dict[str, QPushButton] = {}
         self._pages: dict[str, QWidget] = {}
         self._scan_thread: LibraryScanThread | None = None
+        self._tracks: list[dict] = []
+        self._current_track_path: str | None = None
+        self._slider_is_pressed = False
+
+        self.player = QMediaPlayer(self)
+        self.audio_output = QAudioOutput(self)
+        self.player.setAudioOutput(self.audio_output)
+        self.audio_output.setVolume(0.7)
+        self.player.positionChanged.connect(self._position_changed)
+        self.player.durationChanged.connect(self._duration_changed)
+        self.player.playbackStateChanged.connect(self._playback_state_changed)
+        self.player.mediaStatusChanged.connect(self._media_status_changed)
+
         self._build_ui()
         self._show_page("Home")
         self._start_scan()
+
+        self._monitor_timer = QTimer(self)
+        self._monitor_timer.setInterval(MONITOR_INTERVAL_MS)
+        self._monitor_timer.timeout.connect(self._start_scan)
+        self._monitor_timer.start()
 
     def _build_ui(self) -> None:
         root = QWidget()
@@ -143,7 +165,7 @@ class MainWindow(QMainWindow):
             search_row.addWidget(search_button)
             layout.addLayout(search_row)
             self.search_status = QLabel(
-                "Online search adapters are being connected in the next development step."
+                "Enable one or more sources on Search Sources to start online discovery."
             )
             self.search_status.setObjectName("muted")
             layout.addWidget(self.search_status)
@@ -157,7 +179,9 @@ class MainWindow(QMainWindow):
             layout.addStretch(1)
 
         elif name == "Local Music":
-            intro = QLabel("Choose folders that contain your music. Subfolders are scanned too.")
+            intro = QLabel(
+                "Choose music folders. Subfolders are scanned automatically while the app runs."
+            )
             intro.setObjectName("muted")
             layout.addWidget(intro)
             actions = QHBoxLayout()
@@ -185,6 +209,7 @@ class MainWindow(QMainWindow):
             )
             self.track_table.setAlternatingRowColors(True)
             self.track_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+            self.track_table.setSelectionMode(QTableWidget.SelectionMode.ExtendedSelection)
             self.track_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
             self.track_table.verticalHeader().setVisible(False)
             self.track_table.horizontalHeader().setSectionResizeMode(
@@ -193,7 +218,11 @@ class MainWindow(QMainWindow):
             self.track_table.horizontalHeader().setSectionsClickable(True)
             self.track_table.horizontalHeader().setSortIndicatorShown(True)
             self.track_table.setSortingEnabled(True)
+            self.track_table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+            self.track_table.customContextMenuRequested.connect(self._track_context_menu)
+            self.track_table.cellDoubleClicked.connect(self._play_selected_track)
             layout.addWidget(self.track_table, 1)
+
             remove_button = QPushButton("Remove Selected Folder")
             remove_button.clicked.connect(self._remove_folder)
             layout.addWidget(remove_button, 0, Qt.AlignmentFlag.AlignLeft)
@@ -201,7 +230,7 @@ class MainWindow(QMainWindow):
             self._refresh_tracks()
 
         elif name == "Search Sources":
-            intro = QLabel("Enable and configure the sources used by integrated search.")
+            intro = QLabel("Enable the sources you want included in the next search.")
             intro.setObjectName("muted")
             layout.addWidget(intro)
             for source in ("YouTube", "Spotify", "SoundCloud"):
@@ -247,15 +276,46 @@ class MainWindow(QMainWindow):
     def _build_player(self) -> QWidget:
         player = QFrame()
         player.setObjectName("playerBar")
-        player.setFixedHeight(76)
+        player.setFixedHeight(86)
         row = QHBoxLayout(player)
-        row.setContentsMargins(22, 8, 22, 8)
-        track = QLabel("Nothing playing")
-        track.setObjectName("playerTrack")
-        row.addWidget(track, 1)
-        self.player_status = QLabel("Local player is being connected")
-        self.player_status.setObjectName("muted")
-        row.addWidget(self.player_status)
+        row.setContentsMargins(18, 8, 18, 8)
+
+        self.player_track_label = QLabel("Nothing playing")
+        self.player_track_label.setObjectName("playerTrack")
+        self.player_track_label.setMinimumWidth(180)
+        row.addWidget(self.player_track_label, 2)
+
+        previous_button = QPushButton("Previous")
+        previous_button.clicked.connect(self._previous_track)
+        row.addWidget(previous_button)
+        self.play_button = QPushButton("Play")
+        self.play_button.clicked.connect(self._toggle_playback)
+        row.addWidget(self.play_button)
+        next_button = QPushButton("Next")
+        next_button.clicked.connect(self._next_track)
+        row.addWidget(next_button)
+
+        self.position_label = QLabel("0:00")
+        self.position_label.setObjectName("muted")
+        row.addWidget(self.position_label)
+        self.position_slider = QSlider(Qt.Orientation.Horizontal)
+        self.position_slider.setRange(0, 0)
+        self.position_slider.sliderPressed.connect(self._slider_pressed)
+        self.position_slider.sliderReleased.connect(self._slider_released)
+        row.addWidget(self.position_slider, 3)
+        self.duration_label = QLabel("0:00")
+        self.duration_label.setObjectName("muted")
+        row.addWidget(self.duration_label)
+
+        self.volume_slider = QSlider(Qt.Orientation.Horizontal)
+        self.volume_slider.setRange(0, 100)
+        self.volume_slider.setValue(70)
+        self.volume_slider.setMaximumWidth(110)
+        self.volume_slider.valueChanged.connect(
+            lambda value: self.audio_output.setVolume(value / 100)
+        )
+        self.volume_slider.setToolTip("Volume")
+        row.addWidget(self.volume_slider)
         return player
 
     def _show_page(self, name: str) -> None:
@@ -268,8 +328,15 @@ class MainWindow(QMainWindow):
         if len(query) < 2:
             self.search_status.setText("Enter at least 2 characters to search.")
             return
+        enabled = [
+            source for source in ("youtube", "spotify", "soundcloud")
+            if get_setting(f"source_enabled:{source}", "false") == "true"
+        ]
+        if not enabled:
+            self.search_status.setText("No sources enabled. Open Search Sources to enable one.")
+            return
         self.search_status.setText(
-            "Search UI is ready. Source adapters are scheduled for the next milestone."
+            "Online source adapters are not connected in this build. Local Music is available."
         )
 
     def _refresh_folders(self) -> None:
@@ -283,9 +350,9 @@ class MainWindow(QMainWindow):
         if not hasattr(self, "track_table"):
             return
         self.track_table.setSortingEnabled(False)
-        tracks = list_tracks()
-        self.track_table.setRowCount(len(tracks))
-        for row, track in enumerate(tracks):
+        self._tracks = list_tracks()
+        self.track_table.setRowCount(len(self._tracks))
+        for row, track in enumerate(self._tracks):
             values = [
                 track["title"],
                 track["artist"],
@@ -295,10 +362,12 @@ class MainWindow(QMainWindow):
             ]
             for column, value in enumerate(values):
                 item = QTableWidgetItem(value)
-                if column == 0 and track["scan_error"]:
-                    item.setText("⚠ " + value)
-                    item.setToolTip(track["scan_error"])
-                    item.setForeground(Qt.GlobalColor.red)
+                if column == 0:
+                    item.setData(Qt.ItemDataRole.UserRole, track["path"])
+                    if track["scan_error"]:
+                        item.setText("⚠ " + value)
+                        item.setToolTip(track["scan_error"])
+                        item.setForeground(Qt.GlobalColor.red)
                 self.track_table.setItem(row, column, item)
         self.track_table.setSortingEnabled(True)
 
@@ -321,23 +390,32 @@ class MainWindow(QMainWindow):
 
     def _scan_completed(self, count: int) -> None:
         self.scan_button.setEnabled(True)
-        self.scan_status.setText(f"Scan complete · {count} audio files found.")
+        self.scan_status.setText(f"Library updated · {count} audio files found.")
         self._refresh_tracks()
+        self._scan_thread = None
 
     def _scan_failed(self, message: str) -> None:
         self.scan_button.setEnabled(True)
         self.scan_status.setText("Scan failed: " + message)
+        self._scan_thread = None
 
     def _add_folder(self) -> None:
-        folder = QFileDialog.getExistingDirectory(self, "Select a music folder")
-        if not folder:
+        dialog = QFileDialog(self, "Select a music folder")
+        dialog.setFileMode(QFileDialog.FileMode.Directory)
+        dialog.setOption(QFileDialog.Option.ShowDirsOnly, True)
+        dialog.setLabelText(QFileDialog.DialogLabel.Accept, "Confirm")
+        if not dialog.exec():
             return
-        if not Path(folder).is_dir():
+        selected = dialog.selectedFiles()
+        if not selected:
+            return
+        folder = Path(selected[0])
+        if not folder.is_dir():
             QMessageBox.warning(self, "Invalid folder", "The selected folder is not available.")
             return
-        add_library_folder(folder)
-        self._refresh_folders()
-        self._start_scan()
+        if add_library_folder(folder):
+            self._refresh_folders()
+            self._start_scan()
 
     def _remove_folder(self) -> None:
         item = self.folder_list.currentItem()
@@ -353,6 +431,129 @@ class MainWindow(QMainWindow):
             remove_library_folder(folder)
             self._refresh_folders()
             self._refresh_tracks()
+
+    def _selected_track(self) -> dict | None:
+        row = self.track_table.currentRow()
+        if row < 0:
+            return None
+        item = self.track_table.item(row, 0)
+        if item is None:
+            return None
+        path = item.data(Qt.ItemDataRole.UserRole)
+        return next((track for track in self._tracks if track["path"] == path), None)
+
+    def _play_selected_track(self, _row: int = -1, _column: int = -1) -> None:
+        track = self._selected_track()
+        if track is not None:
+            self._play_track(track)
+
+    def _play_track(self, track: dict) -> None:
+        path = Path(track["path"])
+        if not path.is_file():
+            QMessageBox.warning(self, "Track unavailable", "The audio file no longer exists.")
+            self._start_scan()
+            return
+        self._current_track_path = str(path)
+        self.player_track_label.setText(
+            f"{track['title']}  ·  {track['artist'] or 'Unknown artist'}"
+        )
+        self.player.setSource(QUrl.fromLocalFile(str(path)))
+        self.player.play()
+
+    def _toggle_playback(self) -> None:
+        if self.player.playbackState() == QMediaPlayer.PlaybackState.PlayingState:
+            self.player.pause()
+        elif self._current_track_path:
+            self.player.play()
+        else:
+            self._play_selected_track()
+
+    def _track_paths(self) -> list[dict]:
+        return [
+            track for track in self._tracks
+            if not track["scan_error"] and Path(track["path"]).is_file()
+        ]
+
+    def _step_track(self, direction: int) -> None:
+        tracks = self._track_paths()
+        if not tracks:
+            return
+        current = next(
+            (index for index, track in enumerate(tracks)
+             if track["path"] == self._current_track_path),
+            -1,
+        )
+        next_index = (current + direction) % len(tracks)
+        self._play_track(tracks[next_index])
+
+    def _previous_track(self) -> None:
+        if self.player.position() > 3000:
+            self.player.setPosition(0)
+        else:
+            self._step_track(-1)
+
+    def _next_track(self) -> None:
+        self._step_track(1)
+
+    def _media_status_changed(self, status: QMediaPlayer.MediaStatus) -> None:
+        if status == QMediaPlayer.MediaStatus.EndOfMedia:
+            self._next_track()
+
+    def _playback_state_changed(self, state: QMediaPlayer.PlaybackState) -> None:
+        self.play_button.setText(
+            "Pause" if state == QMediaPlayer.PlaybackState.PlayingState else "Play"
+        )
+
+    def _position_changed(self, position: int) -> None:
+        if not self._slider_is_pressed:
+            self.position_slider.setValue(position)
+        self.position_label.setText(self._format_duration(position / 1000))
+
+    def _duration_changed(self, duration: int) -> None:
+        self.position_slider.setRange(0, duration)
+        self.duration_label.setText(self._format_duration(duration / 1000))
+
+    def _slider_pressed(self) -> None:
+        self._slider_is_pressed = True
+
+    def _slider_released(self) -> None:
+        self._slider_is_pressed = False
+        self.player.setPosition(self.position_slider.value())
+
+    def _track_context_menu(self, position) -> None:
+        item = self.track_table.itemAt(position)
+        if item is None:
+            return
+        self.track_table.setCurrentCell(item.row(), 0)
+        track = self._selected_track()
+        if track is None:
+            return
+        menu = QMenu(self)
+        play_action = menu.addAction("Play")
+        details_action = menu.addAction("View Track Details")
+        retry_action = None
+        if track["scan_error"]:
+            retry_action = menu.addAction("Retry")
+        selected = menu.exec(self.track_table.viewport().mapToGlobal(position))
+        if selected == play_action:
+            self._play_track(track)
+        elif selected == details_action:
+            self._show_track_details(track)
+        elif retry_action is not None and selected == retry_action:
+            self._start_scan()
+
+    def _show_track_details(self, track: dict) -> None:
+        details = (
+            f"Track: {track['title']}\n"
+            f"Artist: {track['artist'] or '—'}\n"
+            f"Album: {track['album'] or '—'}\n"
+            f"Duration: {self._format_duration(track['duration'])}\n"
+            f"Format: {track['file_format']}\n"
+            f"Location: {track['path']}"
+        )
+        if track["scan_error"]:
+            details += f"\n\nError: {track['scan_error']}"
+        QMessageBox.information(self, "Track Details", details)
 
     @staticmethod
     def _stylesheet() -> str:
