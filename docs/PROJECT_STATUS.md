@@ -1,15 +1,19 @@
 # Senna Music — Project Status
 
-**Current milestone:** V1 desktop foundation  
+**Current milestone:** Local Music — recursive scan and library list  
 **Current version:** 0.1.0 (early development)  
 **Implementation:** Authorized by the owner on 2026-11-27  
 **Repository:** https://github.com/Mrva007/Senna_Music
 
 ## Current GitHub state
 
-- Implementation branch: feature/v1-desktop-foundation
-- The first implementation PR adds the PySide6 desktop shell, SQLite persistence foundation, Local Music folder registration, and Windows CI.
-- No PR is merged until its diff and verification are reviewed.
+- PR #15 (desktop foundation) is merged into `main`.
+- PR #15 tests passed (2/2), but its Ruff step failed on three SIM117 transaction-context findings and one I001 import-order finding.
+- PR #16 fixes those inherited lint findings and adds the first Local Music scanning milestone.
+- PR #16 latest CI passed on commit `22482b8`: 7 tests passed and Ruff reported no issues.
+- The scanner also preserves indexed tracks when a drive is temporarily unavailable or a folder scan is incomplete.
+- Current implementation branch: `feature/local-music-library-scan`.
+- PR #16 is technically verified and ready for final merge approval.
 
 ## Working foundation
 
@@ -23,8 +27,8 @@
 
 ## Implementation sequence
 
-1. Desktop foundation: application entry point, navigation shell, SQLite persistence, CI.
-2. Local Music: folder scanning, metadata, library views, and local playback.
+1. Desktop foundation: merged — application entry point, navigation shell, SQLite persistence, and CI workflow. Its first CI run passed tests but failed Ruff; the lint findings are corrected in PR #16.
+2. Local Music: folder registration is implemented; recursive scanning, metadata, persistent track indexing, automatic startup scan, and track-list UI are in PR #16. Folder monitoring, artwork, track details, and local playback remain.
 3. Search: YouTube, Spotify, and SoundCloud adapters; source settings; session/cookie support where needed.
 4. Downloads: yt-dlp/FFmpeg integration, unified queue, progress, pause/resume, duplicate handling, and file organization.
 5. Library features: playlists, favorites, player queue, lyrics, and remaining accepted interactions.
@@ -32,9 +36,10 @@
 
 ## Current verification
 
-- GitHub Actions is configured to run pytest and Ruff on Windows.
-- Test results for the current PR are pending CI execution.
-- The first GUI build is a foundation, not yet the complete first release.
+- Windows GitHub Actions workflow runs pytest and Ruff for pull requests and pushes to main.
+- PR #15: pytest passed (2 tests); Ruff failed with 4 findings.
+- PR #16 at `22482b8`: pytest passed (7/7) and Ruff passed.
+- The application is an early development build, not yet the complete first release.
 
 ## Deferred beyond the first testable build
 
