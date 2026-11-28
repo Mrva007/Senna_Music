@@ -96,6 +96,8 @@ def download_audio(
 
     with YoutubeDL(options) as probe:
         info = probe.extract_info(url, download=False)
+    if cancel_event is not None and cancel_event.is_set():
+        raise DownloadCancelled("Download cancelled by user.")
     if not info:
         raise RuntimeError("The source did not return downloadable audio.")
     extension = str(info.get("ext") or "mp3").lower()

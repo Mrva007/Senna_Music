@@ -95,3 +95,14 @@ def test_download_audio_reports_missing_url(tmp_path):
     task["download_url"] = ""
     with pytest.raises(ValueError, match="No supported audio"):
         download_audio(task, tmp_path)
+
+def test_interrupted_download_tasks_are_requeued_on_database_startup(tmp_path):
+    db = tmp_path / "senna.sqlite3"
+    initialize_database(db)
+    task_id = add_download_task(sample_task(), db)
+    update_download_task(task_id, db, status="downloading", progress=37)
+    initialize_database(db)
+    task = list_download_tasks(db)[0]
+    assert task["status"] == "queued"
+    assert task["progress"] == 0
+    assert task["destination_root"] == "C:/Music"

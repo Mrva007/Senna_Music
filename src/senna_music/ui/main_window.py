@@ -167,6 +167,7 @@ class DownloadQueueWorker(QThread):
 
     def cancel_current(self) -> None:
         self.cancel_event.set()
+        self.pause_event.set()
 
     def stop_after_current(self) -> None:
         self.stop_event.set()
@@ -1758,6 +1759,23 @@ class MainWindow(QMainWindow):
         if track["scan_error"]:
             details += f"\n\nError: {track['scan_error']}"
         QMessageBox.information(self, "Track Details", details)
+
+
+    def closeEvent(self, event) -> None:
+        workers = [self._scan_thread, self._search_worker, self._download_worker]
+        if self._download_worker is not None and self._download_worker.isRunning():
+            self._download_worker.stop_after_current()
+        for worker in workers:
+            if worker is not None and worker.isRunning() and not worker.wait(5000):
+                QMessageBox.warning(
+                    self,
+                    "Operation still running",
+                    "Senna Music is still finishing a background operation. "
+                    "Wait for it to stop, then close the application.",
+                )
+                event.ignore()
+                return
+        event.accept()
 
     @staticmethod
     def _stylesheet() -> str:
