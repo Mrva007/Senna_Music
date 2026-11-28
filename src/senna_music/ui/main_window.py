@@ -10,7 +10,7 @@ from pathlib import Path
 
 import keyring
 from PySide6.QtCore import Qt, QThread, QTimer, QUrl, Signal
-from PySide6.QtGui import QDesktopServices, QIcon, QPixmap, QTextCursor
+from PySide6.QtGui import QDesktopServices, QIcon, QPalette, QPixmap, QTextCursor
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -149,8 +149,8 @@ class SearchWorker(QThread):
 
 
 class LyricsWorker(QThread):
-    completed = Signal(str, object)
-    failed = Signal(str, str)
+    completed = Signal(str, str, object)
+    failed = Signal(str, str, str)
 
     def __init__(self, track: dict, language: str, parent=None) -> None:
         super().__init__(parent)
@@ -166,9 +166,9 @@ class LyricsWorker(QThread):
                 self.track["duration"],
                 self.language,
             )
-            self.completed.emit(self.track["path"], result)
+            self.completed.emit(self.track["path"], self.language, result)
         except (LyricsProviderError, OSError, ValueError) as error:
-            self.failed.emit(self.track["path"], str(error))
+            self.failed.emit(self.track["path"], self.language, str(error))
 
 
 class DownloadQueueWorker(QThread):
@@ -1245,6 +1245,7 @@ class MainWindow(QMainWindow):
             )
             if current_track:
                 self._update_player_display(current_track)
+                self._load_current_lyrics()
         self._scan_thread = None
 
     def _scan_failed(self, message: str) -> None:
@@ -1552,6 +1553,9 @@ class MainWindow(QMainWindow):
             self.expanded_art_label.clear()
         if self._current_lyrics_path == track["path"] and self._current_lyrics_result:
             self._render_lyrics(self._current_lyrics_result)
+        elif self._expanded_player_dialog is not None:
+            self.lyrics_status_label.setText("Loading lyrics…")
+            self.lyrics_text.setPlainText("")
 
     def _refresh_expanded_queue(self) -> None:
         if self._expanded_player_dialog is None:
@@ -1623,7 +1627,13 @@ class MainWindow(QMainWindow):
         if not force and self._current_lyrics_path == self._current_track_path:
             if self._current_lyrics_result:
                 self._render_lyrics(self._current_lyrics_result)
-            return
+                return
+            if any(
+                worker.isRunning()
+                and worker.track["path"] == self._current_track_path
+                for worker in self._lyrics_workers
+            ):
+                return
         track = next(
             (item for item in self._tracks if item["path"] == self._current_track_path),
             None,
@@ -1649,14 +1659,20 @@ class MainWindow(QMainWindow):
         if worker in self._lyrics_workers:
             self._lyrics_workers.remove(worker)
 
-    def _lyrics_loaded(self, path: str, result: LyricsResult) -> None:
-        if path != self._current_track_path:
+    def _lyrics_loaded(self, path: str, language: str, result: LyricsResult) -> None:
+        if (
+            path != self._current_track_path
+            or language != get_setting("lyrics_language", "auto")
+        ):
             return
         self._current_lyrics_result = result
         self._render_lyrics(result)
 
-    def _lyrics_failed(self, path: str, message: str) -> None:
-        if path != self._current_track_path:
+    def _lyrics_failed(self, path: str, language: str, message: str) -> None:
+        if (
+            path != self._current_track_path
+            or language != get_setting("lyrics_language", "auto")
+        ):
             return
         self._current_lyrics_result = LyricsResult("error", message=message)
         self._render_lyrics(self._current_lyrics_result)
@@ -1704,7 +1720,7 @@ class MainWindow(QMainWindow):
         cursor.select(QTextCursor.SelectionType.LineUnderCursor)
         selection = QTextEdit.ExtraSelection()
         selection.cursor = cursor
-        selection.format.setBackground(self.palette().color(self.palette().ColorRole.Highlight))
+        selection.format.setBackground(self.palette().color(QPalette.ColorRole.Highlight))
         self.lyrics_text.setExtraSelections([selection])
         self.lyrics_text.setTextCursor(cursor)
         self.lyrics_text.ensureCursorVisible()
