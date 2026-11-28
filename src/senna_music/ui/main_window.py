@@ -58,6 +58,9 @@ from senna_music.core.collections import (
     remove_track_from_playlist,
     rename_favorite_collection,
     rename_playlist,
+    reorder_favorite_collection_tracks,
+    reorder_favorites,
+    reorder_playlist_tracks,
 )
 from senna_music.core.downloads import DownloadCancelled, download_audio
 from senna_music.core.metadata import read_cover_art, update_track_metadata
@@ -250,6 +253,8 @@ class MainWindow(QMainWindow):
         self._current_queue_index = -1
         self._shuffle_enabled = False
         self._repeat_mode = "off"
+        self._local_view = "All Tracks"
+        self._local_filter: dict[str, str] = {}
         self._restore_position_ms: int | None = None
         self._expanded_player_dialog: QDialog | None = None
 
@@ -431,6 +436,20 @@ class MainWindow(QMainWindow):
             actions.addStretch(1)
             layout.addLayout(actions)
 
+            view_row = QHBoxLayout()
+            view_row.addWidget(QLabel("View"))
+            self.local_view_combo = QComboBox()
+            self.local_view_combo.addItems(["All Tracks", "Artists", "Albums", "Folders"])
+            self.local_view_combo.currentTextChanged.connect(self._set_local_view)
+            view_row.addWidget(self.local_view_combo)
+            self.local_filter_label = QLabel("All tracks")
+            self.local_filter_label.setObjectName("muted")
+            view_row.addWidget(self.local_filter_label, 1)
+            clear_filter_button = QPushButton("Clear Filter")
+            clear_filter_button.clicked.connect(self._clear_local_filter)
+            view_row.addWidget(clear_filter_button)
+            layout.addLayout(view_row)
+
             self.folder_list = QListWidget()
             self.folder_list.setMaximumHeight(105)
             self.folder_list.setObjectName("folderList")
@@ -457,7 +476,7 @@ class MainWindow(QMainWindow):
             self.track_table.setSortingEnabled(True)
             self.track_table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
             self.track_table.customContextMenuRequested.connect(self._track_context_menu)
-            self.track_table.cellDoubleClicked.connect(self._play_selected_track)
+            self.track_table.cellDoubleClicked.connect(self._activate_local_view_row)
             layout.addWidget(self.track_table, 1)
 
             remove_button = QPushButton("Remove Selected Folder")
@@ -582,6 +601,16 @@ class MainWindow(QMainWindow):
             self.playlist_tracks_table.setSelectionBehavior(
                 QTableWidget.SelectionBehavior.SelectRows
             )
+            self.playlist_tracks_table.setSelectionMode(
+                QTableWidget.SelectionMode.ExtendedSelection
+            )
+            self.playlist_tracks_table.setDragDropMode(
+                QAbstractItemView.DragDropMode.InternalMove
+            )
+            self.playlist_tracks_table.setDragDropOverwriteMode(False)
+            self.playlist_tracks_table.model().rowsMoved.connect(
+                self._playlist_tracks_reordered
+            )
             self.playlist_tracks_table.setContextMenuPolicy(
                 Qt.ContextMenuPolicy.CustomContextMenu
             )
@@ -612,6 +641,14 @@ class MainWindow(QMainWindow):
                 QHeaderView.ResizeMode.Stretch
             )
             self.favorites_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+            self.favorites_table.setSelectionMode(QTableWidget.SelectionMode.ExtendedSelection)
+            self.favorites_table.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
+            self.favorites_table.setDragDropOverwriteMode(False)
+            self.favorites_table.model().rowsMoved.connect(self._favorites_reordered)
+            self.favorites_table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+            self.favorites_table.customContextMenuRequested.connect(
+                self._favorites_track_menu
+            )
             self.favorites_table.cellDoubleClicked.connect(self._play_favorite_track)
             layout.addWidget(self.favorites_table, 2)
             collection_actions = QHBoxLayout()
@@ -640,6 +677,16 @@ class MainWindow(QMainWindow):
             )
             self.favorite_collection_tracks_table.setSelectionBehavior(
                 QTableWidget.SelectionBehavior.SelectRows
+            )
+            self.favorite_collection_tracks_table.setSelectionMode(
+                QTableWidget.SelectionMode.ExtendedSelection
+            )
+            self.favorite_collection_tracks_table.setDragDropMode(
+                QAbstractItemView.DragDropMode.InternalMove
+            )
+            self.favorite_collection_tracks_table.setDragDropOverwriteMode(False)
+            self.favorite_collection_tracks_table.model().rowsMoved.connect(
+                self._favorite_collection_tracks_reordered
             )
             self.favorite_collection_tracks_table.setContextMenuPolicy(
                 Qt.ContextMenuPolicy.CustomContextMenu
@@ -997,36 +1044,136 @@ class MainWindow(QMainWindow):
     def _refresh_tracks(self) -> None:
         if not hasattr(self, "track_table"):
             return
-        self.track_table.setSortingEnabled(False)
         self._tracks = list_tracks()
-        self.track_table.setRowCount(len(self._tracks))
-        for row, track in enumerate(self._tracks):
-            values = [
-                track["title"],
-                track["artist"],
-                track["album"],
-                self._format_duration(track["duration"]),
-                "Local Music",
+        table = self.track_table
+        table.setSortingEnabled(False)
+
+        if self._local_view == "Artists":
+            groups: dict[str, int] = {}
+            for track in self._tracks:
+                artist = track["artist"] or "Unknown Artist"
+                groups[artist] = groups.get(artist, 0) + 1
+            table.setColumnCount(2)
+            table.setHorizontalHeaderLabels(["Artist", "Tracks"])
+            rows = sorted(groups.items(), key=lambda item: item[0].casefold())
+            table.setRowCount(len(rows))
+            for row, (artist, count) in enumerate(rows):
+                item = QTableWidgetItem(artist)
+                item.setData(Qt.ItemDataRole.UserRole, artist)
+                table.setItem(row, 0, item)
+                table.setItem(row, 1, QTableWidgetItem(str(count)))
+
+        elif self._local_view == "Albums":
+            groups: dict[tuple[str, str], int] = {}
+            for track in self._tracks:
+                key = (track["album"] or "Singles", track["artist"] or "Unknown Artist")
+                groups[key] = groups.get(key, 0) + 1
+            table.setColumnCount(3)
+            table.setHorizontalHeaderLabels(["Album", "Artist", "Tracks"])
+            rows = sorted(groups.items(), key=lambda item: (item[0][1].casefold(), item[0][0].casefold()))
+            table.setRowCount(len(rows))
+            for row, ((album, artist), count) in enumerate(rows):
+                item = QTableWidgetItem(album)
+                item.setData(Qt.ItemDataRole.UserRole, (album, artist))
+                table.setItem(row, 0, item)
+                table.setItem(row, 1, QTableWidgetItem(artist))
+                table.setItem(row, 2, QTableWidgetItem(str(count)))
+
+        elif self._local_view == "Folders":
+            groups: dict[str, int] = {}
+            for track in self._tracks:
+                folder = str(Path(track["path"]).parent)
+                groups[folder] = groups.get(folder, 0) + 1
+            table.setColumnCount(2)
+            table.setHorizontalHeaderLabels(["Folder", "Tracks"])
+            rows = sorted(groups.items(), key=lambda item: item[0].casefold())
+            table.setRowCount(len(rows))
+            for row, (folder, count) in enumerate(rows):
+                item = QTableWidgetItem(folder)
+                item.setData(Qt.ItemDataRole.UserRole, folder)
+                table.setItem(row, 0, item)
+                table.setItem(row, 1, QTableWidgetItem(str(count)))
+
+        else:
+            tracks = [
+                track for track in self._tracks
+                if all(
+                    (
+                        track["artist"] or "Unknown Artist"
+                    ) == self._local_filter.get("artist", track["artist"] or "Unknown Artist")
+                    and (track["album"] or "Singles")
+                    == self._local_filter.get("album", track["album"] or "Singles")
+                    and (
+                        str(Path(track["path"]).parent)
+                        == self._local_filter.get("folder", str(Path(track["path"]).parent))
+                    )
+                    for _ in [0]
+                )
             ]
-            for column, value in enumerate(values):
-                item = QTableWidgetItem(value)
-                if column == 0:
-                    item.setData(Qt.ItemDataRole.UserRole, track["path"])
-                    if not track["scan_error"]:
-                        artwork = read_cover_art(track["path"])
-                        if artwork:
-                            pixmap = QPixmap()
-                            if pixmap.loadFromData(artwork):
-                                item.setIcon(QIcon(pixmap.scaled(
-                                    32, 32, Qt.AspectRatioMode.KeepAspectRatio,
-                                    Qt.TransformationMode.SmoothTransformation,
-                                )))
-                    if track["scan_error"]:
-                        item.setText("⚠ " + value)
-                        item.setToolTip(track["scan_error"])
-                        item.setForeground(Qt.GlobalColor.red)
-                self.track_table.setItem(row, column, item)
-        self.track_table.setSortingEnabled(True)
+            table.setColumnCount(5)
+            table.setHorizontalHeaderLabels(
+                ["Track name", "Artist", "Album", "Duration", "Source"]
+            )
+            table.setRowCount(len(tracks))
+            for row, track in enumerate(tracks):
+                values = [
+                    track["title"], track["artist"], track["album"],
+                    self._format_duration(track["duration"]), "Local Music",
+                ]
+                for column, value in enumerate(values):
+                    item = QTableWidgetItem(value)
+                    if column == 0:
+                        item.setData(Qt.ItemDataRole.UserRole, track["path"])
+                        if not track["scan_error"]:
+                            artwork = read_cover_art(track["path"])
+                            if artwork:
+                                pixmap = QPixmap()
+                                if pixmap.loadFromData(artwork):
+                                    item.setIcon(QIcon(pixmap.scaled(
+                                        32, 32, Qt.AspectRatioMode.KeepAspectRatio,
+                                        Qt.TransformationMode.SmoothTransformation,
+                                    )))
+                        if track["scan_error"]:
+                            item.setText("⚠ " + value)
+                            item.setToolTip(track["scan_error"])
+                            item.setForeground(Qt.GlobalColor.red)
+                    table.setItem(row, column, item)
+
+        table.setSortingEnabled(True)
+        if hasattr(self, "local_filter_label"):
+            if self._local_filter:
+                self.local_filter_label.setText(
+                    "Filtered: " + " · ".join(f"{key.title()}: {value}" for key, value in self._local_filter.items())
+                )
+            else:
+                self.local_filter_label.setText("All tracks")
+
+    def _set_local_view(self, view: str) -> None:
+        self._local_view = view
+        self._refresh_tracks()
+
+    def _clear_local_filter(self) -> None:
+        self._local_filter = {}
+        self.local_view_combo.setCurrentText("All Tracks")
+        self._refresh_tracks()
+
+    def _activate_local_view_row(self, row: int, _column: int) -> None:
+        if self._local_view == "All Tracks":
+            self._play_selected_track(row, _column)
+            return
+        item = self.track_table.item(row, 0)
+        if item is None:
+            return
+        value = item.data(Qt.ItemDataRole.UserRole)
+        if self._local_view == "Artists":
+            self._local_filter = {"artist": str(value)}
+        elif self._local_view == "Albums":
+            album, artist = value
+            self._local_filter = {"album": album, "artist": artist}
+        elif self._local_view == "Folders":
+            self._local_filter = {"folder": str(value)}
+        self.local_view_combo.setCurrentText("All Tracks")
+        self._refresh_tracks()
 
     @staticmethod
     def _format_duration(seconds: float | None) -> str:
@@ -1456,6 +1603,8 @@ class MainWindow(QMainWindow):
         self.player.setPosition(self.position_slider.value())
 
     def _track_context_menu(self, position) -> None:
+        if self._local_view != "All Tracks":
+            return
         item = self.track_table.itemAt(position)
         if item is None:
             return
@@ -1466,7 +1615,7 @@ class MainWindow(QMainWindow):
             self.track_table.setCurrentCell(item.row(), 0)
             selected_rows = {item.row()}
         selected_tracks = []
-        for row in selected_rows:
+        for row in sorted(selected_rows):
             cell = self.track_table.item(row, 0)
             if cell is None:
                 continue
@@ -1696,6 +1845,74 @@ class MainWindow(QMainWindow):
             queue_paths = [entry["path"] for entry in list_playlist_tracks(playlist_id)]
             if track:
                 self._play_track(track, queue_paths)
+
+
+    @staticmethod
+    def _table_track_paths(table: QTableWidget) -> list[str]:
+        return [
+            str(table.item(row, 0).data(Qt.ItemDataRole.UserRole))
+            for row in range(table.rowCount())
+            if table.item(row, 0) is not None
+            and table.item(row, 0).data(Qt.ItemDataRole.UserRole)
+        ]
+
+    def _playlist_tracks_reordered(self, *_args) -> None:
+        playlist_id = self._selected_list_id(self.playlist_list)
+        if playlist_id is not None:
+            reorder_playlist_tracks(
+                playlist_id, self._table_track_paths(self.playlist_tracks_table)
+            )
+            self._refresh_playlists(playlist_id)
+
+    def _favorites_reordered(self, *_args) -> None:
+        reorder_favorites(self._table_track_paths(self.favorites_table))
+        self._refresh_favorites()
+
+    def _favorite_collection_tracks_reordered(self, *_args) -> None:
+        collection_id = self._selected_list_id(self.favorite_collections_list)
+        if collection_id is not None:
+            reorder_favorite_collection_tracks(
+                collection_id,
+                self._table_track_paths(self.favorite_collection_tracks_table),
+            )
+            self._refresh_favorite_collections(collection_id)
+
+    def _favorites_track_menu(self, position) -> None:
+        row = self.favorites_table.rowAt(position.y())
+        if row < 0:
+            return
+        selected_rows = {
+            index.row() for index in self.favorites_table.selectionModel().selectedRows()
+        }
+        if row not in selected_rows:
+            self.favorites_table.setCurrentCell(row, 0)
+            selected_rows = {row}
+        paths = [
+            str(self.favorites_table.item(index, 0).data(Qt.ItemDataRole.UserRole))
+            for index in sorted(selected_rows)
+            if self.favorites_table.item(index, 0) is not None
+        ]
+        if not paths:
+            return
+        menu = QMenu(self)
+        play_action = menu.addAction("Play")
+        next_action = menu.addAction("Play Next")
+        queue_action = menu.addAction("Add to Queue")
+        menu.addSeparator()
+        remove_action = menu.addAction("Remove from Favorites")
+        chosen = menu.exec(self.favorites_table.viewport().mapToGlobal(position))
+        if chosen == play_action:
+            track = next((item for item in self._tracks if item["path"] == paths[0]), None)
+            if track:
+                self._play_track(track, [item["path"] for item in list_favorites()])
+        elif chosen == next_action:
+            self._enqueue_paths(paths, play_next=True)
+        elif chosen == queue_action:
+            self._enqueue_paths(paths)
+        elif chosen == remove_action:
+            for path in paths:
+                remove_favorite(path)
+            self._refresh_favorites()
 
     def _refresh_favorites(self) -> None:
         if not hasattr(self, "favorites_table"):
