@@ -38,7 +38,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from senna_music.core.downloads import DownloadCancelled, download_audio
 from senna_music.core.collections import (
     add_favorites,
     add_tracks_to_favorite_collection,
@@ -58,6 +57,7 @@ from senna_music.core.collections import (
     rename_favorite_collection,
     rename_playlist,
 )
+from senna_music.core.downloads import DownloadCancelled, download_audio
 from senna_music.core.metadata import read_cover_art, update_track_metadata
 from senna_music.core.scanner import scan_library
 from senna_music.core.search import SearchResult, search_source

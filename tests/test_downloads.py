@@ -106,3 +106,38 @@ def test_interrupted_download_tasks_are_requeued_on_database_startup(tmp_path):
     assert task["status"] == "queued"
     assert task["progress"] == 0
     assert task["destination_root"] == "C:/Music"
+
+def test_existing_download_queue_schema_is_migrated(tmp_path):
+    import sqlite3
+
+    db = tmp_path / "senna.sqlite3"
+    connection = sqlite3.connect(db)
+    connection.execute(
+        """
+        CREATE TABLE download_queue (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            source TEXT NOT NULL,
+            source_url TEXT NOT NULL,
+            download_url TEXT NOT NULL,
+            title TEXT NOT NULL,
+            artist TEXT NOT NULL DEFAULT '',
+            album TEXT NOT NULL DEFAULT '',
+            requested_format TEXT NOT NULL DEFAULT 'original',
+            quality TEXT NOT NULL DEFAULT '192',
+            status TEXT NOT NULL DEFAULT 'queued',
+            progress REAL NOT NULL DEFAULT 0,
+            destination_path TEXT NOT NULL DEFAULT '',
+            error TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+        """
+    )
+    connection.commit()
+    connection.close()
+
+    initialize_database(db)
+    connection = sqlite3.connect(db)
+    columns = {row[1] for row in connection.execute("PRAGMA table_info(download_queue)")}
+    connection.close()
+    assert "destination_root" in columns
