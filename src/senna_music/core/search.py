@@ -57,7 +57,7 @@ def _search_ytdlp(query: str, prefix: str, source: str, limit: int) -> list[Sear
     try:
         with YoutubeDL(options) as downloader:
             data = downloader.extract_info(f"{prefix}{limit}:{query}", download=False)
-    except Exception as error:  # noqa: BLE001 - provider errors are shown in the UI
+    except Exception as error:
         raise SearchProviderError(f"{source} search failed: {error}") from error
     entries = data.get("entries", []) if data else []
     results = [_normalize_entry(entry, source) for entry in entries if entry]
@@ -100,7 +100,7 @@ def search_spotify(
         )
         songs = client.search([query])[:limit]
         urls = client.get_download_urls(songs)
-    except Exception as error:  # noqa: BLE001 - provider errors are shown in the UI
+    except Exception as error:
         raise SearchProviderError(f"Spotify lookup failed: {error}") from error
 
     results = []
