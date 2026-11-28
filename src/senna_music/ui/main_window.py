@@ -10,7 +10,7 @@ from pathlib import Path
 
 import keyring
 from PySide6.QtCore import Qt, QThread, QTimer, QUrl, Signal
-from PySide6.QtGui import QDesktopServices, QIcon, QPixmap
+from PySide6.QtGui import QDesktopServices, QIcon, QPixmap, QTextCursor
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -30,12 +30,14 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QMainWindow,
     QMenu,
+    QPlainTextEdit,
     QMessageBox,
     QPushButton,
     QSlider,
     QStackedWidget,
     QTableWidget,
     QTableWidgetItem,
+    QTextEdit,
     QVBoxLayout,
     QWidget,
 )
@@ -63,6 +65,7 @@ from senna_music.core.collections import (
     reorder_playlist_tracks,
 )
 from senna_music.core.downloads import DownloadCancelled, download_audio
+from senna_music.core.lyrics import LyricsProviderError, LyricsResult, fetch_lyrics, parse_lrc
 from senna_music.core.metadata import read_cover_art, update_track_metadata
 from senna_music.core.scanner import scan_library
 from senna_music.core.search import SearchResult, search_source
@@ -142,6 +145,30 @@ class SearchWorker(QThread):
         finally:
             executor.shutdown(wait=False, cancel_futures=True)
 
+
+
+
+class LyricsWorker(QThread):
+    completed = Signal(str, object)
+    failed = Signal(str, str)
+
+    def __init__(self, track: dict, language: str, parent=None) -> None:
+        super().__init__(parent)
+        self.track = track
+        self.language = language
+
+    def run(self) -> None:
+        try:
+            result = fetch_lyrics(
+                self.track["title"],
+                self.track["artist"],
+                self.track["album"],
+                self.track["duration"],
+                self.language,
+            )
+            self.completed.emit(self.track["path"], result)
+        except (LyricsProviderError, OSError, ValueError) as error:
+            self.failed.emit(self.track["path"], str(error))
 
 
 class DownloadQueueWorker(QThread):
@@ -255,6 +282,10 @@ class MainWindow(QMainWindow):
         self._repeat_mode = "off"
         self._local_view = "All Tracks"
         self._local_filter: dict[str, str] = {}
+        self._lyrics_workers: list[LyricsWorker] = []
+        self._current_lyrics_path: str | None = None
+        self._current_lyrics_result: LyricsResult | None = None
+        self._lyrics_lines: list[tuple[int, str]] = []
         self._restore_position_ms: int | None = None
         self._expanded_player_dialog: QDialog | None = None
 
@@ -725,6 +756,17 @@ class MainWindow(QMainWindow):
             self.download_quality_combo.addItems(["128", "192", "256", "320"])
             self.download_quality_combo.setCurrentText(get_setting("download_quality", "192"))
             layout.addWidget(self.download_quality_combo)
+
+            layout.addWidget(QLabel("Preferred lyrics language"))
+            self.lyrics_language_settings_combo = QComboBox()
+            self.lyrics_language_settings_combo.addItems([
+                "Auto", "English", "Bosnian", "Croatian", "Serbian",
+                "French", "German", "Dutch", "Spanish", "Italian",
+            ])
+            self.lyrics_language_settings_combo.setCurrentText(
+                self._lyrics_language_label(get_setting("lyrics_language", "auto"))
+            )
+            layout.addWidget(self.lyrics_language_settings_combo)
 
             layout.addWidget(QLabel("FFmpeg executable or folder (optional)"))
             ffmpeg_row = QHBoxLayout()
@@ -1277,6 +1319,7 @@ class MainWindow(QMainWindow):
         self.player.setSource(QUrl.fromLocalFile(track_path))
         self.player.play()
         self._update_player_display(track)
+        self._load_current_lyrics()
         self._refresh_expanded_queue()
         self._save_playback_state()
 
@@ -1436,12 +1479,28 @@ class MainWindow(QMainWindow):
             self.expanded_position_slider.sliderPressed.connect(self._slider_pressed)
             self.expanded_position_slider.sliderReleased.connect(self._expanded_slider_released)
             left.addWidget(self.expanded_position_slider)
-            self.expanded_lyrics_label = QLabel(
-                "Lyrics are not available for this track yet."
+            lyrics_header = QHBoxLayout()
+            lyrics_header.addWidget(QLabel("Lyrics"))
+            self.lyrics_language_combo = QComboBox()
+            self.lyrics_language_combo.addItems([
+                "Auto", "English", "Bosnian", "Croatian", "Serbian",
+                "French", "German", "Dutch", "Spanish", "Italian",
+            ])
+            self.lyrics_language_combo.setCurrentText(
+                self._lyrics_language_label(get_setting("lyrics_language", "auto"))
             )
-            self.expanded_lyrics_label.setWordWrap(True)
-            self.expanded_lyrics_label.setObjectName("muted")
-            left.addWidget(self.expanded_lyrics_label)
+            self.lyrics_language_combo.currentTextChanged.connect(
+                self._lyrics_language_changed
+            )
+            lyrics_header.addWidget(self.lyrics_language_combo)
+            left.addLayout(lyrics_header)
+            self.lyrics_status_label = QLabel("Lyrics load when a track is selected.")
+            self.lyrics_status_label.setObjectName("muted")
+            left.addWidget(self.lyrics_status_label)
+            self.lyrics_text = QPlainTextEdit()
+            self.lyrics_text.setReadOnly(True)
+            self.lyrics_text.setPlaceholderText("Lyrics will appear here when available.")
+            left.addWidget(self.lyrics_text, 1)
             left.addStretch(1)
 
             right = QVBoxLayout()
@@ -1471,6 +1530,8 @@ class MainWindow(QMainWindow):
                 next((item for item in self._tracks if item["path"] == self._current_track_path), None)
             )
         self._expanded_player_dialog.show()
+        if self._current_track_path:
+            self._load_current_lyrics()
         self._expanded_player_dialog.raise_()
         self._expanded_player_dialog.activateWindow()
 
@@ -1489,9 +1550,8 @@ class MainWindow(QMainWindow):
             )
         else:
             self.expanded_art_label.clear()
-        self.expanded_lyrics_label.setText(
-            "Lyrics are not available for this track yet."
-        )
+        if self._current_lyrics_path == track["path"] and self._current_lyrics_result:
+            self._render_lyrics(self._current_lyrics_result)
 
     def _refresh_expanded_queue(self) -> None:
         if self._expanded_player_dialog is None:
@@ -1534,6 +1594,121 @@ class MainWindow(QMainWindow):
         self._slider_is_pressed = False
         self.player.setPosition(self.expanded_position_slider.value())
 
+
+    @staticmethod
+    def _lyrics_language_label(code: str) -> str:
+        labels = {
+            "auto": "Auto", "en": "English", "bs": "Bosnian",
+            "hr": "Croatian", "sr": "Serbian", "fr": "French",
+            "de": "German", "nl": "Dutch", "es": "Spanish", "it": "Italian",
+        }
+        return labels.get(code, "Auto")
+
+    @staticmethod
+    def _lyrics_language_code(label: str) -> str:
+        return {
+            "Auto": "auto", "English": "en", "Bosnian": "bs",
+            "Croatian": "hr", "Serbian": "sr", "French": "fr",
+            "German": "de", "Dutch": "nl", "Spanish": "es", "Italian": "it",
+        }.get(label, "auto")
+
+    def _lyrics_language_changed(self, label: str) -> None:
+        language = self._lyrics_language_code(label)
+        set_setting("lyrics_language", language)
+        self._load_current_lyrics(force=True)
+
+    def _load_current_lyrics(self, force: bool = False) -> None:
+        if not self._current_track_path:
+            return
+        if not force and self._current_lyrics_path == self._current_track_path:
+            if self._current_lyrics_result:
+                self._render_lyrics(self._current_lyrics_result)
+            return
+        track = next(
+            (item for item in self._tracks if item["path"] == self._current_track_path),
+            None,
+        )
+        if track is None:
+            return
+        self._current_lyrics_path = self._current_track_path
+        self._current_lyrics_result = None
+        self._lyrics_lines = []
+        if self._expanded_player_dialog is not None:
+            self.lyrics_status_label.setText("Loading lyrics…")
+            self.lyrics_text.setPlainText("")
+        worker = LyricsWorker(
+            track, get_setting("lyrics_language", "auto"), self
+        )
+        worker.completed.connect(self._lyrics_loaded)
+        worker.failed.connect(self._lyrics_failed)
+        worker.finished.connect(lambda current=worker: self._lyrics_worker_finished(current))
+        self._lyrics_workers.append(worker)
+        worker.start()
+
+    def _lyrics_worker_finished(self, worker: LyricsWorker) -> None:
+        if worker in self._lyrics_workers:
+            self._lyrics_workers.remove(worker)
+
+    def _lyrics_loaded(self, path: str, result: LyricsResult) -> None:
+        if path != self._current_track_path:
+            return
+        self._current_lyrics_result = result
+        self._render_lyrics(result)
+
+    def _lyrics_failed(self, path: str, message: str) -> None:
+        if path != self._current_track_path:
+            return
+        self._current_lyrics_result = LyricsResult("error", message=message)
+        self._render_lyrics(self._current_lyrics_result)
+
+    def _render_lyrics(self, result: LyricsResult) -> None:
+        if self._expanded_player_dialog is None:
+            return
+        if result.status == "found":
+            if result.synced_lyrics:
+                self._lyrics_lines = parse_lrc(result.synced_lyrics)
+                self.lyrics_text.setPlainText("\\n".join(line for _, line in self._lyrics_lines))
+                self.lyrics_status_label.setText(
+                    f"Synchronized lyrics · {result.language.upper()}"
+                )
+            else:
+                self._lyrics_lines = []
+                self.lyrics_text.setPlainText(result.plain_lyrics)
+                self.lyrics_status_label.setText(
+                    f"Plain lyrics · {result.language.upper()}"
+                )
+        else:
+            self._lyrics_lines = []
+            self.lyrics_text.setPlainText("")
+            self.lyrics_status_label.setText(result.message or "Lyrics are unavailable.")
+        self._sync_lyrics(self.player.position())
+
+    def _sync_lyrics(self, position_ms: int) -> None:
+        if (
+            self._expanded_player_dialog is None
+            or not self._lyrics_lines
+            or not hasattr(self, "lyrics_text")
+        ):
+            return
+        active_index = -1
+        for index, (timestamp, _line) in enumerate(self._lyrics_lines):
+            if timestamp > position_ms:
+                break
+            active_index = index
+        if active_index < 0:
+            return
+        cursor = QTextCursor(self.lyrics_text.document())
+        cursor.movePosition(QTextCursor.MoveOperation.Start)
+        for _index in range(active_index):
+            cursor.movePosition(QTextCursor.MoveOperation.NextBlock)
+        cursor.select(QTextCursor.SelectionType.LineUnderCursor)
+        selection = QTextEdit.ExtraSelection()
+        selection.cursor = cursor
+        selection.format.setBackground(self.palette().color(self.palette().ColorRole.Highlight))
+        self.lyrics_text.setExtraSelections([selection])
+        self.lyrics_text.setTextCursor(cursor)
+        self.lyrics_text.ensureCursorVisible()
+
     def _save_playback_state(self) -> None:
         state = {
             "queue": self._playback_queue,
@@ -1572,6 +1747,7 @@ class MainWindow(QMainWindow):
             )
             if track:
                 self._update_player_display(track)
+                self._load_current_lyrics()
             else:
                 self.player_track_label.setText(Path(self._current_track_path).name)
         self._refresh_expanded_queue()
@@ -1588,6 +1764,7 @@ class MainWindow(QMainWindow):
             if self._expanded_player_dialog is not None:
                 self.expanded_position_slider.setValue(position)
         self.position_label.setText(self._format_duration(position / 1000))
+        self._sync_lyrics(position)
 
     def _duration_changed(self, duration: int) -> None:
         self.position_slider.setRange(0, duration)
@@ -2148,7 +2325,14 @@ class MainWindow(QMainWindow):
         set_setting("download_folder", folder)
         set_setting("download_format", self.download_format_combo.currentText())
         set_setting("download_quality", self.download_quality_combo.currentText())
+        set_setting("lyrics_language", self._lyrics_language_code(
+            self.lyrics_language_settings_combo.currentText()
+        ))
         set_setting("ffmpeg_location", self.ffmpeg_path_input.text().strip())
+        if hasattr(self, "lyrics_language_combo"):
+            self.lyrics_language_combo.setCurrentText(
+                self._lyrics_language_label(get_setting("lyrics_language", "auto"))
+            )
         QMessageBox.information(self, "Settings saved", "Download settings were saved.")
 
     def _search_result_menu(self, position) -> None:
