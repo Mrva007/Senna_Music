@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import random
 import shutil
 import threading
 import unicodedata
@@ -12,6 +13,7 @@ from PySide6.QtCore import Qt, QThread, QTimer, QUrl, Signal
 from PySide6.QtGui import QDesktopServices, QIcon, QPixmap
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
+    QAbstractItemView,
     QCheckBox,
     QComboBox,
     QDialog,
@@ -244,6 +246,12 @@ class MainWindow(QMainWindow):
         self._slider_is_pressed = False
         self._search_worker: SearchWorker | None = None
         self._download_worker: DownloadQueueWorker | None = None
+        self._playback_queue: list[str] = []
+        self._current_queue_index = -1
+        self._shuffle_enabled = False
+        self._repeat_mode = "off"
+        self._restore_position_ms: int | None = None
+        self._expanded_player_dialog: QDialog | None = None
 
         self.player = QMediaPlayer(self)
         self.audio_output = QAudioOutput(self)
@@ -255,8 +263,13 @@ class MainWindow(QMainWindow):
         self.player.mediaStatusChanged.connect(self._media_status_changed)
 
         self._build_ui()
+        self._restore_playback_state()
         self._show_page("Home")
         self._start_scan()
+        self._state_save_timer = QTimer(self)
+        self._state_save_timer.setInterval(10_000)
+        self._state_save_timer.timeout.connect(self._save_playback_state)
+        self._state_save_timer.start()
 
         self._monitor_timer = QTimer(self)
         self._monitor_timer.setInterval(MONITOR_INTERVAL_MS)
@@ -701,14 +714,25 @@ class MainWindow(QMainWindow):
     def _build_player(self) -> QWidget:
         player = QFrame()
         player.setObjectName("playerBar")
-        player.setFixedHeight(86)
+        player.setFixedHeight(94)
         row = QHBoxLayout(player)
         row.setContentsMargins(18, 8, 18, 8)
+
+        self.player_art_label = QLabel()
+        self.player_art_label.setFixedSize(58, 58)
+        self.player_art_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        row.addWidget(self.player_art_label)
 
         self.player_track_label = QLabel("Nothing playing")
         self.player_track_label.setObjectName("playerTrack")
         self.player_track_label.setMinimumWidth(180)
+        self.player_track_label.setWordWrap(True)
         row.addWidget(self.player_track_label, 2)
+
+        self.player_favorite_button = QPushButton("♡")
+        self.player_favorite_button.setToolTip("Add or remove Favorite")
+        self.player_favorite_button.clicked.connect(self._toggle_current_favorite)
+        row.addWidget(self.player_favorite_button)
 
         previous_button = QPushButton("Previous")
         previous_button.clicked.connect(self._previous_track)
@@ -735,12 +759,17 @@ class MainWindow(QMainWindow):
         self.volume_slider = QSlider(Qt.Orientation.Horizontal)
         self.volume_slider.setRange(0, 100)
         self.volume_slider.setValue(70)
-        self.volume_slider.setMaximumWidth(110)
+        self.volume_slider.setMaximumWidth(100)
         self.volume_slider.valueChanged.connect(
             lambda value: self.audio_output.setVolume(value / 100)
         )
         self.volume_slider.setToolTip("Volume")
         row.addWidget(self.volume_slider)
+
+        expand_button = QPushButton("Expand")
+        expand_button.setToolTip("Open expanded player")
+        expand_button.clicked.connect(self._open_expanded_player)
+        row.addWidget(expand_button)
         return player
 
     def _show_page(self, name: str) -> None:
@@ -1020,6 +1049,13 @@ class MainWindow(QMainWindow):
         self.scan_button.setEnabled(True)
         self.scan_status.setText(f"Library updated · {count} audio files found.")
         self._refresh_tracks()
+        if self._current_track_path:
+            current_track = next(
+                (track for track in self._tracks if track["path"] == self._current_track_path),
+                None,
+            )
+            if current_track:
+                self._update_player_display(current_track)
         self._scan_thread = None
 
     def _scan_failed(self, message: str) -> None:
@@ -1073,20 +1109,29 @@ class MainWindow(QMainWindow):
     def _play_selected_track(self, _row: int = -1, _column: int = -1) -> None:
         track = self._selected_track()
         if track is not None:
-            self._play_track(track)
+            paths = [item["path"] for item in self._track_paths()]
+            self._play_track(track, paths)
 
-    def _play_track(self, track: dict) -> None:
+    def _play_track(self, track: dict, queue_paths: list[str] | None = None) -> None:
         path = Path(track["path"])
         if not path.is_file():
             QMessageBox.warning(self, "Track unavailable", "The audio file no longer exists.")
             self._start_scan()
             return
-        self._current_track_path = str(path)
-        self.player_track_label.setText(
-            f"{track['title']}  ·  {track['artist'] or 'Unknown artist'}"
-        )
-        self.player.setSource(QUrl.fromLocalFile(str(path)))
+        track_path = str(path)
+        if queue_paths is not None:
+            self._playback_queue = list(dict.fromkeys(queue_paths))
+            if track_path not in self._playback_queue:
+                self._playback_queue.insert(0, track_path)
+        elif track_path not in self._playback_queue:
+            self._playback_queue = [track_path]
+        self._current_queue_index = self._playback_queue.index(track_path)
+        self._current_track_path = track_path
+        self.player.setSource(QUrl.fromLocalFile(track_path))
         self.player.play()
+        self._update_player_display(track)
+        self._refresh_expanded_queue()
+        self._save_playback_state()
 
     def _toggle_playback(self) -> None:
         if self.player.playbackState() == QMediaPlayer.PlaybackState.PlayingState:
@@ -1102,17 +1147,59 @@ class MainWindow(QMainWindow):
             if not track["scan_error"] and Path(track["path"]).is_file()
         ]
 
-    def _step_track(self, direction: int) -> None:
-        tracks = self._track_paths()
-        if not tracks:
+    def _enqueue_paths(self, paths: list[str], play_next: bool = False) -> None:
+        clean_paths = list(dict.fromkeys(paths))
+        if not clean_paths:
             return
-        current = next(
-            (index for index, track in enumerate(tracks)
-             if track["path"] == self._current_track_path),
-            -1,
-        )
-        next_index = (current + direction) % len(tracks)
-        self._play_track(tracks[next_index])
+        if not self._playback_queue:
+            self._playback_queue = clean_paths
+            if self._current_track_path in clean_paths:
+                self._current_queue_index = clean_paths.index(self._current_track_path)
+            else:
+                first = next(
+                    (track for track in self._track_paths()
+                     if track["path"] == clean_paths[0]),
+                    None,
+                )
+                if first:
+                    self._play_track(first, clean_paths)
+            self._refresh_expanded_queue()
+            return
+        insertion = self._current_queue_index + 1 if play_next else len(self._playback_queue)
+        additions = [path for path in clean_paths if path not in self._playback_queue]
+        self._playback_queue[insertion:insertion] = additions
+        self._refresh_expanded_queue()
+        self._save_playback_state()
+
+    def _step_track(self, direction: int) -> None:
+        if not self._playback_queue:
+            available = [track["path"] for track in self._track_paths()]
+            if not available:
+                return
+            self._playback_queue = available
+            self._current_queue_index = -1
+        if self._shuffle_enabled and direction > 0 and len(self._playback_queue) > 1:
+            choices = [
+                index for index in range(len(self._playback_queue))
+                if index != self._current_queue_index
+            ]
+            next_index = random.choice(choices)
+        else:
+            next_index = self._current_queue_index + direction
+            if next_index < 0 or next_index >= len(self._playback_queue):
+                if self._repeat_mode == "all":
+                    next_index = next_index % len(self._playback_queue)
+                else:
+                    self.player.stop()
+                    return
+        next_path = self._playback_queue[next_index]
+        track = next((item for item in self._tracks if item["path"] == next_path), None)
+        if track is None or not Path(next_path).is_file():
+            self._playback_queue.pop(next_index)
+            self._step_track(direction)
+            return
+        self._current_queue_index = next_index
+        self._play_track(track, self._playback_queue)
 
     def _previous_track(self) -> None:
         if self.player.position() > 3000:
@@ -1124,8 +1211,224 @@ class MainWindow(QMainWindow):
         self._step_track(1)
 
     def _media_status_changed(self, status: QMediaPlayer.MediaStatus) -> None:
-        if status == QMediaPlayer.MediaStatus.EndOfMedia:
-            self._next_track()
+        if status == QMediaPlayer.MediaStatus.LoadedMedia and self._restore_position_ms is not None:
+            self.player.setPosition(self._restore_position_ms)
+            self._restore_position_ms = None
+        elif status == QMediaPlayer.MediaStatus.EndOfMedia:
+            if self._repeat_mode == "one":
+                self.player.setPosition(0)
+                self.player.play()
+            else:
+                self._next_track()
+
+    def _update_player_display(self, track: dict | None) -> None:
+        if track is None:
+            self.player_track_label.setText("Nothing playing")
+            self.player_art_label.clear()
+            self.player_favorite_button.setText("♡")
+            return
+        self.player_track_label.setText(
+            f"{track['title']}\\n{track['artist'] or 'Unknown artist'} · {track['album'] or 'Single'}"
+        )
+        artwork = read_cover_art(track["path"])
+        pixmap = QPixmap()
+        if artwork and pixmap.loadFromData(artwork):
+            pixmap = pixmap.scaled(
+                56, 56, Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
+            )
+            self.player_art_label.setPixmap(pixmap)
+        else:
+            self.player_art_label.clear()
+        favorite_paths = {item["path"] for item in list_favorites()}
+        self.player_favorite_button.setText("♥" if track["path"] in favorite_paths else "♡")
+        if self._expanded_player_dialog is not None:
+            self._update_expanded_track(track)
+
+    def _toggle_current_favorite(self) -> None:
+        if not self._current_track_path:
+            return
+        favorites = {item["path"] for item in list_favorites()}
+        if self._current_track_path in favorites:
+            remove_favorite(self._current_track_path)
+        else:
+            add_favorites([self._current_track_path])
+        self._update_player_display(
+            next((item for item in self._tracks if item["path"] == self._current_track_path), None)
+        )
+        self._refresh_favorites()
+
+    def _open_expanded_player(self) -> None:
+        if self._expanded_player_dialog is None:
+            dialog = QDialog(self)
+            dialog.setWindowTitle("Senna Music — Player")
+            dialog.resize(1040, 720)
+            layout = QHBoxLayout(dialog)
+            left = QVBoxLayout()
+            self.expanded_art_label = QLabel()
+            self.expanded_art_label.setFixedSize(300, 300)
+            self.expanded_art_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            left.addWidget(self.expanded_art_label, 0, Qt.AlignmentFlag.AlignHCenter)
+            self.expanded_title_label = QLabel("Nothing playing")
+            self.expanded_title_label.setObjectName("sectionTitle")
+            self.expanded_title_label.setWordWrap(True)
+            left.addWidget(self.expanded_title_label)
+            controls = QHBoxLayout()
+            previous = QPushButton("Previous")
+            previous.clicked.connect(self._previous_track)
+            play = QPushButton("Play/Pause")
+            play.clicked.connect(self._toggle_playback)
+            next_button = QPushButton("Next")
+            next_button.clicked.connect(self._next_track)
+            controls.addWidget(previous)
+            controls.addWidget(play)
+            controls.addWidget(next_button)
+            left.addLayout(controls)
+            self.expanded_position_slider = QSlider(Qt.Orientation.Horizontal)
+            self.expanded_position_slider.setRange(0, 0)
+            self.expanded_position_slider.sliderPressed.connect(self._slider_pressed)
+            self.expanded_position_slider.sliderReleased.connect(self._expanded_slider_released)
+            left.addWidget(self.expanded_position_slider)
+            self.expanded_lyrics_label = QLabel(
+                "Lyrics are not available for this track yet."
+            )
+            self.expanded_lyrics_label.setWordWrap(True)
+            self.expanded_lyrics_label.setObjectName("muted")
+            left.addWidget(self.expanded_lyrics_label)
+            left.addStretch(1)
+
+            right = QVBoxLayout()
+            right.addWidget(QLabel("Playback Queue"))
+            queue_controls = QHBoxLayout()
+            self.shuffle_button = QPushButton("Shuffle")
+            self.shuffle_button.setCheckable(True)
+            self.shuffle_button.toggled.connect(self._set_shuffle)
+            self.repeat_combo = QComboBox()
+            self.repeat_combo.addItems(["off", "all", "one"])
+            self.repeat_combo.currentTextChanged.connect(self._set_repeat_mode)
+            queue_controls.addWidget(self.shuffle_button)
+            queue_controls.addWidget(QLabel("Repeat"))
+            queue_controls.addWidget(self.repeat_combo)
+            right.addLayout(queue_controls)
+            self.expanded_queue_list = QListWidget()
+            self.expanded_queue_list.setDragDropMode(
+                QAbstractItemView.DragDropMode.InternalMove
+            )
+            self.expanded_queue_list.model().rowsMoved.connect(self._queue_reordered)
+            right.addWidget(self.expanded_queue_list, 1)
+            layout.addLayout(left, 1)
+            layout.addLayout(right, 1)
+            self._expanded_player_dialog = dialog
+            self._refresh_expanded_queue()
+            self._update_player_display(
+                next((item for item in self._tracks if item["path"] == self._current_track_path), None)
+            )
+        self._expanded_player_dialog.show()
+        self._expanded_player_dialog.raise_()
+        self._expanded_player_dialog.activateWindow()
+
+    def _update_expanded_track(self, track: dict) -> None:
+        self.expanded_title_label.setText(
+            f"{track['title']}\\n{track['artist'] or 'Unknown artist'}\\n{track['album'] or 'Single'}"
+        )
+        artwork = read_cover_art(track["path"])
+        pixmap = QPixmap()
+        if artwork and pixmap.loadFromData(artwork):
+            self.expanded_art_label.setPixmap(
+                pixmap.scaled(
+                    300, 300, Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation,
+                )
+            )
+        else:
+            self.expanded_art_label.clear()
+        self.expanded_lyrics_label.setText(
+            "Lyrics are not available for this track yet."
+        )
+
+    def _refresh_expanded_queue(self) -> None:
+        if self._expanded_player_dialog is None:
+            return
+        self.expanded_queue_list.clear()
+        for path in self._playback_queue:
+            track = next((item for item in self._tracks if item["path"] == path), None)
+            label = (
+                f"{track['title']} — {track['artist'] or 'Unknown artist'}"
+                if track else Path(path).name
+            )
+            item = QListWidgetItem(label)
+            item.setData(Qt.ItemDataRole.UserRole, path)
+            self.expanded_queue_list.addItem(item)
+        self.expanded_queue_list.setCurrentRow(self._current_queue_index)
+        self.shuffle_button.setChecked(self._shuffle_enabled)
+        self.repeat_combo.setCurrentText(self._repeat_mode)
+
+    def _queue_reordered(self, *_args) -> None:
+        if self._expanded_player_dialog is None:
+            return
+        self._playback_queue = [
+            str(self.expanded_queue_list.item(index).data(Qt.ItemDataRole.UserRole))
+            for index in range(self.expanded_queue_list.count())
+        ]
+        self._current_queue_index = self._playback_queue.index(
+            self._current_track_path
+        ) if self._current_track_path in self._playback_queue else -1
+        self._save_playback_state()
+
+    def _set_shuffle(self, enabled: bool) -> None:
+        self._shuffle_enabled = enabled
+        self._save_playback_state()
+
+    def _set_repeat_mode(self, mode: str) -> None:
+        self._repeat_mode = mode
+        self._save_playback_state()
+
+    def _expanded_slider_released(self) -> None:
+        self._slider_is_pressed = False
+        self.player.setPosition(self.expanded_position_slider.value())
+
+    def _save_playback_state(self) -> None:
+        state = {
+            "queue": self._playback_queue,
+            "current_track": self._current_track_path,
+            "position_ms": self.player.position(),
+            "shuffle": self._shuffle_enabled,
+            "repeat": self._repeat_mode,
+        }
+        set_setting("playback_state", json.dumps(state))
+
+    def _restore_playback_state(self) -> None:
+        try:
+            state = json.loads(get_setting("playback_state", "{}"))
+        except (TypeError, ValueError):
+            return
+        self._playback_queue = [
+            str(path) for path in state.get("queue", []) if isinstance(path, str)
+        ]
+        self._current_track_path = state.get("current_track")
+        if self._current_track_path not in self._playback_queue:
+            self._current_track_path = None
+        self._current_queue_index = (
+            self._playback_queue.index(self._current_track_path)
+            if self._current_track_path else -1
+        )
+        self._shuffle_enabled = bool(state.get("shuffle", False))
+        self._repeat_mode = state.get("repeat", "off")
+        if self._repeat_mode not in {"off", "all", "one"}:
+            self._repeat_mode = "off"
+        if self._current_track_path and Path(self._current_track_path).is_file():
+            self._restore_position_ms = int(state.get("position_ms", 0))
+            self.player.setSource(QUrl.fromLocalFile(self._current_track_path))
+            track = next(
+                (item for item in self._tracks if item["path"] == self._current_track_path),
+                None,
+            )
+            if track:
+                self._update_player_display(track)
+            else:
+                self.player_track_label.setText(Path(self._current_track_path).name)
+        self._refresh_expanded_queue()
+
 
     def _playback_state_changed(self, state: QMediaPlayer.PlaybackState) -> None:
         self.play_button.setText(
@@ -1135,10 +1438,14 @@ class MainWindow(QMainWindow):
     def _position_changed(self, position: int) -> None:
         if not self._slider_is_pressed:
             self.position_slider.setValue(position)
+            if self._expanded_player_dialog is not None:
+                self.expanded_position_slider.setValue(position)
         self.position_label.setText(self._format_duration(position / 1000))
 
     def _duration_changed(self, duration: int) -> None:
         self.position_slider.setRange(0, duration)
+        if self._expanded_player_dialog is not None:
+            self.expanded_position_slider.setRange(0, duration)
         self.duration_label.setText(self._format_duration(duration / 1000))
 
     def _slider_pressed(self) -> None:
@@ -1171,12 +1478,18 @@ class MainWindow(QMainWindow):
             return
         menu = QMenu(self)
         play_action = menu.addAction("Play")
+        play_next_action = menu.addAction("Play Next")
+        add_queue_action = menu.addAction("Add to Queue")
         details_action = menu.addAction("View Track Details")
         menu.addSeparator()
         edit_label = "Edit Metadata" if len(selected_tracks) == 1 else "Edit Metadata for Selected"
         edit_action = menu.addAction(edit_label)
         menu.addSeparator()
-        add_favorite_action = menu.addAction("Add to Favorites")
+        favorite_paths = {item["path"] for item in list_favorites()}
+        selected_paths = [track["path"] for track in selected_tracks]
+        all_favorite = all(path in favorite_paths for path in selected_paths)
+        favorite_label = "Remove from Favorites" if all_favorite else "Add to Favorites"
+        add_favorite_action = menu.addAction(favorite_label)
         playlist_menu = menu.addMenu("Add to Playlist")
         playlist_actions = {
             playlist_menu.addAction(item["name"]): item["id"]
@@ -1187,13 +1500,24 @@ class MainWindow(QMainWindow):
             retry_action = menu.addAction("Retry")
         chosen = menu.exec(self.track_table.viewport().mapToGlobal(position))
         if chosen == play_action:
-            self._play_track(selected_tracks[0])
+            self._play_track(
+                selected_tracks[0], [track["path"] for track in self._track_paths()]
+            )
+        elif chosen == play_next_action:
+            self._enqueue_paths(selected_paths, play_next=True)
+        elif chosen == add_queue_action:
+            self._enqueue_paths(selected_paths)
         elif chosen == details_action:
             self._show_track_details(selected_tracks[0])
         elif chosen == edit_action:
             self._edit_track_metadata(selected_tracks)
         elif chosen == add_favorite_action:
-            add_favorites([track["path"] for track in selected_tracks])
+            if all_favorite:
+                for path in selected_paths:
+                    remove_favorite(path)
+            else:
+                add_favorites(selected_paths)
+            self._refresh_favorites()
         elif chosen in playlist_actions:
             add_tracks_to_playlist(
                 playlist_actions[chosen], [track["path"] for track in selected_tracks]
@@ -1347,19 +1671,31 @@ class MainWindow(QMainWindow):
         if item_id is None:
             return
         menu = QMenu(self)
+        play_action = menu.addAction("Play")
+        play_next_action = menu.addAction("Play Next")
+        add_queue_action = menu.addAction("Add to Queue")
+        menu.addSeparator()
         remove_action = menu.addAction("Remove from Playlist")
         chosen = menu.exec(self.playlist_tracks_table.viewport().mapToGlobal(position))
-        if chosen == remove_action:
+        if chosen == play_action:
+            self._play_playlist_track(row, 0)
+        elif chosen == play_next_action:
+            self._enqueue_paths([path], play_next=True)
+        elif chosen == add_queue_action:
+            self._enqueue_paths([path])
+        elif chosen == remove_action:
             remove_track_from_playlist(item_id, path)
             self._refresh_playlists(item_id)
 
     def _play_playlist_track(self, row: int, _column: int) -> None:
         item = self.playlist_tracks_table.item(row, 0)
-        if item is not None:
+        playlist_id = self._selected_list_id(self.playlist_list)
+        if item is not None and playlist_id is not None:
             path = item.data(Qt.ItemDataRole.UserRole)
             track = next((entry for entry in self._tracks if entry["path"] == path), None)
+            queue_paths = [entry["path"] for entry in list_playlist_tracks(playlist_id)]
             if track:
-                self._play_track(track)
+                self._play_track(track, queue_paths)
 
     def _refresh_favorites(self) -> None:
         if not hasattr(self, "favorites_table"):
@@ -1479,27 +1815,47 @@ class MainWindow(QMainWindow):
         if collection_id is None:
             return
         menu = QMenu(self)
+        play_action = menu.addAction("Play")
+        play_next_action = menu.addAction("Play Next")
+        add_queue_action = menu.addAction("Add to Queue")
+        menu.addSeparator()
         remove_action = menu.addAction("Remove from Collection")
         chosen = menu.exec(
             self.favorite_collection_tracks_table.viewport().mapToGlobal(position)
         )
-        if chosen == remove_action:
+        if chosen == play_action:
+            self._play_favorite_collection_track(row, 0)
+        elif chosen == play_next_action:
+            self._enqueue_paths([path], play_next=True)
+        elif chosen == add_queue_action:
+            self._enqueue_paths([path])
+        elif chosen == remove_action:
             remove_track_from_favorite_collection(collection_id, path)
             self._refresh_favorite_collections(collection_id)
 
     def _play_favorite_track(self, row: int, _column: int) -> None:
-        self._play_table_track(self.favorites_table, row)
+        self._play_table_track(
+            self.favorites_table, row,
+            [track["path"] for track in list_favorites()],
+        )
 
     def _play_favorite_collection_track(self, row: int, _column: int) -> None:
-        self._play_table_track(self.favorite_collection_tracks_table, row)
+        collection_id = self._selected_list_id(self.favorite_collections_list)
+        paths = (
+            [track["path"] for track in list_favorite_collection_tracks(collection_id)]
+            if collection_id is not None else []
+        )
+        self._play_table_track(self.favorite_collection_tracks_table, row, paths)
 
-    def _play_table_track(self, table: QTableWidget, row: int) -> None:
+    def _play_table_track(
+        self, table: QTableWidget, row: int, queue_paths: list[str] | None = None
+    ) -> None:
         item = table.item(row, 0)
         if item is not None:
             path = item.data(Qt.ItemDataRole.UserRole)
             track = next((entry for entry in self._tracks if entry["path"] == path), None)
             if track:
-                self._play_track(track)
+                self._play_track(track, queue_paths)
 
     def _pick_track_paths(self) -> list[str]:
         dialog = QDialog(self)
@@ -1775,6 +2131,7 @@ class MainWindow(QMainWindow):
                 )
                 event.ignore()
                 return
+        self._save_playback_state()
         event.accept()
 
     @staticmethod
