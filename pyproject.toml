@@ -15,6 +15,7 @@ dependencies = [
   "yt-dlp>=2025.1.15",
   "spotdl>=4.2.11",
   "keyring>=25.0",
+  "langdetect>=1.0.9",
 ]
 
 [project.optional-dependencies]
