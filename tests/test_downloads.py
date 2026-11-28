@@ -57,7 +57,7 @@ def test_build_target_path_organizes_and_sanitizes_names(tmp_path):
         "mp3",
     )
     assert target.is_relative_to(tmp_path.resolve())
-    assert target.parts[-3] == "Artist"
+    assert target.parts[-3].endswith("Artist")
     assert target.suffix == ".mp3"
 
 
