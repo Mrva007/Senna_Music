@@ -10,9 +10,10 @@
 - PR #15 (desktop foundation) is merged into `main`.
 - PR #15 tests passed (2/2), but its Ruff step failed on three SIM117 transaction-context findings and one I001 import-order finding.
 - PR #16 fixes those inherited lint findings and adds the first Local Music scanning milestone.
-- PR #16 CI passed on commit `f064c4b` (pytest and Ruff); an additional safety fix and regression test are now in the PR and require a fresh CI run.
+- PR #16 latest CI passed on commit `22482b8`: 7 tests passed and Ruff reported no issues.
+- The scanner also preserves indexed tracks when a drive is temporarily unavailable or a folder scan is incomplete.
 - Current implementation branch: `feature/local-music-library-scan`.
-- PR #16 remains open pending final verification and review.
+- PR #16 is technically verified and ready for final merge approval.
 
 ## Working foundation
 
@@ -37,7 +38,7 @@
 
 - Windows GitHub Actions workflow runs pytest and Ruff for pull requests and pushes to main.
 - PR #15: pytest passed (2 tests); Ruff failed with 4 findings.
-- PR #16 at `f064c4b`: pytest and Ruff passed; the follow-up scanner safety fix is awaiting its own CI result.
+- PR #16 at `22482b8`: pytest passed (7/7) and Ruff passed.
 - The application is an early development build, not yet the complete first release.
 
 ## Deferred beyond the first testable build
