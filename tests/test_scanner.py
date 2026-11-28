@@ -81,3 +81,29 @@ def test_removing_folder_only_removes_library_index(tmp_path, monkeypatch):
 
     assert list_tracks(database) == []
     assert audio_file.exists()
+
+
+def test_scan_preserves_index_when_registered_folder_is_temporarily_unavailable(
+    tmp_path, monkeypatch
+):
+    database = tmp_path / "senna.sqlite3"
+    music = tmp_path / "Music"
+    music.mkdir()
+    audio_file = music / "keep-indexed.mp3"
+    audio_file.write_bytes(b"audio")
+    initialize_database(database)
+    add_library_folder(music, database)
+    monkeypatch.setattr(
+        "senna_music.core.scanner.read_track_metadata",
+        lambda path: {
+            "title": path.stem, "artist": "", "album": "", "track_number": "",
+            "year": "", "genre": "", "duration": None, "scan_error": "",
+        },
+    )
+    scan_library(database)
+    assert len(list_tracks(database)) == 1
+
+    # Simulate an unplugged external drive: the registered root is unavailable.
+    music.rename(tmp_path / "Music temporarily offline")
+    assert scan_library(database) == 0
+    assert len(list_tracks(database)) == 1
