@@ -194,7 +194,7 @@ class DownloadQueueWorker(QThread):
                 result = download_audio(
                     task,
                     task["destination_root"],
-                    progress_callback=lambda value: self._progress(task_id, value),
+                    progress_callback=lambda value, current_task_id=task_id: self._progress(current_task_id, value),
                     cancel_event=self.cancel_event,
                     pause_event=self.pause_event,
                     ffmpeg_location=self.ffmpeg_location,
