@@ -14,9 +14,11 @@ from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QHeaderView,
+    QInputDialog,
     QLabel,
     QLineEdit,
     QListWidget,
+    QListWidgetItem,
     QMainWindow,
     QMenu,
     QMessageBox,
@@ -29,6 +31,25 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from senna_music.core.collections import (
+    add_favorites,
+    add_tracks_to_favorite_collection,
+    add_tracks_to_playlist,
+    create_favorite_collection,
+    create_playlist,
+    delete_favorite_collection,
+    delete_playlist,
+    list_favorite_collection_tracks,
+    list_favorite_collections,
+    list_favorites,
+    list_playlist_tracks,
+    list_playlists,
+    remove_favorite,
+    remove_track_from_favorite_collection,
+    remove_track_from_playlist,
+    rename_favorite_collection,
+    rename_playlist,
+)
 from senna_music.core.metadata import read_cover_art, update_track_metadata
 from senna_music.core.scanner import scan_library
 from senna_music.core.storage import (
@@ -263,6 +284,105 @@ class MainWindow(QMainWindow):
                 layout.addWidget(row)
 
             layout.addStretch(1)
+
+
+        elif name == "Playlists":
+            actions = QHBoxLayout()
+            for label, callback in (
+                ("New Playlist", self._create_playlist),
+                ("Rename", self._rename_playlist),
+                ("Delete", self._delete_playlist),
+                ("Add Tracks", self._add_tracks_to_playlist),
+            ):
+                button = QPushButton(label)
+                button.clicked.connect(callback)
+                actions.addWidget(button)
+            actions.addStretch(1)
+            layout.addLayout(actions)
+            self.playlist_list = QListWidget()
+            self.playlist_list.currentItemChanged.connect(self._refresh_playlist_tracks)
+            layout.addWidget(self.playlist_list, 1)
+            self.playlist_tracks_table = QTableWidget(0, 4)
+            self.playlist_tracks_table.setHorizontalHeaderLabels(
+                ["Track", "Artist", "Album", "Duration"]
+            )
+            self.playlist_tracks_table.horizontalHeader().setSectionResizeMode(
+                QHeaderView.ResizeMode.Stretch
+            )
+            self.playlist_tracks_table.setSelectionBehavior(
+                QTableWidget.SelectionBehavior.SelectRows
+            )
+            self.playlist_tracks_table.setContextMenuPolicy(
+                Qt.ContextMenuPolicy.CustomContextMenu
+            )
+            self.playlist_tracks_table.customContextMenuRequested.connect(
+                self._playlist_track_menu
+            )
+            self.playlist_tracks_table.cellDoubleClicked.connect(
+                self._play_playlist_track
+            )
+            layout.addWidget(self.playlist_tracks_table, 2)
+            self._refresh_playlists()
+
+        elif name == "Favorites":
+            favorites_actions = QHBoxLayout()
+            add_favorite_button = QPushButton("Add Tracks")
+            add_favorite_button.clicked.connect(self._add_tracks_to_favorites)
+            remove_favorite_button = QPushButton("Remove Selected")
+            remove_favorite_button.clicked.connect(self._remove_selected_favorites)
+            favorites_actions.addWidget(add_favorite_button)
+            favorites_actions.addWidget(remove_favorite_button)
+            favorites_actions.addStretch(1)
+            layout.addLayout(favorites_actions)
+            self.favorites_table = QTableWidget(0, 4)
+            self.favorites_table.setHorizontalHeaderLabels(
+                ["Track", "Artist", "Album", "Duration"]
+            )
+            self.favorites_table.horizontalHeader().setSectionResizeMode(
+                QHeaderView.ResizeMode.Stretch
+            )
+            self.favorites_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+            self.favorites_table.cellDoubleClicked.connect(self._play_favorite_track)
+            layout.addWidget(self.favorites_table, 2)
+            collection_actions = QHBoxLayout()
+            for label, callback in (
+                ("New Collection", self._create_favorite_collection),
+                ("Rename", self._rename_favorite_collection),
+                ("Delete", self._delete_favorite_collection),
+                ("Add Tracks", self._add_tracks_to_favorite_collection),
+            ):
+                button = QPushButton(label)
+                button.clicked.connect(callback)
+                collection_actions.addWidget(button)
+            collection_actions.addStretch(1)
+            layout.addLayout(collection_actions)
+            self.favorite_collections_list = QListWidget()
+            self.favorite_collections_list.currentItemChanged.connect(
+                self._refresh_favorite_collection_tracks
+            )
+            layout.addWidget(self.favorite_collections_list, 1)
+            self.favorite_collection_tracks_table = QTableWidget(0, 4)
+            self.favorite_collection_tracks_table.setHorizontalHeaderLabels(
+                ["Track", "Artist", "Album", "Duration"]
+            )
+            self.favorite_collection_tracks_table.horizontalHeader().setSectionResizeMode(
+                QHeaderView.ResizeMode.Stretch
+            )
+            self.favorite_collection_tracks_table.setSelectionBehavior(
+                QTableWidget.SelectionBehavior.SelectRows
+            )
+            self.favorite_collection_tracks_table.setContextMenuPolicy(
+                Qt.ContextMenuPolicy.CustomContextMenu
+            )
+            self.favorite_collection_tracks_table.customContextMenuRequested.connect(
+                self._favorite_collection_track_menu
+            )
+            self.favorite_collection_tracks_table.cellDoubleClicked.connect(
+                self._play_favorite_collection_track
+            )
+            layout.addWidget(self.favorite_collection_tracks_table, 2)
+            self._refresh_favorites()
+            self._refresh_favorite_collections()
 
         elif name == "Settings":
             intro = QLabel("Application preferences will be added incrementally.")
@@ -561,6 +681,13 @@ class MainWindow(QMainWindow):
         menu.addSeparator()
         edit_label = "Edit Metadata" if len(selected_tracks) == 1 else "Edit Metadata for Selected"
         edit_action = menu.addAction(edit_label)
+        menu.addSeparator()
+        add_favorite_action = menu.addAction("Add to Favorites")
+        playlist_menu = menu.addMenu("Add to Playlist")
+        playlist_actions = {
+            playlist_menu.addAction(item["name"]): item["id"]
+            for item in list_playlists()
+        }
         retry_action = None
         if any(track["scan_error"] for track in selected_tracks):
             retry_action = menu.addAction("Retry")
@@ -571,6 +698,12 @@ class MainWindow(QMainWindow):
             self._show_track_details(selected_tracks[0])
         elif chosen == edit_action:
             self._edit_track_metadata(selected_tracks)
+        elif chosen == add_favorite_action:
+            add_favorites([track["path"] for track in selected_tracks])
+        elif chosen in playlist_actions:
+            add_tracks_to_playlist(
+                playlist_actions[chosen], [track["path"] for track in selected_tracks]
+            )
         elif retry_action is not None and chosen == retry_action:
             self._start_scan()
 
@@ -625,6 +758,306 @@ class MainWindow(QMainWindow):
             )
         else:
             QMessageBox.information(self, "Metadata saved", "Track metadata was updated.")
+
+
+    def _selected_list_id(self, widget: QListWidget) -> int | None:
+        item = widget.currentItem()
+        return int(item.data(Qt.ItemDataRole.UserRole)) if item else None
+
+    def _create_playlist(self) -> None:
+        name, accepted = QInputDialog.getText(self, "New Playlist", "Playlist name:")
+        if accepted:
+            try:
+                created = create_playlist(name)
+            except ValueError as error:
+                QMessageBox.warning(self, "Invalid name", str(error))
+                return
+            if not created:
+                QMessageBox.warning(self, "Duplicate name", "A playlist with that name already exists.")
+            else:
+                self._refresh_playlists()
+
+    def _rename_playlist(self) -> None:
+        item_id = self._selected_list_id(self.playlist_list)
+        item = self.playlist_list.currentItem()
+        if item_id is None or item is None:
+            return
+        name, accepted = QInputDialog.getText(
+            self, "Rename Playlist", "Playlist name:", text=item.text().split(" (")[0]
+        )
+        if accepted:
+            try:
+                renamed = rename_playlist(item_id, name)
+            except ValueError as error:
+                QMessageBox.warning(self, "Invalid name", str(error))
+                return
+            if not renamed:
+                QMessageBox.warning(self, "Duplicate name", "A playlist with that name already exists.")
+            else:
+                self._refresh_playlists(item_id)
+
+    def _delete_playlist(self) -> None:
+        item_id = self._selected_list_id(self.playlist_list)
+        if item_id is None:
+            return
+        answer = QMessageBox.question(
+            self, "Delete Playlist", "Delete this playlist? Local music files will not be deleted."
+        )
+        if answer == QMessageBox.StandardButton.Yes:
+            delete_playlist(item_id)
+            self._refresh_playlists()
+
+    def _refresh_playlists(self, selected_id: int | None = None) -> None:
+        if not hasattr(self, "playlist_list"):
+            return
+        self.playlist_list.clear()
+        selected_item = None
+        for playlist in list_playlists():
+            item = QListWidgetItem(
+                f"{playlist['name']} ({playlist['track_count']})"
+            )
+            item.setData(Qt.ItemDataRole.UserRole, playlist["id"])
+            self.playlist_list.addItem(item)
+            if playlist["id"] == selected_id:
+                selected_item = item
+        if selected_item is not None:
+            self.playlist_list.setCurrentItem(selected_item)
+        elif self.playlist_list.count():
+            self.playlist_list.setCurrentRow(0)
+        else:
+            self.playlist_tracks_table.setRowCount(0)
+
+    def _refresh_playlist_tracks(self, current=None, _previous=None) -> None:
+        if not hasattr(self, "playlist_tracks_table"):
+            return
+        item_id = int(current.data(Qt.ItemDataRole.UserRole)) if current else None
+        tracks = list_playlist_tracks(item_id) if item_id is not None else []
+        self._fill_track_table(self.playlist_tracks_table, tracks)
+
+    def _add_tracks_to_playlist(self) -> None:
+        playlist_id = self._selected_list_id(self.playlist_list)
+        if playlist_id is None:
+            QMessageBox.information(self, "Select a Playlist", "Create or select a playlist first.")
+            return
+        paths = self._pick_track_paths()
+        if paths:
+            add_tracks_to_playlist(playlist_id, paths)
+            self._refresh_playlists(playlist_id)
+
+    def _playlist_track_menu(self, position) -> None:
+        row = self.playlist_tracks_table.rowAt(position.y())
+        if row < 0:
+            return
+        path = self.playlist_tracks_table.item(row, 0).data(Qt.ItemDataRole.UserRole)
+        item_id = self._selected_list_id(self.playlist_list)
+        if item_id is None:
+            return
+        menu = QMenu(self)
+        remove_action = menu.addAction("Remove from Playlist")
+        chosen = menu.exec(self.playlist_tracks_table.viewport().mapToGlobal(position))
+        if chosen == remove_action:
+            remove_track_from_playlist(item_id, path)
+            self._refresh_playlists(item_id)
+
+    def _play_playlist_track(self, row: int, _column: int) -> None:
+        item = self.playlist_tracks_table.item(row, 0)
+        if item is not None:
+            path = item.data(Qt.ItemDataRole.UserRole)
+            track = next((entry for entry in self._tracks if entry["path"] == path), None)
+            if track:
+                self._play_track(track)
+
+    def _refresh_favorites(self) -> None:
+        if not hasattr(self, "favorites_table"):
+            return
+        self._fill_track_table(self.favorites_table, list_favorites())
+
+    def _add_tracks_to_favorites(self) -> None:
+        paths = self._pick_track_paths()
+        if paths:
+            add_favorites(paths)
+            self._refresh_favorites()
+
+    def _remove_selected_favorites(self) -> None:
+        paths = self._selected_table_paths(self.favorites_table)
+        for path in paths:
+            remove_favorite(path)
+        self._refresh_favorites()
+
+    def _refresh_favorite_collections(self, selected_id: int | None = None) -> None:
+        if not hasattr(self, "favorite_collections_list"):
+            return
+        self.favorite_collections_list.clear()
+        selected_item = None
+        for collection in list_favorite_collections():
+            item = QListWidgetItem(
+                f"{collection['name']} ({collection['track_count']})"
+            )
+            item.setData(Qt.ItemDataRole.UserRole, collection["id"])
+            self.favorite_collections_list.addItem(item)
+            if collection["id"] == selected_id:
+                selected_item = item
+        if selected_item is not None:
+            self.favorite_collections_list.setCurrentItem(selected_item)
+        elif self.favorite_collections_list.count():
+            self.favorite_collections_list.setCurrentRow(0)
+        else:
+            self.favorite_collection_tracks_table.setRowCount(0)
+
+    def _refresh_favorite_collection_tracks(self, current=None, _previous=None) -> None:
+        if not hasattr(self, "favorite_collection_tracks_table"):
+            return
+        item_id = int(current.data(Qt.ItemDataRole.UserRole)) if current else None
+        tracks = list_favorite_collection_tracks(item_id) if item_id is not None else []
+        self._fill_track_table(self.favorite_collection_tracks_table, tracks)
+
+    def _create_favorite_collection(self) -> None:
+        name, accepted = QInputDialog.getText(
+            self, "New Favorites Collection", "Collection name:"
+        )
+        if accepted:
+            try:
+                created = create_favorite_collection(name)
+            except ValueError as error:
+                QMessageBox.warning(self, "Invalid name", str(error))
+                return
+            if not created:
+                QMessageBox.warning(
+                    self, "Duplicate name", "A Favorites collection with that name already exists."
+                )
+            else:
+                self._refresh_favorite_collections()
+
+    def _rename_favorite_collection(self) -> None:
+        item_id = self._selected_list_id(self.favorite_collections_list)
+        item = self.favorite_collections_list.currentItem()
+        if item_id is None or item is None:
+            return
+        name, accepted = QInputDialog.getText(
+            self, "Rename Collection", "Collection name:",
+            text=item.text().split(" (")[0],
+        )
+        if accepted:
+            try:
+                renamed = rename_favorite_collection(item_id, name)
+            except ValueError as error:
+                QMessageBox.warning(self, "Invalid name", str(error))
+                return
+            if not renamed:
+                QMessageBox.warning(
+                    self, "Duplicate name", "A Favorites collection with that name already exists."
+                )
+            else:
+                self._refresh_favorite_collections(item_id)
+
+    def _delete_favorite_collection(self) -> None:
+        item_id = self._selected_list_id(self.favorite_collections_list)
+        if item_id is None:
+            return
+        answer = QMessageBox.question(
+            self, "Delete Collection",
+            "Delete this Favorites collection? Tracks and local files will remain.",
+        )
+        if answer == QMessageBox.StandardButton.Yes:
+            delete_favorite_collection(item_id)
+            self._refresh_favorite_collections()
+
+    def _add_tracks_to_favorite_collection(self) -> None:
+        collection_id = self._selected_list_id(self.favorite_collections_list)
+        if collection_id is None:
+            QMessageBox.information(
+                self, "Select a Collection", "Create or select a Favorites collection first."
+            )
+            return
+        paths = self._pick_track_paths()
+        if paths:
+            add_tracks_to_favorite_collection(collection_id, paths)
+            self._refresh_favorite_collections(collection_id)
+
+    def _favorite_collection_track_menu(self, position) -> None:
+        row = self.favorite_collection_tracks_table.rowAt(position.y())
+        if row < 0:
+            return
+        path = self.favorite_collection_tracks_table.item(row, 0).data(
+            Qt.ItemDataRole.UserRole
+        )
+        collection_id = self._selected_list_id(self.favorite_collections_list)
+        if collection_id is None:
+            return
+        menu = QMenu(self)
+        remove_action = menu.addAction("Remove from Collection")
+        chosen = menu.exec(
+            self.favorite_collection_tracks_table.viewport().mapToGlobal(position)
+        )
+        if chosen == remove_action:
+            remove_track_from_favorite_collection(collection_id, path)
+            self._refresh_favorite_collections(collection_id)
+
+    def _play_favorite_track(self, row: int, _column: int) -> None:
+        self._play_table_track(self.favorites_table, row)
+
+    def _play_favorite_collection_track(self, row: int, _column: int) -> None:
+        self._play_table_track(self.favorite_collection_tracks_table, row)
+
+    def _play_table_track(self, table: QTableWidget, row: int) -> None:
+        item = table.item(row, 0)
+        if item is not None:
+            path = item.data(Qt.ItemDataRole.UserRole)
+            track = next((entry for entry in self._tracks if entry["path"] == path), None)
+            if track:
+                self._play_track(track)
+
+    def _pick_track_paths(self) -> list[str]:
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Select Tracks")
+        layout = QVBoxLayout(dialog)
+        listing = QListWidget()
+        for track in self._tracks:
+            if track["scan_error"]:
+                continue
+            item = QListWidgetItem(
+                f"{track['title']} — {track['artist'] or 'Unknown artist'}"
+            )
+            item.setData(Qt.ItemDataRole.UserRole, track["path"])
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            item.setCheckState(Qt.CheckState.Unchecked)
+            listing.addItem(item)
+        layout.addWidget(listing)
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        layout.addWidget(buttons)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return []
+        return [
+            str(listing.item(index).data(Qt.ItemDataRole.UserRole))
+            for index in range(listing.count())
+            if listing.item(index).checkState() == Qt.CheckState.Checked
+        ]
+
+    @staticmethod
+    def _fill_track_table(table: QTableWidget, tracks: list[dict]) -> None:
+        table.setRowCount(len(tracks))
+        for row, track in enumerate(tracks):
+            values = [
+                track["title"], track["artist"], track["album"],
+                MainWindow._format_duration(track["duration"]),
+            ]
+            for column, value in enumerate(values):
+                item = QTableWidgetItem(value)
+                if column == 0:
+                    item.setData(Qt.ItemDataRole.UserRole, track["path"])
+                table.setItem(row, column, item)
+
+    @staticmethod
+    def _selected_table_paths(table: QTableWidget) -> list[str]:
+        return [
+            str(table.item(row, 0).data(Qt.ItemDataRole.UserRole))
+            for row in sorted({index.row() for index in table.selectionModel().selectedRows()})
+            if table.item(row, 0) is not None
+        ]
 
     def _show_track_details(self, track: dict) -> None:
         details = (
